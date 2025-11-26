@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "417611516684",
+    "project_id": "ai-personal-stylist-b1162",
+    "storage_bucket": "ai-personal-stylist-b1162.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:417611516684:android:010df8e438825cf67b5729",
+        "android_client_info": {
+          "package_name": "com.example.ai_personal_stylist"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvF-x0G4Wt61zbHJFkmPxyNJ7lLLU0g7U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
