@@ -32,12 +32,14 @@ class _LoginScreenState extends State<LoginScreen> {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
             colors: [
-              Color(0xFF6C63FF),
-              Color(0xFF8B5CF6),
+              Color(0xFF7C3AED),  // Purple
+              Color(0xFFDB2777),  // Pink
+              Color(0xFFF97316),  // Orange
             ],
+            stops: [0.0, 0.5, 1.0],
           ),
         ),
         child: SafeArea(
@@ -54,25 +56,36 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: [
                   const SizedBox(height: 20),
                   
-                  // Logo/Icon
+                  // Logo/Icon với animation shimmer effect
                   Container(
-                    width: 120,
-                    height: 120,
+                    width: 130,
+                    height: 130,
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(30),
+                      borderRadius: BorderRadius.circular(36),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.2),
-                          blurRadius: 20,
-                          offset: const Offset(0, 10),
+                          color: Colors.black.withValues(alpha: 0.25),
+                          blurRadius: 30,
+                          offset: const Offset(0, 15),
+                        ),
+                        BoxShadow(
+                          color: const Color(0xFF7C3AED).withValues(alpha: 0.3),
+                          blurRadius: 40,
+                          spreadRadius: -10,
+                          offset: const Offset(0, 20),
                         ),
                       ],
                     ),
-                    child: const Icon(
-                      Icons.checkroom,
-                      size: 64,
-                      color: AppTheme.primaryColor,
+                    child: ShaderMask(
+                      shaderCallback: (bounds) => const LinearGradient(
+                        colors: [Color(0xFF7C3AED), Color(0xFFEC4899)],
+                      ).createShader(bounds),
+                      child: const Icon(
+                        Icons.checkroom,
+                        size: 70,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                   

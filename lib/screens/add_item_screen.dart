@@ -47,8 +47,32 @@ class _AddItemScreenState extends State<AddItemScreen> {
         title: const Text('Thêm đồ mới'),
         backgroundColor: Colors.transparent,
         elevation: 0,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                AppTheme.accentColor.withValues(alpha: 0.1),
+                AppTheme.primaryColor.withValues(alpha: 0.05),
+              ],
+            ),
+          ),
+        ),
       ),
-      body: SingleChildScrollView(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFFECFDF5),  // Cyan 50
+              AppTheme.backgroundColor,
+            ],
+            stops: [0.0, 0.2],
+          ),
+        ),
+        child: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -69,6 +93,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
               _buildSaveButton(),
             ],
           ],
+        ),
         ),
       ),
     );

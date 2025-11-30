@@ -25,6 +25,18 @@ class _WardrobeCleanupScreenState extends State<WardrobeCleanupScreen> {
         title: const Text('Dọn tủ đồ'),
         backgroundColor: Colors.transparent,
         elevation: 0,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                AppTheme.warningColor.withValues(alpha: 0.1),
+                AppTheme.secondaryColor.withValues(alpha: 0.05),
+              ],
+            ),
+          ),
+        ),
         actions: [
           if (_selectedForRemoval.isNotEmpty)
             TextButton.icon(

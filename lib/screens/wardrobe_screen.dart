@@ -39,33 +39,63 @@ class _WardrobeScreenState extends State<WardrobeScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // Header
-            Padding(
+            // Header with gradient
+            Container(
               padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    AppTheme.primaryColor.withValues(alpha: 0.1),
+                    AppTheme.secondaryColor.withValues(alpha: 0.05),
+                  ],
+                ),
+              ),
               child: Row(
                 children: [
-                  const Text(
-                    'Tủ đồ của tôi',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Tủ đồ của tôi',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Quản lý trang phục của bạn',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppTheme.textSecondary,
+                        ),
+                      ),
+                    ],
                   ),
                   const Spacer(),
                   Consumer<WardrobeProvider>(
                     builder: (context, wardrobe, _) => Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
+                        horizontal: 14,
+                        vertical: 8,
                       ),
                       decoration: BoxDecoration(
-                        color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                        gradient: AppTheme.primaryGradient,
                         borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppTheme.primaryColor.withValues(alpha: 0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                       ),
                       child: Text(
                         '${wardrobe.allItems.length} món',
                         style: const TextStyle(
-                          color: AppTheme.primaryColor,
+                          color: Colors.white,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -102,15 +132,23 @@ class _WardrobeScreenState extends State<WardrobeScreen> {
                         duration: const Duration(milliseconds: 200),
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         decoration: BoxDecoration(
-                          color: isSelected 
-                              ? AppTheme.primaryColor 
-                              : Colors.white,
+                          gradient: isSelected 
+                              ? AppTheme.primaryGradient 
+                              : null,
+                          color: isSelected ? null : Colors.white,
                           borderRadius: BorderRadius.circular(22),
                           border: Border.all(
                             color: isSelected 
-                                ? AppTheme.primaryColor 
+                                ? Colors.transparent 
                                 : Colors.grey.shade300,
                           ),
+                          boxShadow: isSelected ? [
+                            BoxShadow(
+                              color: AppTheme.primaryColor.withValues(alpha: 0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ] : null,
                         ),
                         child: Row(
                           children: [

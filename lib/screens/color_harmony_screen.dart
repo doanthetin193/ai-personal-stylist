@@ -28,8 +28,32 @@ class _ColorHarmonyScreenState extends State<ColorHarmonyScreen> {
         title: const Text('Chấm điểm hợp màu'),
         backgroundColor: Colors.transparent,
         elevation: 0,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                AppTheme.secondaryColor.withValues(alpha: 0.1),
+                AppTheme.primaryColor.withValues(alpha: 0.05),
+              ],
+            ),
+          ),
+        ),
       ),
-      body: SingleChildScrollView(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFFFDF4FF),  // Purple 50
+              AppTheme.backgroundColor,
+            ],
+            stops: [0.0, 0.25],
+          ),
+        ),
+        child: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -157,6 +181,7 @@ class _ColorHarmonyScreenState extends State<ColorHarmonyScreen> {
             if (_result != null) _buildResult(),
           ],
         ),
+      ),
       ),
     );
   }
