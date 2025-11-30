@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
@@ -9,6 +8,8 @@ import '../widgets/common_widgets.dart';
 import '../widgets/clothing_card.dart';
 import 'wardrobe_screen.dart';
 import 'outfit_suggest_screen.dart';
+import 'color_harmony_screen.dart';
+import 'wardrobe_cleanup_screen.dart';
 import 'add_item_screen.dart';
 import 'profile_screen.dart';
 
@@ -40,6 +41,11 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  /// Navigate to specific tab - public method for child widgets
+  void _navigateToTab(int index) {
+    setState(() => _currentIndex = index);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,7 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 20,
               offset: const Offset(0, -5),
             ),
@@ -64,11 +70,11 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildNavItem(0, Icons.home_rounded, 'Trang chủ'),
+                _buildNavItem(0, Icons.home_rounded, 'Home'),
                 _buildNavItem(1, Icons.checkroom_rounded, 'Tủ đồ'),
                 _buildAddButton(),
                 _buildNavItem(2, Icons.auto_awesome, 'Phối đồ'),
-                _buildNavItem(3, Icons.person_rounded, 'Tài khoản'),
+                _buildNavItem(3, Icons.person_rounded, 'Tôi'),
               ],
             ),
           ),
@@ -88,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected 
-              ? AppTheme.primaryColor.withOpacity(0.1) 
+              ? AppTheme.primaryColor.withValues(alpha: 0.1) 
               : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
         ),
@@ -126,7 +132,7 @@ class _HomeScreenState extends State<HomeScreen> {
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: AppTheme.primaryColor.withOpacity(0.4),
+              color: AppTheme.primaryColor.withValues(alpha: 0.4),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -194,7 +200,7 @@ class _HomeTab extends StatelessWidget {
                       Consumer<AuthProvider>(
                         builder: (context, auth, _) => CircleAvatar(
                           radius: 24,
-                          backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
+                          backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
                           backgroundImage: auth.photoUrl != null
                               ? NetworkImage(auth.photoUrl!)
                               : null,
@@ -219,7 +225,10 @@ class _HomeTab extends StatelessWidget {
                   if (wardrobe.weather == null) {
                     return const SizedBox.shrink();
                   }
-                  return WeatherWidget(weather: wardrobe.weather!);
+                  return GestureDetector(
+                    onTap: () => _showChangeLocationDialog(context, wardrobe),
+                    child: WeatherWidget(weather: wardrobe.weather!),
+                  );
                 },
               ),
             ),
@@ -262,7 +271,10 @@ class _HomeTab extends StatelessWidget {
                           title: 'Gợi ý outfit',
                           color: AppTheme.accentColor,
                           onTap: () {
-                            // Navigate to outfit suggest
+                            // Navigate to Outfit tab (index 2)
+                            if (context.findAncestorStateOfType<_HomeScreenState>() != null) {
+                              context.findAncestorStateOfType<_HomeScreenState>()!._navigateToTab(2);
+                            }
                           },
                         ),
                       ),
@@ -277,7 +289,10 @@ class _HomeTab extends StatelessWidget {
                           title: 'Chấm màu',
                           color: AppTheme.secondaryColor,
                           onTap: () {
-                            // Navigate to color harmony
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => const ColorHarmonyScreen()),
+                            );
                           },
                         ),
                       ),
@@ -288,7 +303,10 @@ class _HomeTab extends StatelessWidget {
                           title: 'Dọn tủ đồ',
                           color: AppTheme.warningColor,
                           onTap: () {
-                            // Navigate to cleanup
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => const WardrobeCleanupScreen()),
+                            );
                           },
                         ),
                       ),
@@ -409,6 +427,93 @@ class _HomeTab extends StatelessWidget {
       ),
     );
   }
+
+  void _showChangeLocationDialog(BuildContext context, WardrobeProvider wardrobe) {
+    final cities = [
+      {'name': 'Quy Nhon', 'display': 'Quy Nhơn, Bình Định'},
+      {'name': 'Ho Chi Minh City', 'display': 'TP. Hồ Chí Minh'},
+      {'name': 'Hanoi', 'display': 'Hà Nội'},
+      {'name': 'Da Nang', 'display': 'Đà Nẵng'},
+      {'name': 'Nha Trang', 'display': 'Nha Trang'},
+      {'name': 'Can Tho', 'display': 'Cần Thơ'},
+      {'name': 'Hai Phong', 'display': 'Hải Phòng'},
+      {'name': 'Hue', 'display': 'Huế'},
+      {'name': 'Vung Tau', 'display': 'Vũng Tàu'},
+      {'name': 'Bien Hoa', 'display': 'Biên Hòa'},
+      {'name': 'Pleiku', 'display': 'Pleiku, Gia Lai'},
+      {'name': 'Buon Ma Thuot', 'display': 'Buôn Ma Thuột'},
+    ];
+
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.location_on, color: AppTheme.primaryColor),
+                const SizedBox(width: 8),
+                const Text(
+                  'Chọn thành phố',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Hiện tại: ${wardrobe.weather?.cityName ?? "Không xác định"}',
+              style: const TextStyle(color: AppTheme.textSecondary),
+            ),
+            const SizedBox(height: 16),
+            Flexible(
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: cities.length,
+                itemBuilder: (context, index) {
+                  final city = cities[index];
+                  final currentCity = wardrobe.weather?.cityName;
+                  final isSelected = currentCity != null && currentCity.toLowerCase() == city['name']!.toLowerCase();
+                  
+                  return ListTile(
+                    leading: Icon(
+                      isSelected ? Icons.check_circle : Icons.location_city,
+                      color: isSelected ? AppTheme.primaryColor : AppTheme.textSecondary,
+                    ),
+                    title: Text(
+                      city['display']!,
+                      style: TextStyle(
+                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                        color: isSelected ? AppTheme.primaryColor : null,
+                      ),
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
+                      wardrobe.changeWeatherLocation(city['name']!);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Đang cập nhật thời tiết ${city['display']}...'),
+                          duration: const Duration(seconds: 2),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class _QuickActionCard extends StatelessWidget {
@@ -431,7 +536,7 @@ class _QuickActionCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
+          color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(16),
         ),
         child: Row(
@@ -439,7 +544,7 @@ class _QuickActionCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.2),
+                color: color.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(icon, color: color, size: 24),

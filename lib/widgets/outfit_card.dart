@@ -7,7 +7,6 @@ import 'clothing_card.dart';
 class OutfitCard extends StatelessWidget {
   final Outfit outfit;
   final VoidCallback? onTap;
-  final VoidCallback? onSave;
   final VoidCallback? onWear;
   final bool showActions;
 
@@ -15,7 +14,6 @@ class OutfitCard extends StatelessWidget {
     super.key,
     required this.outfit,
     this.onTap,
-    this.onSave,
     this.onWear,
     this.showActions = true,
   });
@@ -53,7 +51,7 @@ class OutfitCard extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: _getScoreColor(outfit.colorScore!).withOpacity(0.1),
+                      color: _getScoreColor(outfit.colorScore!).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
@@ -119,27 +117,13 @@ class OutfitCard extends StatelessWidget {
             // Actions
             if (showActions) ...[
               const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: onSave,
-                      icon: Icon(
-                        outfit.isSaved ? Icons.bookmark : Icons.bookmark_border,
-                        size: 18,
-                      ),
-                      label: Text(outfit.isSaved ? 'Đã lưu' : 'Lưu'),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: onWear,
-                      icon: const Icon(Icons.checkroom, size: 18),
-                      label: const Text('Mặc hôm nay'),
-                    ),
-                  ),
-                ],
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: onWear,
+                  icon: const Icon(Icons.checkroom, size: 18),
+                  label: const Text('Mặc hôm nay'),
+                ),
               ),
             ],
           ],
@@ -224,7 +208,7 @@ class OutfitPreview extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),

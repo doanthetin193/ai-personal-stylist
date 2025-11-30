@@ -7,6 +7,7 @@ import '../models/weather.dart';
 import '../services/firebase_service.dart';
 import '../services/gemini_service.dart';
 import '../services/weather_service.dart';
+import '../utils/constants.dart';
 
 enum WardrobeStatus {
   initial,
@@ -82,10 +83,24 @@ class WardrobeProvider extends ChangeNotifier {
 
   // Stats
   int get totalItems => _items.length;
-  Map<String, int> get itemsByType {
+  
+  /// Get items count by type (for stats)
+  Map<String, int> get itemsCountByType {
     final map = <String, int>{};
     for (final item in _items) {
       map[item.type.name] = (map[item.type.name] ?? 0) + 1;
+    }
+    return map;
+  }
+
+  /// Get items grouped by type (for display)
+  Map<ClothingType, List<ClothingItem>> get itemsByType {
+    final map = <ClothingType, List<ClothingItem>>{};
+    for (final item in _items) {
+      if (map[item.type] == null) {
+        map[item.type] = [];
+      }
+      map[item.type]!.add(item);
     }
     return map;
   }
@@ -108,13 +123,21 @@ class WardrobeProvider extends ChangeNotifier {
   }
 
   /// Load weather
-  Future<void> loadWeather() async {
+  Future<void> loadWeather({String? city}) async {
     try {
-      _weather = await _weatherService.getCurrentWeather();
+      _weather = await _weatherService.getCurrentWeather(
+        city: city ?? AppConstants.defaultCity,
+      );
       notifyListeners();
     } catch (e) {
       print('Load Weather Error: $e');
     }
+  }
+
+  /// Change weather location
+  Future<void> changeWeatherLocation(String city) async {
+    _weatherService.clearCache();
+    await loadWeather(city: city);
   }
 
   /// Add new item with image analysis
@@ -334,25 +357,6 @@ class WardrobeProvider extends ChangeNotifier {
     }
   }
 
-  /// Delete item
-  Future<bool> deleteItem(ClothingItem item) async {
-    try {
-      final success = await _firebaseService.deleteClothingItem(
-        item.id, 
-        item.imageUrl,
-      );
-      if (success) {
-        _items.removeWhere((i) => i.id == item.id);
-        notifyListeners();
-      }
-      return success;
-    } catch (e) {
-      _errorMessage = e.toString();
-      notifyListeners();
-      return false;
-    }
-  }
-
   /// Toggle favorite
   Future<void> toggleFavorite(ClothingItem item) async {
     final newValue = !item.isFavorite;
@@ -457,6 +461,51 @@ class WardrobeProvider extends ChangeNotifier {
     ClothingItem item2,
   ) async {
     return await _geminiService.evaluateColorHarmony(item1, item2);
+  }
+
+  /// Get cleanup suggestions from AI
+  Future<Map<String, dynamic>?> getCleanupSuggestions() async {
+    if (_items.isEmpty) return null;
+    return await _geminiService.getCleanupSuggestions(_items);
+  }
+
+  /// Delete item by ID
+  Future<bool> deleteItem(String itemId) async {
+    try {
+      final item = _items.firstWhere((i) => i.id == itemId);
+      final success = await _firebaseService.deleteClothingItem(
+        item.id, 
+        item.imageUrl,
+      );
+      if (success) {
+        _items.removeWhere((i) => i.id == itemId);
+        notifyListeners();
+      }
+      return success;
+    } catch (e) {
+      _errorMessage = e.toString();
+      notifyListeners();
+      return false;
+    }
+  }
+
+  /// Delete all items
+  Future<bool> deleteAllItems() async {
+    try {
+      final itemIds = _items.map((i) => i.id).toList();
+      
+      for (final id in itemIds) {
+        await deleteItem(id);
+      }
+      
+      _items.clear();
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _errorMessage = e.toString();
+      notifyListeners();
+      return false;
+    }
   }
 
   /// Set filter

@@ -77,7 +77,9 @@ lib/
 │   └── common_widgets.dart   # Widgets dùng chung
 │
 └── utils/                    # Utilities
-    ├── constants.dart        # API keys, prompts, constants
+    ├── constants.dart        # App constants, prompts
+    ├── api_keys.dart         # 🔐 API keys (gitignored)
+    ├── api_keys.example.dart # Template cho api_keys.dart
     ├── theme.dart            # Theme, colors, styles
     └── helpers.dart          # Helper functions
 ```
@@ -121,12 +123,26 @@ service cloud.firestore {
    - Field: `userId` (Ascending)
    - Field: `createdAt` (Descending)
 
-### Bước 4: Cấu hình API Keys
-Mở `lib/utils/constants.dart` và thay API keys:
-```dart
-static const String geminiApiKey = 'YOUR_GEMINI_API_KEY';
-static const String weatherApiKey = 'YOUR_WEATHER_API_KEY';
+### Bước 4: Cấu hình API Keys ⚠️ QUAN TRỌNG
+
+**File `lib/utils/api_keys.dart` đã được gitignore để bảo vệ API keys.**
+
+1. Copy file template:
+```bash
+cp lib/utils/api_keys.example.dart lib/utils/api_keys.dart
 ```
+
+2. Mở `lib/utils/api_keys.dart` và điền API keys của bạn:
+```dart
+class ApiKeys {
+  static const String geminiApiKey = 'YOUR_GEMINI_API_KEY';
+  static const String weatherApiKey = 'YOUR_WEATHER_API_KEY';
+}
+```
+
+3. Lấy API keys tại:
+   - **Gemini**: https://aistudio.google.com/app/apikey
+   - **Weather**: https://openweathermap.org/api
 
 ### Bước 5: Chạy app
 ```bash

@@ -8,7 +8,6 @@ import '../providers/wardrobe_provider.dart';
 import '../models/clothing_item.dart';
 import '../services/gemini_service.dart';
 import '../utils/theme.dart';
-import '../utils/helpers.dart';
 import '../widgets/loading_widgets.dart';
 
 class AddItemScreen extends StatefulWidget {
@@ -86,14 +85,14 @@ class _AddItemScreenState extends State<AddItemScreen> {
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: _imageBytes == null 
-                ? AppTheme.primaryColor.withOpacity(0.3)
+                ? AppTheme.primaryColor.withValues(alpha: 0.3)
                 : Colors.transparent,
             width: 2,
             style: BorderStyle.solid,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -113,7 +112,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
         Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: AppTheme.primaryColor.withOpacity(0.1),
+            color: AppTheme.primaryColor.withValues(alpha: 0.1),
             shape: BoxShape.circle,
           ),
           child: const Icon(
@@ -190,7 +189,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
       child: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.5),
+          color: Colors.black.withValues(alpha: 0.5),
           shape: BoxShape.circle,
         ),
         child: Icon(icon, color: Colors.white, size: 20),
@@ -212,10 +211,10 @@ class _AddItemScreenState extends State<AddItemScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.successColor.withOpacity(0.1),
+        color: AppTheme.successColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: AppTheme.successColor.withOpacity(0.3),
+          color: AppTheme.successColor.withValues(alpha: 0.3),
         ),
       ),
       child: Row(
@@ -354,7 +353,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 ),
                 decoration: BoxDecoration(
                   color: isSelected 
-                      ? AppTheme.accentColor.withOpacity(0.2) 
+                      ? AppTheme.accentColor.withValues(alpha: 0.2) 
                       : Colors.white,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
@@ -406,7 +405,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 ),
                 decoration: BoxDecoration(
                   color: isSelected 
-                      ? AppTheme.warningColor.withOpacity(0.2) 
+                      ? AppTheme.warningColor.withValues(alpha: 0.2) 
                       : Colors.white,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
@@ -554,7 +553,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
       child: Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: AppTheme.primaryColor.withOpacity(0.1),
+          color: AppTheme.primaryColor.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(

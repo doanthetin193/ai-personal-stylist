@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/wardrobe_provider.dart';
 import '../utils/theme.dart';
+import 'wardrobe_cleanup_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -37,7 +38,7 @@ class ProfileScreen extends StatelessWidget {
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.2),
+                              color: Colors.black.withValues(alpha: 0.2),
                               blurRadius: 10,
                             ),
                           ],
@@ -75,7 +76,7 @@ class ProfileScreen extends StatelessWidget {
                         Text(
                           user!.email!,
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.8),
+                            color: Colors.white.withValues(alpha: 0.8),
                             fontSize: 14,
                           ),
                         ),
@@ -131,25 +132,22 @@ class ProfileScreen extends StatelessWidget {
                       icon: Icons.person_outline,
                       title: 'Thông tin cá nhân',
                       subtitle: 'Chỉnh sửa hồ sơ của bạn',
-                      onTap: () => _showComingSoon(context),
+                      onTap: () => _showEditProfileDialog(context, authProvider),
                     ),
                     _buildMenuItem(
-                      icon: Icons.notifications_outlined,
-                      title: 'Thông báo',
-                      subtitle: 'Quản lý cài đặt thông báo',
-                      onTap: () => _showComingSoon(context),
+                      icon: Icons.bar_chart_rounded,
+                      title: 'Thống kê tủ đồ',
+                      subtitle: 'Xem chi tiết tủ đồ của bạn',
+                      onTap: () => _showWardrobeStats(context, wardrobeProvider),
                     ),
                     _buildMenuItem(
-                      icon: Icons.palette_outlined,
-                      title: 'Phong cách yêu thích',
-                      subtitle: 'Thiết lập sở thích thời trang',
-                      onTap: () => _showComingSoon(context),
-                    ),
-                    _buildMenuItem(
-                      icon: Icons.cloud_outlined,
-                      title: 'Đồng bộ dữ liệu',
-                      subtitle: 'Sao lưu và khôi phục tủ đồ',
-                      onTap: () => _showComingSoon(context),
+                      icon: Icons.cleaning_services_outlined,
+                      title: 'Dọn tủ đồ',
+                      subtitle: 'AI gợi ý đồ nên bỏ',
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const WardrobeCleanupScreen()),
+                      ),
                     ),
 
                     const SizedBox(height: 24),
@@ -162,22 +160,10 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 12),
                     _buildMenuItem(
-                      icon: Icons.help_outline,
-                      title: 'Trợ giúp & Hỗ trợ',
-                      subtitle: 'Câu hỏi thường gặp',
-                      onTap: () => _showComingSoon(context),
-                    ),
-                    _buildMenuItem(
                       icon: Icons.info_outline,
                       title: 'Về ứng dụng',
                       subtitle: 'Phiên bản 1.0.0',
                       onTap: () => _showAboutDialog(context),
-                    ),
-                    _buildMenuItem(
-                      icon: Icons.star_outline,
-                      title: 'Đánh giá ứng dụng',
-                      subtitle: 'Chia sẻ trải nghiệm của bạn',
-                      onTap: () => _showComingSoon(context),
                     ),
 
                     const SizedBox(height: 24),
@@ -217,7 +203,7 @@ class ProfileScreen extends StatelessWidget {
   }) {
     return Column(
       children: [
-        Icon(icon, color: Colors.white.withOpacity(0.8), size: 24),
+        Icon(icon, color: Colors.white.withValues(alpha: 0.8), size: 24),
         const SizedBox(height: 8),
         Text(
           value,
@@ -231,7 +217,7 @@ class ProfileScreen extends StatelessWidget {
         Text(
           label,
           style: TextStyle(
-            color: Colors.white.withOpacity(0.8),
+            color: Colors.white.withValues(alpha: 0.8),
             fontSize: 12,
           ),
         ),
@@ -243,7 +229,7 @@ class ProfileScreen extends StatelessWidget {
     return Container(
       width: 1,
       height: 50,
-      color: Colors.white.withOpacity(0.3),
+      color: Colors.white.withValues(alpha: 0.3),
     );
   }
 
@@ -264,7 +250,7 @@ class ProfileScreen extends StatelessWidget {
         leading: Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: AppTheme.primaryColor.withOpacity(0.1),
+            color: AppTheme.primaryColor.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(icon, color: AppTheme.primaryColor),
@@ -285,15 +271,6 @@ class ProfileScreen extends StatelessWidget {
           color: AppTheme.textSecondary,
         ),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      ),
-    );
-  }
-
-  void _showComingSoon(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Tính năng đang phát triển'),
-        behavior: SnackBarBehavior.floating,
       ),
     );
   }
@@ -389,6 +366,321 @@ class ProfileScreen extends StatelessWidget {
             child: const Text('Đăng xuất'),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showEditProfileDialog(BuildContext context, AuthProvider authProvider) {
+    final nameController = TextEditingController(
+      text: authProvider.user?.displayName ?? '',
+    );
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: const Text('Chỉnh sửa hồ sơ'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Avatar
+            Stack(
+              children: [
+                CircleAvatar(
+                  radius: 40,
+                  backgroundColor: Colors.grey.shade200,
+                  backgroundImage: authProvider.user?.photoURL != null
+                      ? NetworkImage(authProvider.user!.photoURL!)
+                      : null,
+                  child: authProvider.user?.photoURL == null
+                      ? const Icon(Icons.person, size: 40)
+                      : null,
+                ),
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: const BoxDecoration(
+                      color: AppTheme.primaryColor,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.camera_alt,
+                      color: Colors.white,
+                      size: 16,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              controller: nameController,
+              decoration: InputDecoration(
+                labelText: 'Tên hiển thị',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                prefixIcon: const Icon(Icons.person_outline),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.email_outlined, color: AppTheme.textSecondary),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      authProvider.user?.email ?? 'Chưa có email',
+                      style: const TextStyle(color: AppTheme.textSecondary),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Hủy'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final newName = nameController.text.trim();
+              if (newName.isNotEmpty) {
+                await authProvider.updateDisplayName(newName);
+              }
+              Navigator.pop(context);
+            },
+            child: const Text('Lưu'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showWardrobeStats(BuildContext context, WardrobeProvider wardrobeProvider) {
+    final items = wardrobeProvider.allItems;
+    final itemsByType = wardrobeProvider.itemsByType;
+    
+    // Calculate stats
+    final totalItems = items.length;
+    final favoriteCount = items.where((i) => i.isFavorite).length;
+    final mostWornItem = items.isNotEmpty 
+        ? items.reduce((a, b) => a.wearCount > b.wearCount ? a : b)
+        : null;
+    final leastWornItems = items.where((i) => i.wearCount == 0).length;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.7,
+        maxChildSize: 0.9,
+        minChildSize: 0.5,
+        expand: false,
+        builder: (context, scrollController) => SingleChildScrollView(
+          controller: scrollController,
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Handle
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              
+              const Text(
+                'Thống kê tủ đồ',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // Overview stats
+              Row(
+                children: [
+                  _buildStatCard(
+                    icon: Icons.checkroom,
+                    value: totalItems.toString(),
+                    label: 'Tổng số đồ',
+                    color: AppTheme.primaryColor,
+                  ),
+                  const SizedBox(width: 12),
+                  _buildStatCard(
+                    icon: Icons.favorite,
+                    value: favoriteCount.toString(),
+                    label: 'Yêu thích',
+                    color: AppTheme.errorColor,
+                  ),
+                  const SizedBox(width: 12),
+                  _buildStatCard(
+                    icon: Icons.visibility_off,
+                    value: leastWornItems.toString(),
+                    label: 'Chưa mặc',
+                    color: AppTheme.warningColor,
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 24),
+
+              // By type
+              const Text(
+                'Theo loại',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 12),
+              ...itemsByType.entries.map((entry) {
+                final percentage = (entry.value.length / totalItems * 100).toStringAsFixed(0);
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        width: 80,
+                        child: Text(
+                          entry.key.displayName,
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                      ),
+                      Expanded(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(4),
+                          child: LinearProgressIndicator(
+                            value: entry.value.length / totalItems,
+                            backgroundColor: Colors.grey.shade200,
+                            valueColor: const AlwaysStoppedAnimation(AppTheme.primaryColor),
+                            minHeight: 8,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        '${entry.value.length} ($percentage%)',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }),
+
+              if (mostWornItem != null) ...[
+                const SizedBox(height: 24),
+                const Text(
+                  'Đồ mặc nhiều nhất',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.emoji_events, color: AppTheme.warningColor),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${mostWornItem.type.displayName} - ${mostWornItem.color}',
+                              style: const TextStyle(fontWeight: FontWeight.w600),
+                            ),
+                            Text(
+                              'Đã mặc ${mostWornItem.wearCount} lần',
+                              style: const TextStyle(
+                                color: AppTheme.textSecondary,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+
+              const SizedBox(height: 40),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatCard({
+    required IconData icon,
+    required String value,
+    required String label,
+    required Color color,
+  }) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, color: color, size: 28),
+            const SizedBox(height: 8),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: const TextStyle(
+                color: AppTheme.textSecondary,
+                fontSize: 12,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ),
     );
   }

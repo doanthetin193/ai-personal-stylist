@@ -1,3 +1,6 @@
+# API Keys - QUAN TRỌNG: Không push keys lên GitHub!
+lib/utils/api_keys.dart
+
 # Miscellaneous
 *.class
 *.log

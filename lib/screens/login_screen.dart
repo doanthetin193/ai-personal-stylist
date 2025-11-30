@@ -41,158 +41,170 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
         child: SafeArea(
-          child: Padding(
+          child: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
-            child: Column(
-              children: [
-                const Spacer(),
-                
-                // Logo/Icon
-                Container(
-                  width: 120,
-                  height: 120,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(30),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
-                        blurRadius: 20,
-                        offset: const Offset(0, 10),
-                      ),
-                    ],
-                  ),
-                  child: const Icon(
-                    Icons.checkroom,
-                    size: 64,
-                    color: AppTheme.primaryColor,
-                  ),
-                ),
-                
-                const SizedBox(height: 32),
-                
-                // App name
-                const Text(
-                  'AI Personal Stylist',
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                
-                const SizedBox(height: 12),
-                
-                Text(
-                  'Stylist cá nhân thông minh\ngiúp bạn phối đồ mỗi ngày',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white.withOpacity(0.9),
-                    height: 1.5,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                
-                const Spacer(),
-                
-                // Features
-                _buildFeature(Icons.camera_alt, 'Số hóa tủ đồ bằng AI'),
-                const SizedBox(height: 16),
-                _buildFeature(Icons.auto_awesome, 'Gợi ý outfit thông minh'),
-                const SizedBox(height: 16),
-                _buildFeature(Icons.palette, 'Chấm điểm hợp màu'),
-                
-                const Spacer(),
-                
-                // Login buttons
-                Consumer<AuthProvider>(
-                  builder: (context, auth, _) {
-                    if (auth.isLoading) {
-                      return const CircularProgressIndicator(color: Colors.white);
-                    }
-
-                    // Show email form
-                    if (_showEmailForm) {
-                      return _buildEmailForm(auth);
-                    }
-                    
-                    return Column(
-                      children: [
-                        // Email/Password Sign In
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton.icon(
-                            onPressed: () => setState(() => _showEmailForm = true),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              foregroundColor: AppTheme.textPrimary,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                            ),
-                            icon: const Icon(Icons.email_outlined),
-                            label: const Text(
-                              'Đăng nhập với Email',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ),
-                        
-                        const SizedBox(height: 12),
-
-                        // Google Sign In
-                        SizedBox(
-                          width: double.infinity,
-                          child: OutlinedButton.icon(
-                            onPressed: () => _signInWithGoogle(auth),
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor: Colors.white,
-                              side: const BorderSide(color: Colors.white, width: 2),
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                            ),
-                            icon: Image.network(
-                              'https://www.google.com/favicon.ico',
-                              width: 24,
-                              height: 24,
-                              errorBuilder: (_, __, ___) => const Icon(Icons.g_mobiledata),
-                            ),
-                            label: const Text(
-                              'Đăng nhập với Google',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ),
-                        
-                        const SizedBox(height: 16),
-                        
-                        // Anonymous/Demo login
-                        TextButton(
-                          onPressed: () => _signInAnonymously(auth),
-                          child: Text(
-                            'Dùng thử không cần đăng nhập',
-                            style: TextStyle(
-                              color: Colors.white.withOpacity(0.9),
-                              fontSize: 14,
-                            ),
-                          ),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: MediaQuery.of(context).size.height - 
+                    MediaQuery.of(context).padding.top - 
+                    MediaQuery.of(context).padding.bottom - 48,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const SizedBox(height: 20),
+                  
+                  // Logo/Icon
+                  Container(
+                    width: 120,
+                    height: 120,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(30),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.2),
+                          blurRadius: 20,
+                          offset: const Offset(0, 10),
                         ),
                       ],
-                    );
-                  },
-                ),
+                    ),
+                    child: const Icon(
+                      Icons.checkroom,
+                      size: 64,
+                      color: AppTheme.primaryColor,
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 32),
+                  
+                  // App name
+                  const Text(
+                    'AI Personal Stylist',
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 12),
+                  
+                  Text(
+                    'Stylist cá nhân thông minh\ngiúp bạn phối đồ mỗi ngày',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white.withValues(alpha: 0.9),
+                      height: 1.5,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  
+                  const SizedBox(height: 40),
+                  
+                  // Features
+                  Column(
+                    children: [
+                      _buildFeature(Icons.camera_alt, 'Số hóa tủ đồ bằng AI'),
+                      const SizedBox(height: 16),
+                      _buildFeature(Icons.auto_awesome, 'Gợi ý outfit thông minh'),
+                      const SizedBox(height: 16),
+                      _buildFeature(Icons.palette, 'Chấm điểm hợp màu'),
+                    ],
+                  ),
+                  
+                  const SizedBox(height: 40),
+                  
+                  // Login buttons
+                  Consumer<AuthProvider>(
+                    builder: (context, auth, _) {
+                      if (auth.isLoading) {
+                        return const CircularProgressIndicator(color: Colors.white);
+                      }
+
+                      // Show email form
+                      if (_showEmailForm) {
+                        return _buildEmailForm(auth);
+                      }
+                      
+                      return Column(
+                        children: [
+                          // Email/Password Sign In
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton.icon(
+                              onPressed: () => setState(() => _showEmailForm = true),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                foregroundColor: AppTheme.textPrimary,
+                                padding: const EdgeInsets.symmetric(vertical: 16),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                              ),
+                              icon: const Icon(Icons.email_outlined),
+                              label: const Text(
+                                'Đăng nhập với Email',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ),
+                          
+                          const SizedBox(height: 12),
+
+                          // Google Sign In
+                          SizedBox(
+                            width: double.infinity,
+                            child: OutlinedButton.icon(
+                              onPressed: () => _signInWithGoogle(auth),
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: Colors.white,
+                                side: const BorderSide(color: Colors.white, width: 2),
+                                padding: const EdgeInsets.symmetric(vertical: 16),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                              ),
+                              icon: Image.network(
+                                'https://www.google.com/favicon.ico',
+                                width: 24,
+                                height: 24,
+                                errorBuilder: (_, __, ___) => const Icon(Icons.g_mobiledata),
+                              ),
+                              label: const Text(
+                                'Đăng nhập với Google',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ),
+                        
+                          const SizedBox(height: 16),
+                        
+                          // Anonymous/Demo login
+                          TextButton(
+                            onPressed: () => _signInAnonymously(auth),
+                            child: Text(
+                              'Dùng thử không cần đăng nhập',
+                              style: TextStyle(
+                                color: Colors.white.withValues(alpha: 0.9),
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
                 
-                const SizedBox(height: 24),
-              ],
+                  const SizedBox(height: 24),
+                ],
+              ),
             ),
           ),
         ),
@@ -206,7 +218,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.2),
+            color: Colors.white.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(icon, color: Colors.white, size: 24),

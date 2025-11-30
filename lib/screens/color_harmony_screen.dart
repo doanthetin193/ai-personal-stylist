@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/wardrobe_provider.dart';
@@ -7,7 +6,6 @@ import '../models/outfit.dart';
 import '../utils/theme.dart';
 import '../widgets/clothing_card.dart';
 import '../widgets/common_widgets.dart';
-import '../widgets/loading_widgets.dart';
 
 class ColorHarmonyScreen extends StatefulWidget {
   const ColorHarmonyScreen({super.key});
@@ -40,7 +38,7 @@ class _ColorHarmonyScreenState extends State<ColorHarmonyScreen> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: AppTheme.primaryColor.withOpacity(0.1),
+                color: AppTheme.primaryColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Row(
@@ -104,7 +102,7 @@ class _ColorHarmonyScreenState extends State<ColorHarmonyScreen> {
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
+                        color: Colors.black.withValues(alpha: 0.1),
                         blurRadius: 8,
                       ),
                     ],
@@ -183,7 +181,7 @@ class _ColorHarmonyScreenState extends State<ColorHarmonyScreen> {
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 8,
             ),
           ],
@@ -232,7 +230,7 @@ class _ColorHarmonyScreenState extends State<ColorHarmonyScreen> {
                           end: Alignment.bottomCenter,
                           colors: [
                             Colors.transparent,
-                            Colors.black.withOpacity(0.7),
+                            Colors.black.withValues(alpha: 0.7),
                           ],
                         ),
                         borderRadius: const BorderRadius.vertical(
@@ -292,7 +290,7 @@ class _ColorHarmonyScreenState extends State<ColorHarmonyScreen> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
           ),
         ],

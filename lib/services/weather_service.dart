@@ -99,7 +99,7 @@ class WeatherService {
       windSpeed: 3,
       description: 'Partly cloudy',
       icon: '02d',
-      cityName: 'Ho Chi Minh City',
+      cityName: AppConstants.defaultCity,
       timestamp: DateTime.now(),
     );
   }

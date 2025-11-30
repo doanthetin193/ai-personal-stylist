@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:uuid/uuid.dart';
 import '../models/clothing_item.dart';
 import '../utils/constants.dart';
@@ -13,6 +14,25 @@ class FirebaseService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseStorage _storage = FirebaseStorage.instance;
   final _uuid = const Uuid();
+  
+  bool _persistenceSet = false;
+  
+  /// Thiết lập persistence cho Firebase Auth (gọi trước khi đăng nhập)
+  Future<void> ensurePersistence() async {
+    if (_persistenceSet) return;
+    
+    if (kIsWeb) {
+      try {
+        // Trên Web: giữ phiên đăng nhập trong localStorage (persist qua reload/restart)
+        await _auth.setPersistence(Persistence.LOCAL);
+        print('Firebase Auth persistence set to LOCAL');
+      } catch (e) {
+        print('Error setting persistence: $e');
+      }
+    }
+    // Trên Mobile: Firebase Auth tự động persist bằng secure storage
+    _persistenceSet = true;
+  }
   
   // ==================== BASE64 UTILS ====================
   

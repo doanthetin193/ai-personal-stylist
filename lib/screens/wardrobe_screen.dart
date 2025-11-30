@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/wardrobe_provider.dart';
@@ -26,7 +25,10 @@ class _WardrobeScreenState extends State<WardrobeScreen> {
     {'id': 'top', 'name': 'Áo', 'icon': Icons.checkroom},
     {'id': 'bottom', 'name': 'Quần', 'icon': Icons.straighten},
     {'id': 'outerwear', 'name': 'Khoác', 'icon': Icons.dry_cleaning},
+    {'id': 'dress', 'name': 'Váy', 'icon': Icons.dry},
     {'id': 'footwear', 'name': 'Giày', 'icon': Icons.ice_skating},
+    {'id': 'bag', 'name': 'Túi', 'icon': Icons.shopping_bag},
+    {'id': 'hat', 'name': 'Mũ', 'icon': Icons.face_retouching_natural},
     {'id': 'accessory', 'name': 'Phụ kiện', 'icon': Icons.watch},
   ];
 
@@ -57,7 +59,7 @@ class _WardrobeScreenState extends State<WardrobeScreen> {
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: AppTheme.primaryColor.withOpacity(0.1),
+                        color: AppTheme.primaryColor.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
@@ -356,7 +358,7 @@ class _WardrobeScreenState extends State<WardrobeScreen> {
               Navigator.pop(context);
               final success = await context
                   .read<WardrobeProvider>()
-                  .deleteItem(item);
+                  .deleteItem(item.id);
               if (mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(

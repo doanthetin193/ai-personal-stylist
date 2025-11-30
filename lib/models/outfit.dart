@@ -12,7 +12,6 @@ class Outfit {
   final String reason;
   final int? colorScore;
   final DateTime createdAt;
-  final bool isSaved;
 
   Outfit({
     required this.id,
@@ -25,7 +24,6 @@ class Outfit {
     required this.reason,
     this.colorScore,
     required this.createdAt,
-    this.isSaved = false,
   });
 
   /// Lấy tất cả items trong outfit
@@ -54,7 +52,6 @@ class Outfit {
     String? reason,
     int? colorScore,
     DateTime? createdAt,
-    bool? isSaved,
   }) {
     return Outfit(
       id: id ?? this.id,
@@ -67,7 +64,6 @@ class Outfit {
       reason: reason ?? this.reason,
       colorScore: colorScore ?? this.colorScore,
       createdAt: createdAt ?? this.createdAt,
-      isSaved: isSaved ?? this.isSaved,
     );
   }
 }

@@ -135,13 +135,6 @@ String getMaterialNameVN(String material) {
   return materialMap[material.toLowerCase()] ?? capitalize(material);
 }
 
-/// Validate image file
-bool isValidImageFile(String path) {
-  final validExtensions = ['.jpg', '.jpeg', '.png', '.webp', '.heic'];
-  final lowerPath = path.toLowerCase();
-  return validExtensions.any((ext) => lowerPath.endsWith(ext));
-}
-
 /// Get greeting based on time
 String getGreeting() {
   final hour = DateTime.now().hour;

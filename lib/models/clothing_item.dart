@@ -58,8 +58,8 @@ enum ClothingType {
     switch (this) {
       case ClothingType.shirt:
       case ClothingType.tshirt:
-      case ClothingType.hoodie:
         return 'top';
+      case ClothingType.hoodie:
       case ClothingType.jacket:
         return 'outerwear';
       case ClothingType.pants:
@@ -68,13 +68,15 @@ enum ClothingType {
       case ClothingType.skirt:
         return 'bottom';
       case ClothingType.dress:
-        return 'fullbody';
+        return 'dress';
       case ClothingType.shoes:
       case ClothingType.sneakers:
         return 'footwear';
-      case ClothingType.accessory:
       case ClothingType.bag:
+        return 'bag';
       case ClothingType.hat:
+        return 'hat';
+      case ClothingType.accessory:
         return 'accessory';
       case ClothingType.other:
         return 'other';

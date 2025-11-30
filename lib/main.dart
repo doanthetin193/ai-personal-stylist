@@ -25,11 +25,19 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MyApp());
+  
+  // Thiết lập persistence cho Firebase Auth trước khi runApp
+  // Điều này giúp giữ phiên đăng nhập giữa các lần reload/restart
+  final firebaseService = FirebaseService();
+  await firebaseService.ensurePersistence();
+  
+  runApp(MyApp(firebaseService: firebaseService));
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+  final FirebaseService firebaseService;
+  
+  const MyApp({super.key, required this.firebaseService});
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -37,7 +45,6 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   // Services
-  late final FirebaseService _firebaseService;
   late final GeminiService _geminiService;
   late final WeatherService _weatherService;
 
@@ -48,12 +55,10 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _initServices() {
-    _firebaseService = FirebaseService();
     _geminiService = GeminiService();
     _weatherService = WeatherService();
     
     // Initialize Gemini with API key
-    // TODO: Replace with your actual API key
     _geminiService.initialize(AppConstants.geminiApiKey);
   }
 
@@ -64,15 +69,15 @@ class _MyAppState extends State<MyApp> {
         // Services - cần Provider để các screen khác access được
         Provider<GeminiService>.value(value: _geminiService),
         Provider<WeatherService>.value(value: _weatherService),
-        Provider<FirebaseService>.value(value: _firebaseService),
+        Provider<FirebaseService>.value(value: widget.firebaseService),
         // Auth Provider
         ChangeNotifierProvider(
-          create: (_) => AuthProvider(_firebaseService),
+          create: (_) => AuthProvider(widget.firebaseService),
         ),
         // Wardrobe Provider
         ChangeNotifierProvider(
           create: (_) => WardrobeProvider(
-            _firebaseService,
+            widget.firebaseService,
             _geminiService,
             _weatherService,
           ),

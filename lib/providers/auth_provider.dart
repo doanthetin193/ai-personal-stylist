@@ -200,6 +200,21 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  /// Update display name
+  Future<bool> updateDisplayName(String name) async {
+    try {
+      await _user?.updateDisplayName(name);
+      await _user?.reload();
+      _user = _firebaseService.currentUser;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _errorMessage = e.toString();
+      notifyListeners();
+      return false;
+    }
+  }
+
   /// Clear error
   void clearError() {
     _errorMessage = null;

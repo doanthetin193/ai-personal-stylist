@@ -1,12 +1,14 @@
+import 'api_keys.dart';
+
 /// Constants cho toàn app
 class AppConstants {
-  // API Keys - Thay bằng key thật của bạn
-  static const String geminiApiKey = 'AIzaSyAaIlWavpusEE_GrQirQpI-dDZqSaJvHXQ';
-  static const String weatherApiKey = 'b63ea0cd89a3d62ce17d9ae8caa1ac15';
+  // API Keys - Import từ file riêng (đã gitignore)
+  static const String geminiApiKey = ApiKeys.geminiApiKey;
+  static const String weatherApiKey = ApiKeys.weatherApiKey;
   
   // Weather API
   static const String weatherBaseUrl = 'https://api.openweathermap.org/data/2.5';
-  static const String defaultCity = 'Ho Chi Minh City';
+  static const String defaultCity = 'Quy Nhon';
   static const String defaultCountryCode = 'VN';
   
   // Firebase Collections

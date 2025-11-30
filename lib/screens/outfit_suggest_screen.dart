@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/wardrobe_provider.dart';
-import '../models/clothing_item.dart';
 import '../models/outfit.dart';
 import '../utils/theme.dart';
 import '../utils/constants.dart';
 import '../widgets/outfit_card.dart';
-import '../widgets/clothing_card.dart';
 import '../widgets/loading_widgets.dart';
 import '../widgets/common_widgets.dart';
 
@@ -19,6 +17,7 @@ class OutfitSuggestScreen extends StatefulWidget {
 
 class _OutfitSuggestScreenState extends State<OutfitSuggestScreen> {
   String? _selectedOccasion;
+  String? _customOccasion;
   bool _isGenerating = false;
 
   @override
@@ -93,19 +92,70 @@ class _OutfitSuggestScreenState extends State<OutfitSuggestScreen> {
                     Wrap(
                       spacing: 10,
                       runSpacing: 10,
-                      children: Occasions.list.map((occasion) {
-                        final isSelected = _selectedOccasion == occasion['id'];
-                        return OccasionChip(
-                          id: occasion['id']!,
-                          name: occasion['name']!,
-                          icon: occasion['icon']!,
-                          isSelected: isSelected,
-                          onTap: () {
-                            setState(() => _selectedOccasion = occasion['id']);
-                          },
-                        );
-                      }).toList(),
+                      children: [
+                        // Các dịp có sẵn
+                        ...Occasions.list.map((occasion) {
+                          final isSelected = _selectedOccasion == occasion['id'] && _customOccasion == null;
+                          return OccasionChip(
+                            id: occasion['id']!,
+                            name: occasion['name']!,
+                            icon: occasion['icon']!,
+                            isSelected: isSelected,
+                            onTap: () {
+                              setState(() {
+                                _selectedOccasion = occasion['id'];
+                                _customOccasion = null;
+                              });
+                            },
+                          );
+                        }),
+                        // Nút tự nhập
+                        OccasionChip(
+                          id: 'custom',
+                          name: 'Tự nhập',
+                          icon: '✏️',
+                          isSelected: _customOccasion != null,
+                          onTap: () => _showCustomOccasionDialog(),
+                        ),
+                      ],
                     ),
+                    // Hiển thị dịp tự nhập nếu có
+                    if (_customOccasion != null) ...[
+                      const SizedBox(height: 12),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: AppTheme.primaryColor),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.edit_note, color: AppTheme.primaryColor),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                _customOccasion!,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  color: AppTheme.primaryColor,
+                                ),
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.close, size: 20),
+                              onPressed: () {
+                                setState(() {
+                                  _customOccasion = null;
+                                });
+                              },
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -120,7 +170,7 @@ class _OutfitSuggestScreenState extends State<OutfitSuggestScreen> {
                 child: SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
-                    onPressed: _selectedOccasion != null && !_isGenerating
+                    onPressed: (_selectedOccasion != null || _customOccasion != null) && !_isGenerating
                         ? _generateOutfit
                         : null,
                     icon: _isGenerating
@@ -181,12 +231,6 @@ class _OutfitSuggestScreenState extends State<OutfitSuggestScreen> {
                         OutfitCard(
                           outfit: wardrobe.currentOutfit!,
                           onWear: () => _markOutfitAsWorn(wardrobe.currentOutfit!),
-                          onSave: () {
-                            // Save outfit logic
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Đã lưu outfit!')),
-                            );
-                          },
                         ),
                       ],
                     ),
@@ -210,7 +254,7 @@ class _OutfitSuggestScreenState extends State<OutfitSuggestScreen> {
           Container(
             padding: const EdgeInsets.all(32),
             decoration: BoxDecoration(
-              color: AppTheme.primaryColor.withOpacity(0.1),
+              color: AppTheme.primaryColor.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: const Icon(
@@ -241,7 +285,7 @@ class _OutfitSuggestScreenState extends State<OutfitSuggestScreen> {
   }
 
   Future<void> _generateOutfit() async {
-    if (_selectedOccasion == null) return;
+    if (_selectedOccasion == null && _customOccasion == null) return;
 
     setState(() => _isGenerating = true);
 
@@ -259,7 +303,8 @@ class _OutfitSuggestScreenState extends State<OutfitSuggestScreen> {
         return;
       }
 
-      final occasionName = Occasions.getName(_selectedOccasion!);
+      // Sử dụng custom occasion nếu có, ngược lại dùng occasion từ danh sách
+      final occasionName = _customOccasion ?? Occasions.getName(_selectedOccasion!);
       await wardrobeProvider.suggestOutfit(occasionName);
 
       if (wardrobeProvider.errorMessage != null && mounted) {
@@ -272,6 +317,82 @@ class _OutfitSuggestScreenState extends State<OutfitSuggestScreen> {
         setState(() => _isGenerating = false);
       }
     }
+  }
+
+  void _showCustomOccasionDialog() {
+    final dialogController = TextEditingController(text: _customOccasion ?? '');
+    
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: const Row(
+          children: [
+            Icon(Icons.edit_note, color: AppTheme.primaryColor),
+            SizedBox(width: 8),
+            Text('Nhập dịp của bạn'),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Mô tả ngắn gọn dịp bạn muốn mặc đồ:',
+              style: TextStyle(color: AppTheme.textSecondary),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: dialogController,
+              autofocus: true,
+              decoration: InputDecoration(
+                hintText: 'VD: Đi phỏng vấn, gặp đối tác, picnic...',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                prefixIcon: const Icon(Icons.event),
+              ),
+              maxLength: 100,
+              textCapitalization: TextCapitalization.sentences,
+              onSubmitted: (value) {
+                if (value.trim().isNotEmpty) {
+                  Navigator.pop(dialogContext);
+                  setState(() {
+                    _customOccasion = value.trim();
+                    _selectedOccasion = null;
+                  });
+                }
+              },
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(dialogContext);
+            },
+            child: const Text('Hủy'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final text = dialogController.text.trim();
+              if (text.isNotEmpty) {
+                Navigator.pop(dialogContext);
+                setState(() {
+                  _customOccasion = text;
+                  _selectedOccasion = null;
+                });
+              }
+            },
+            child: const Text('Xác nhận'),
+          ),
+        ],
+      ),
+    ).then((_) {
+      dialogController.dispose();
+    });
   }
 
   void _markOutfitAsWorn(Outfit outfit) {

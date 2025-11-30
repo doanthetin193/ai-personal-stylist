@@ -31,7 +31,7 @@ class WeatherWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 8,
           ),
         ],
@@ -72,7 +72,7 @@ class WeatherWidget extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            _getWeatherColor().withOpacity(0.8),
+            _getWeatherColor().withValues(alpha: 0.8),
             _getWeatherColor(),
           ],
           begin: Alignment.topLeft,
@@ -112,7 +112,7 @@ class WeatherWidget extends StatelessWidget {
                       weather.cityName,
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.white.withOpacity(0.9),
+                        color: Colors.white.withValues(alpha: 0.9),
                       ),
                     ),
                   ],
@@ -137,7 +137,7 @@ class WeatherWidget extends StatelessWidget {
               weather.clothingSuggestions.first,
               style: TextStyle(
                 fontSize: 13,
-                color: Colors.white.withOpacity(0.9),
+                color: Colors.white.withValues(alpha: 0.9),
               ),
             ),
           ],
@@ -150,7 +150,7 @@ class WeatherWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.2),
+        color: Colors.white.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
@@ -213,7 +213,7 @@ class OccasionChip extends StatelessWidget {
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: AppTheme.primaryColor.withOpacity(0.3),
+                    color: AppTheme.primaryColor.withValues(alpha: 0.3),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -260,7 +260,7 @@ class FilterChip extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected 
-              ? AppTheme.primaryColor.withOpacity(0.1) 
+              ? AppTheme.primaryColor.withValues(alpha: 0.1) 
               : Colors.grey.shade100,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
@@ -306,7 +306,7 @@ class EmptyState extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: AppTheme.primaryColor.withOpacity(0.1),
+                color: AppTheme.primaryColor.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(

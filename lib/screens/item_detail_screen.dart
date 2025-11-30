@@ -27,7 +27,7 @@ class ItemDetailScreen extends StatelessWidget {
               icon: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.9),
+                  color: Colors.white.withValues(alpha: 0.9),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(Icons.arrow_back, color: AppTheme.textPrimary),
@@ -45,7 +45,7 @@ class ItemDetailScreen extends StatelessWidget {
                     icon: Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.9),
+                        color: Colors.white.withValues(alpha: 0.9),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
@@ -65,7 +65,7 @@ class ItemDetailScreen extends StatelessWidget {
                 icon: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.9),
+                    color: Colors.white.withValues(alpha: 0.9),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(Icons.more_vert, color: AppTheme.textPrimary),
@@ -134,7 +134,7 @@ class ItemDetailScreen extends StatelessWidget {
                             vertical: 6,
                           ),
                           decoration: BoxDecoration(
-                            color: AppTheme.primaryColor.withOpacity(0.1),
+                            color: AppTheme.primaryColor.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Row(
@@ -175,10 +175,10 @@ class ItemDetailScreen extends StatelessWidget {
                               vertical: 8,
                             ),
                             decoration: BoxDecoration(
-                              color: AppTheme.accentColor.withOpacity(0.1),
+                              color: AppTheme.accentColor.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
-                                color: AppTheme.accentColor.withOpacity(0.3),
+                                color: AppTheme.accentColor.withValues(alpha: 0.3),
                               ),
                             ),
                             child: Text(
@@ -209,10 +209,10 @@ class ItemDetailScreen extends StatelessWidget {
                               vertical: 8,
                             ),
                             decoration: BoxDecoration(
-                              color: AppTheme.warningColor.withOpacity(0.1),
+                              color: AppTheme.warningColor.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
-                                color: AppTheme.warningColor.withOpacity(0.3),
+                                color: AppTheme.warningColor.withValues(alpha: 0.3),
                               ),
                             ),
                             child: Text(
@@ -393,7 +393,7 @@ class ItemDetailScreen extends StatelessWidget {
               Navigator.pop(ctx);
               final success = await context
                   .read<WardrobeProvider>()
-                  .deleteItem(item);
+                  .deleteItem(item.id);
               if (success && context.mounted) {
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
