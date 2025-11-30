@@ -149,6 +149,12 @@ class ProfileScreen extends StatelessWidget {
                         MaterialPageRoute(builder: (_) => const WardrobeCleanupScreen()),
                       ),
                     ),
+                    _buildMenuItem(
+                      icon: Icons.style_outlined,
+                      title: 'Sở thích phong cách',
+                      subtitle: wardrobeProvider.stylePreference.displayName,
+                      onTap: () => _showStylePreferenceDialog(context, wardrobeProvider),
+                    ),
 
                     const SizedBox(height: 24),
                     const Text(
@@ -683,5 +689,65 @@ class ProfileScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _showStylePreferenceDialog(BuildContext context, WardrobeProvider wardrobeProvider) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Sở thích phong cách',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'AI sẽ ưu tiên gợi ý outfit theo sở thích của bạn',
+              style: TextStyle(color: AppTheme.textSecondary),
+            ),
+            const SizedBox(height: 20),
+            ...StylePreference.values.map((style) => RadioListTile<StylePreference>(
+              value: style,
+              groupValue: wardrobeProvider.stylePreference,
+              onChanged: (value) {
+                if (value != null) {
+                  wardrobeProvider.setStylePreference(value);
+                  Navigator.pop(context);
+                }
+              },
+              title: Text(style.displayName),
+              subtitle: Text(
+                _getStyleDescription(style),
+                style: const TextStyle(fontSize: 12),
+              ),
+              activeColor: AppTheme.primaryColor,
+              contentPadding: EdgeInsets.zero,
+            )),
+            const SizedBox(height: 10),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _getStyleDescription(StylePreference style) {
+    switch (style) {
+      case StylePreference.loose:
+        return 'Thoải mái, oversized, không bó sát';
+      case StylePreference.regular:
+        return 'Cân bằng, phù hợp mọi dáng người';
+      case StylePreference.fitted:
+        return 'Ôm sát, tôn dáng, sleek';
+    }
   }
 }

@@ -95,7 +95,11 @@ CHỈ TRẢ VỀ JSON. Không markdown, không giải thích, không text thừa
     required String wardrobeContext,
     required String weatherContext,
     required String occasion,
+    String? stylePreference,
   }) {
+    final styleContext = stylePreference != null 
+        ? '\nSTYLE PREFERENCE:\n$stylePreference\n' 
+        : '';
     return '''
 You are a professional fashion stylist. Based on the wardrobe items and conditions below, suggest the best outfit.
 
@@ -106,12 +110,13 @@ WEATHER:
 $weatherContext
 
 OCCASION: $occasion
-
+$styleContext
 Select items that:
 1. Match the weather conditions
 2. Are appropriate for the occasion
 3. Have harmonious colors
 4. Create a cohesive style
+5. Respect the user's style preference (if provided)
 
 Return ONLY a valid JSON object:
 {

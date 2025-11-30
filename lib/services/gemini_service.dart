@@ -109,6 +109,7 @@ class GeminiService {
     required List<ClothingItem> wardrobe,
     required String weatherContext,
     required String occasion,
+    String? stylePreference,
   }) async {
     if (!_isInitialized) {
       print('Gemini not initialized');
@@ -130,6 +131,7 @@ class GeminiService {
         wardrobeContext: wardrobeContext,
         weatherContext: weatherContext,
         occasion: occasion,
+        stylePreference: stylePreference,
       );
 
       final response = await _model.generateContent([

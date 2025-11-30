@@ -16,6 +16,35 @@ enum WardrobeStatus {
   error,
 }
 
+/// Style preference cho gợi ý outfit
+enum StylePreference {
+  loose,    // Thích đồ rộng
+  regular,  // Vừa vặn
+  fitted;   // Ôm body
+
+  String get displayName {
+    switch (this) {
+      case StylePreference.loose:
+        return 'Đồ rộng thoải mái';
+      case StylePreference.regular:
+        return 'Vừa vặn';
+      case StylePreference.fitted:
+        return 'Ôm body';
+    }
+  }
+
+  String get aiDescription {
+    switch (this) {
+      case StylePreference.loose:
+        return 'User prefers loose, relaxed, oversized clothing. Prioritize comfort over fitted looks.';
+      case StylePreference.regular:
+        return 'User prefers regular fit clothing, balanced between loose and fitted.';
+      case StylePreference.fitted:
+        return 'User prefers fitted, slim, body-hugging clothing. Prioritize sleek silhouettes.';
+    }
+  }
+}
+
 class WardrobeProvider extends ChangeNotifier {
   final FirebaseService _firebaseService;
   final GeminiService _geminiService;
@@ -29,6 +58,9 @@ class WardrobeProvider extends ChangeNotifier {
   String? _errorMessage;
   bool _isAnalyzing = false;
   bool _isSuggestingOutfit = false;
+  
+  // Style preference
+  StylePreference _stylePreference = StylePreference.regular;
   
   // Current outfit suggestion
   Outfit? _currentOutfit;
@@ -55,6 +87,7 @@ class WardrobeProvider extends ChangeNotifier {
   Outfit? get currentOutfit => _currentOutfit;
   ClothingType? get filterType => _filterType;
   String? get filterCategory => _filterCategory;
+  StylePreference get stylePreference => _stylePreference;
   
   // Filtered items
   List<ClothingItem> get _filteredItems {
@@ -385,6 +418,12 @@ class WardrobeProvider extends ChangeNotifier {
     }
   }
 
+  /// Set style preference
+  void setStylePreference(StylePreference preference) {
+    _stylePreference = preference;
+    notifyListeners();
+  }
+
   /// Suggest outfit
   Future<Outfit?> suggestOutfit(String occasion) async {
     try {
@@ -401,6 +440,7 @@ class WardrobeProvider extends ChangeNotifier {
         wardrobe: _items,
         weatherContext: weatherContext,
         occasion: occasion,
+        stylePreference: _stylePreference.aiDescription,
       );
 
       if (suggestion == null) {
