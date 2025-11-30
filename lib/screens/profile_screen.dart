@@ -328,7 +328,7 @@ class ProfileScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             const Text(
-              '© 2024 AI Personal Stylist',
+              '© 2025 AI Personal Stylist',
               style: TextStyle(
                 color: AppTheme.textSecondary,
                 fontSize: 12,

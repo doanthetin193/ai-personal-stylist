@@ -186,52 +186,92 @@ class _HomeTab extends StatelessWidget {
       child: SafeArea(
         child: CustomScrollView(
         slivers: [
-          // Header
+          // Premium Header
           SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+              child: Row(
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                  // Avatar với gradient border
+                  Consumer<AuthProvider>(
+                    builder: (context, auth, _) => Container(
+                      padding: const EdgeInsets.all(3),
+                      decoration: BoxDecoration(
+                        gradient: AppTheme.primaryGradient,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppTheme.primaryColor.withValues(alpha: 0.3),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: CircleAvatar(
+                        radius: 28,
+                        backgroundColor: Colors.white,
+                        backgroundImage: auth.photoUrl != null
+                            ? NetworkImage(auth.photoUrl!)
+                            : null,
+                        child: auth.photoUrl == null
+                            ? const Icon(Icons.person, color: AppTheme.primaryColor, size: 28)
+                            : null,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  // Greeting text
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
                           children: [
                             Text(
                               getGreeting(),
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 14,
-                                color: AppTheme.textSecondary,
+                                color: AppTheme.primaryColor.withValues(alpha: 0.8),
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
-                            const SizedBox(height: 4),
-                            Consumer<AuthProvider>(
-                              builder: (context, auth, _) => Text(
-                                auth.displayName,
-                                style: const TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
+                            const SizedBox(width: 4),
+                            const Text('👋', style: TextStyle(fontSize: 16)),
                           ],
                         ),
-                      ),
-                      Consumer<AuthProvider>(
-                        builder: (context, auth, _) => CircleAvatar(
-                          radius: 24,
-                          backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
-                          backgroundImage: auth.photoUrl != null
-                              ? NetworkImage(auth.photoUrl!)
-                              : null,
-                          child: auth.photoUrl == null
-                              ? const Icon(Icons.person, color: AppTheme.primaryColor)
-                              : null,
+                        const SizedBox(height: 4),
+                        Consumer<AuthProvider>(
+                          builder: (context, auth, _) => Text(
+                            auth.displayName,
+                            style: const TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: AppTheme.textPrimary,
+                            ),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
+                  ),
+                  // Notification icon
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.05),
+                          blurRadius: 10,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.notifications_outlined,
+                      color: AppTheme.primaryColor,
+                      size: 22,
+                    ),
                   ),
                 ],
               ),

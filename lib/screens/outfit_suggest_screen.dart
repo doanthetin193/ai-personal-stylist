@@ -39,39 +39,52 @@ class _OutfitSuggestScreenState extends State<OutfitSuggestScreen> {
         child: SafeArea(
           child: CustomScrollView(
             slivers: [
-              // Header
+              // Premium Header
               SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                child: Container(
+                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+                  child: Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(12),
+                        padding: const EdgeInsets.all(14),
                         decoration: BoxDecoration(
                           gradient: AppTheme.primaryGradient,
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(18),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppTheme.primaryColor.withValues(alpha: 0.35),
+                              blurRadius: 12,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
                         ),
                         child: const Icon(
                           Icons.auto_awesome,
                           color: Colors.white,
-                          size: 28,
+                          size: 26,
                         ),
                       ),
-                      const SizedBox(height: 16),
-                      const Text(
-                        'Gợi ý Outfit',
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'Chọn dịp và để AI gợi ý cho bạn',
-                        style: TextStyle(
-                          color: AppTheme.textSecondary,
-                          fontSize: 16,
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Gợi ý Outfit',
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'AI phân tích và gợi ý cho bạn',
+                              style: TextStyle(
+                                color: AppTheme.textSecondary,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
@@ -79,112 +92,143 @@ class _OutfitSuggestScreenState extends State<OutfitSuggestScreen> {
                 ),
               ),
 
-            // Weather info
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Consumer<WardrobeProvider>(
-                  builder: (context, wardrobe, _) {
-                    if (wardrobe.weather == null) {
-                      return const SizedBox.shrink();
-                    }
-                    return WeatherWidget(
-                      weather: wardrobe.weather!,
-                      compact: false,
-                    );
-                  },
+              // Weather info
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Consumer<WardrobeProvider>(
+                    builder: (context, wardrobe, _) {
+                      if (wardrobe.weather == null) {
+                        return const SizedBox.shrink();
+                      }
+                      return WeatherWidget(
+                        weather: wardrobe.weather!,
+                        compact: false,
+                      );
+                    },
+                  ),
                 ),
               ),
-            ),
 
-            const SliverToBoxAdapter(child: SizedBox(height: 24)),
+              const SliverToBoxAdapter(child: SizedBox(height: 20)),
 
-            // Occasion selection
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Bạn đi đâu?',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Wrap(
-                      spacing: 10,
-                      runSpacing: 10,
-                      children: [
-                        // Các dịp có sẵn
-                        ...Occasions.list.map((occasion) {
-                          final isSelected = _selectedOccasion == occasion['id'] && _customOccasion == null;
-                          return OccasionChip(
-                            id: occasion['id']!,
-                            name: occasion['name']!,
-                            icon: occasion['icon']!,
-                            isSelected: isSelected,
-                            onTap: () {
-                              setState(() {
-                                _selectedOccasion = occasion['id'];
-                                _customOccasion = null;
-                              });
-                            },
-                          );
-                        }),
-                        // Nút tự nhập
-                        OccasionChip(
-                          id: 'custom',
-                          name: 'Tự nhập',
-                          icon: '✏️',
-                          isSelected: _customOccasion != null,
-                          onTap: () => _showCustomOccasionDialog(),
+              // Occasion selection - trong card đẹp
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.05),
+                          blurRadius: 15,
+                          offset: const Offset(0, 5),
                         ),
                       ],
                     ),
-                    // Hiển thị dịp tự nhập nếu có
-                    if (_customOccasion != null) ...[
-                      const SizedBox(height: 12),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                        decoration: BoxDecoration(
-                          color: AppTheme.primaryColor.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: AppTheme.primaryColor),
-                        ),
-                        child: Row(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
                           children: [
-                            const Icon(Icons.edit_note, color: AppTheme.primaryColor),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                _customOccasion!,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  color: AppTheme.primaryColor,
-                                ),
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: AppTheme.accentColor.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: const Icon(
+                                Icons.location_on_outlined,
+                                color: AppTheme.accentColor,
+                                size: 20,
                               ),
                             ),
-                            IconButton(
-                              icon: const Icon(Icons.close, size: 20),
-                              onPressed: () {
-                                setState(() {
-                                  _customOccasion = null;
-                                });
-                              },
-                              padding: EdgeInsets.zero,
-                              constraints: const BoxConstraints(),
+                            const SizedBox(width: 12),
+                            const Text(
+                              'Bạn đi đâu hôm nay?',
+                              style: TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ],
                         ),
-                      ),
-                    ],
-                  ],
+                        const SizedBox(height: 16),
+                        Wrap(
+                          spacing: 10,
+                          runSpacing: 10,
+                          children: [
+                            // Các dịp có sẵn
+                            ...Occasions.list.map((occasion) {
+                              final isSelected = _selectedOccasion == occasion['id'] && _customOccasion == null;
+                              return OccasionChip(
+                                id: occasion['id']!,
+                                name: occasion['name']!,
+                                icon: occasion['icon']!,
+                                isSelected: isSelected,
+                                onTap: () {
+                                  setState(() {
+                                    _selectedOccasion = occasion['id'];
+                                    _customOccasion = null;
+                                  });
+                                },
+                              );
+                            }),
+                            // Nút tự nhập
+                            OccasionChip(
+                              id: 'custom',
+                              name: 'Tự nhập',
+                              icon: '✏️',
+                              isSelected: _customOccasion != null,
+                              onTap: () => _showCustomOccasionDialog(),
+                            ),
+                          ],
+                        ),
+                        // Hiển thị dịp tự nhập nếu có
+                        if (_customOccasion != null) ...[
+                          const SizedBox(height: 12),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                            decoration: BoxDecoration(
+                              color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: AppTheme.primaryColor),
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.edit_note, color: AppTheme.primaryColor),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    _customOccasion!,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      color: AppTheme.primaryColor,
+                                    ),
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.close, size: 20),
+                                  onPressed: () {
+                                    setState(() {
+                                      _customOccasion = null;
+                                    });
+                                  },
+                                  padding: EdgeInsets.zero,
+                                  constraints: const BoxConstraints(),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
                 ),
               ),
-            ),
 
             const SliverToBoxAdapter(child: SizedBox(height: 24)),
 

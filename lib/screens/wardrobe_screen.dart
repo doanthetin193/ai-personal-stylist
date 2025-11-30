@@ -39,42 +39,67 @@ class _WardrobeScreenState extends State<WardrobeScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // Header with gradient
+            // Premium Header with gradient
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    AppTheme.primaryColor.withValues(alpha: 0.1),
-                    AppTheme.secondaryColor.withValues(alpha: 0.05),
+                    AppTheme.primaryColor.withValues(alpha: 0.15),
+                    AppTheme.secondaryColor.withValues(alpha: 0.08),
+                    AppTheme.accentColor.withValues(alpha: 0.05),
                   ],
                 ),
               ),
               child: Row(
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Tủ đồ của tôi',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
+                  // Icon với gradient background
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      gradient: AppTheme.primaryGradient,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppTheme.primaryColor.withValues(alpha: 0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 3),
                         ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Quản lý trang phục của bạn',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppTheme.textSecondary,
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.checkroom_rounded,
+                      color: Colors.white,
+                      size: 24,
+                    ),
                   ),
-                  const Spacer(),
+                  const SizedBox(width: 16),
+                  // Title & subtitle
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Tủ đồ của tôi',
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          'Quản lý trang phục của bạn',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: AppTheme.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Badge số món đồ
                   Consumer<WardrobeProvider>(
                     builder: (context, wardrobe, _) => Container(
                       padding: const EdgeInsets.symmetric(
@@ -82,28 +107,45 @@ class _WardrobeScreenState extends State<WardrobeScreen> {
                         vertical: 8,
                       ),
                       decoration: BoxDecoration(
-                        gradient: AppTheme.primaryGradient,
+                        color: Colors.white,
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: AppTheme.primaryColor.withValues(alpha: 0.3),
+                            color: Colors.black.withValues(alpha: 0.08),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
                         ],
                       ),
-                      child: Text(
-                        '${wardrobe.allItems.length} món',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                        ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 8,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              gradient: AppTheme.primaryGradient,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            '${wardrobe.allItems.length} món',
+                            style: const TextStyle(
+                              color: AppTheme.textPrimary,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
                 ],
               ),
             ),
+
+            const SizedBox(height: 16),
 
             // Category Filter
             SizedBox(
