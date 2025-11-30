@@ -348,7 +348,7 @@ class ProfileScreen extends StatelessWidget {
   void _showLogoutDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
@@ -358,13 +358,13 @@ class ProfileScreen extends StatelessWidget {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(dialogContext),
             child: const Text('Hủy'),
           ),
           ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              context.read<AuthProvider>().signOut();
+            onPressed: () async {
+              Navigator.pop(dialogContext);
+              await context.read<AuthProvider>().signOut();
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppTheme.errorColor,

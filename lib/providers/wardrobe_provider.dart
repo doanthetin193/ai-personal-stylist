@@ -100,32 +100,6 @@ class WardrobeProvider extends ChangeNotifier {
     return _items;
   }
 
-  // Items by category
-  List<ClothingItem> get tops => 
-      _items.where((i) => i.type.category == 'top').toList();
-  List<ClothingItem> get bottoms => 
-      _items.where((i) => i.type.category == 'bottom').toList();
-  List<ClothingItem> get outerwear => 
-      _items.where((i) => i.type.category == 'outerwear').toList();
-  List<ClothingItem> get footwear => 
-      _items.where((i) => i.type.category == 'footwear').toList();
-  List<ClothingItem> get accessories => 
-      _items.where((i) => i.type.category == 'accessory').toList();
-  List<ClothingItem> get favorites => 
-      _items.where((i) => i.isFavorite).toList();
-
-  // Stats
-  int get totalItems => _items.length;
-  
-  /// Get items count by type (for stats)
-  Map<String, int> get itemsCountByType {
-    final map = <String, int>{};
-    for (final item in _items) {
-      map[item.type.name] = (map[item.type.name] ?? 0) + 1;
-    }
-    return map;
-  }
-
   /// Get items grouped by type (for display)
   Map<ClothingType, List<ClothingItem>> get itemsByType {
     final map = <ClothingType, List<ClothingItem>>{};
@@ -548,13 +522,7 @@ class WardrobeProvider extends ChangeNotifier {
     }
   }
 
-  /// Set filter
-  void setFilterType(ClothingType? type) {
-    _filterType = type;
-    _filterCategory = null;
-    notifyListeners();
-  }
-
+  /// Set filter by category
   void setFilterCategory(String? category) {
     _filterCategory = category;
     _filterType = null;
@@ -564,18 +532,6 @@ class WardrobeProvider extends ChangeNotifier {
   void clearFilter() {
     _filterType = null;
     _filterCategory = null;
-    notifyListeners();
-  }
-
-  /// Clear error
-  void clearError() {
-    _errorMessage = null;
-    notifyListeners();
-  }
-
-  /// Clear current outfit
-  void clearOutfit() {
-    _currentOutfit = null;
     notifyListeners();
   }
 }

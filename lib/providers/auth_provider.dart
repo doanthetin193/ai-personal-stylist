@@ -190,10 +190,13 @@ class AuthProvider extends ChangeNotifier {
   /// Sign out
   Future<void> signOut() async {
     try {
-      await _firebaseService.signOut();
+      // Set state TRƯỚC khi signOut để UI phản hồi ngay
       _user = null;
       _status = AuthStatus.unauthenticated;
       notifyListeners();
+      
+      // Sau đó mới thực hiện signOut Firebase
+      await _firebaseService.signOut();
     } catch (e) {
       _errorMessage = e.toString();
       notifyListeners();
@@ -213,11 +216,5 @@ class AuthProvider extends ChangeNotifier {
       notifyListeners();
       return false;
     }
-  }
-
-  /// Clear error
-  void clearError() {
-    _errorMessage = null;
-    notifyListeners();
   }
 }

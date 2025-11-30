@@ -56,6 +56,10 @@ class FirebaseService {
   Future<UserCredential?> signInWithGoogle() async {
     try {
       final GoogleAuthProvider googleProvider = GoogleAuthProvider();
+      // Force account selection prompt every time
+      googleProvider.setCustomParameters({
+        'prompt': 'select_account',
+      });
       return await _auth.signInWithPopup(googleProvider);
     } catch (e) {
       print('Google Sign-In Error: $e');

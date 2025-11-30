@@ -13,22 +13,14 @@ class AppConstants {
   
   // Firebase Collections
   static const String itemsCollection = 'items';
-  static const String usersCollection = 'users';
-  static const String outfitsCollection = 'outfits';
   
   // Storage Paths
   static const String clothingImagesPath = 'clothing_images';
   
   // Cache Duration
   static const Duration weatherCacheDuration = Duration(minutes: 30);
-  static const Duration aiCacheDuration = Duration(hours: 24);
-  
-  // Limits
-  static const int maxItemsPerPage = 20;
-  static const int maxOutfitSuggestions = 3;
   
   // AI Settings
-  static const int maxRetries = 3;
   static const Duration aiTimeout = Duration(seconds: 30);
 }
 
