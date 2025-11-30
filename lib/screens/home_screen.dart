@@ -23,16 +23,17 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
 
-  final List<Widget> _screens = [
-    const _HomeTab(),
-    const WardrobeScreen(),
-    const OutfitSuggestScreen(),
-    const ProfileScreen(),
-  ];
+  late final List<Widget> _screens;
 
   @override
   void initState() {
     super.initState();
+    _screens = [
+      _HomeTab(onViewAllTap: () => _navigateToTab(1)),
+      const WardrobeScreen(),
+      const OutfitSuggestScreen(),
+      const ProfileScreen(),
+    ];
     // Load data khi vào home
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final wardrobeProvider = context.read<WardrobeProvider>();
@@ -157,7 +158,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
 /// Tab Home chính
 class _HomeTab extends StatelessWidget {
-  const _HomeTab();
+  final VoidCallback? onViewAllTap;
+  
+  const _HomeTab({this.onViewAllTap});
 
   @override
   Widget build(BuildContext context) {
@@ -334,9 +337,7 @@ class _HomeTab extends StatelessWidget {
                     ),
                   ),
                   TextButton(
-                    onPressed: () {
-                      // Navigate to wardrobe
-                    },
+                    onPressed: onViewAllTap,
                     child: const Text('Xem tất cả'),
                   ),
                 ],
