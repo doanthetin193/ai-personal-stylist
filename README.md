@@ -42,46 +42,57 @@
 ## 📁 Cấu trúc Project
 
 ```
-lib/
-├── main.dart                 # Entry point, khởi tạo Firebase & Providers
-├── firebase_options.dart     # Cấu hình Firebase (auto-generated)
+ai_personal_stylist/
+├── lib/
+│   ├── main.dart                 # Entry point, khởi tạo Firebase & Providers
+│   ├── firebase_options.dart     # Cấu hình Firebase (auto-generated)
+│   │
+│   ├── models/                   # Data models
+│   │   ├── clothing_item.dart    # Model quần áo
+│   │   ├── outfit.dart           # Model outfit/bộ đồ
+│   │   └── weather.dart          # Model thời tiết
+│   │
+│   ├── services/                 # Business logic, API calls
+│   │   ├── firebase_service.dart # Auth, Firestore CRUD
+│   │   ├── gemini_service.dart   # Google Gemini AI
+│   │   └── weather_service.dart  # OpenWeatherMap API
+│   │
+│   ├── providers/                # State management
+│   │   ├── auth_provider.dart    # Trạng thái đăng nhập
+│   │   └── wardrobe_provider.dart# Quản lý tủ đồ, gọi AI
+│   │
+│   ├── screens/                  # UI screens
+│   │   ├── login_screen.dart     # Màn hình đăng nhập
+│   │   ├── home_screen.dart      # Trang chủ + Bottom navigation
+│   │   ├── wardrobe_screen.dart  # Danh sách tủ đồ
+│   │   ├── add_item_screen.dart  # Thêm quần áo mới
+│   │   ├── item_detail_screen.dart # Chi tiết món đồ
+│   │   ├── outfit_suggest_screen.dart # Gợi ý outfit
+│   │   ├── color_harmony_screen.dart  # Chấm điểm hợp màu
+│   │   └── profile_screen.dart   # Hồ sơ cá nhân
+│   │
+│   ├── widgets/                  # Reusable UI components
+│   │   ├── clothing_card.dart    # Card hiển thị món đồ
+│   │   ├── outfit_card.dart      # Card hiển thị outfit
+│   │   ├── loading_widgets.dart  # Shimmer loading
+│   │   └── common_widgets.dart   # Widgets dùng chung
+│   │
+│   └── utils/                    # Utilities
+│       ├── constants.dart        # App constants, prompts
+│       ├── api_keys.dart         # 🔐 API keys (gitignored)
+│       ├── api_keys.example.dart # Template cho api_keys.dart
+│       ├── theme.dart            # Theme, colors, styles
+│       └── helpers.dart          # Helper functions
 │
-├── models/                   # Data models
-│   ├── clothing_item.dart    # Model quần áo
-│   ├── outfit.dart           # Model outfit/bộ đồ
-│   └── weather.dart          # Model thời tiết
-│
-├── services/                 # Business logic, API calls
-│   ├── firebase_service.dart # Auth, Firestore CRUD
-│   ├── gemini_service.dart   # Google Gemini AI
-│   └── weather_service.dart  # OpenWeatherMap API
-│
-├── providers/                # State management
-│   ├── auth_provider.dart    # Trạng thái đăng nhập
-│   └── wardrobe_provider.dart# Quản lý tủ đồ, gọi AI
-│
-├── screens/                  # UI screens
-│   ├── login_screen.dart     # Màn hình đăng nhập
-│   ├── home_screen.dart      # Trang chủ + Bottom navigation
-│   ├── wardrobe_screen.dart  # Danh sách tủ đồ
-│   ├── add_item_screen.dart  # Thêm quần áo mới
-│   ├── item_detail_screen.dart # Chi tiết món đồ
-│   ├── outfit_suggest_screen.dart # Gợi ý outfit
-│   ├── color_harmony_screen.dart  # Chấm điểm hợp màu
-│   └── profile_screen.dart   # Hồ sơ cá nhân
-│
-├── widgets/                  # Reusable UI components
-│   ├── clothing_card.dart    # Card hiển thị món đồ
-│   ├── outfit_card.dart      # Card hiển thị outfit
-│   ├── loading_widgets.dart  # Shimmer loading
-│   └── common_widgets.dart   # Widgets dùng chung
-│
-└── utils/                    # Utilities
-    ├── constants.dart        # App constants, prompts
-    ├── api_keys.dart         # 🔐 API keys (gitignored)
-    ├── api_keys.example.dart # Template cho api_keys.dart
-    ├── theme.dart            # Theme, colors, styles
-    └── helpers.dart          # Helper functions
+└── docs/                         # 📚 Tài liệu chi tiết
+    ├── ARCHITECTURE.md           # Kiến trúc tổng quan
+    ├── MODELS.md                 # Data models chi tiết
+    ├── PROVIDERS.md              # State management
+    ├── SERVICES.md               # Services & APIs
+    ├── SCREENS.md                # Các màn hình UI
+    ├── WIDGETS.md                # Reusable widgets
+    ├── THEME.md                  # Theme & Styling
+    └── AI_INTEGRATION.md         # Tích hợp Gemini AI
 ```
 
 ## 🚀 Cài đặt & Chạy
@@ -184,6 +195,21 @@ flutter run -d ios
 ## 📄 License
 
 MIT License - xem file [LICENSE](LICENSE) để biết thêm chi tiết.
+
+## 📚 Tài liệu
+
+Xem thư mục `docs/` để đọc tài liệu chi tiết về từng phần của project:
+
+| Tài liệu | Mô tả |
+|----------|-------|
+| [📐 ARCHITECTURE.md](docs/ARCHITECTURE.md) | Kiến trúc tổng quan, data flow, design patterns |
+| [📦 MODELS.md](docs/MODELS.md) | Data models: ClothingItem, Outfit, Weather |
+| [🔄 PROVIDERS.md](docs/PROVIDERS.md) | State management với Provider pattern |
+| [⚙️ SERVICES.md](docs/SERVICES.md) | Firebase, Gemini AI, Weather services |
+| [📱 SCREENS.md](docs/SCREENS.md) | Các màn hình UI và navigation flow |
+| [🧩 WIDGETS.md](docs/WIDGETS.md) | Reusable UI components |
+| [🎨 THEME.md](docs/THEME.md) | Theme system, colors, typography |
+| [🤖 AI_INTEGRATION.md](docs/AI_INTEGRATION.md) | Tích hợp Google Gemini AI |
 
 ## 👨‍💻 Tác giả
 
