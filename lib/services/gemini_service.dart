@@ -223,22 +223,4 @@ class GeminiService {
     }
   }
 
-  /// Generic text generation
-  Future<String?> generateText(String prompt) async {
-    if (!_isInitialized) {
-      print('Gemini not initialized');
-      return null;
-    }
-
-    try {
-      final response = await _model.generateContent([
-        Content.text(prompt)
-      ]).timeout(AppConstants.aiTimeout);
-
-      return response.text;
-    } catch (e) {
-      print('Generate Text Error: $e');
-      return null;
-    }
   }
-}

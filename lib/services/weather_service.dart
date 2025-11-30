@@ -53,43 +53,6 @@ class WeatherService {
     }
   }
 
-  /// Get weather by coordinates
-  Future<WeatherInfo?> getWeatherByCoordinates(
-    double lat,
-    double lon,
-  ) async {
-    try {
-      final apiKey = AppConstants.weatherApiKey;
-      if (apiKey.isEmpty || apiKey == 'YOUR_OPENWEATHERMAP_API_KEY') {
-        return _getDefaultWeather();
-      }
-
-      final url = Uri.parse(
-        '${AppConstants.weatherBaseUrl}/weather'
-        '?lat=$lat&lon=$lon'
-        '&appid=$apiKey'
-        '&units=metric'
-      );
-
-      final response = await http.get(url).timeout(
-        const Duration(seconds: 10),
-      );
-
-      if (response.statusCode == 200) {
-        final json = jsonDecode(response.body);
-        _cachedWeather = WeatherInfo.fromJson(json);
-        _lastFetchTime = DateTime.now();
-        return _cachedWeather;
-      } else {
-        print('Weather API Error: ${response.statusCode}');
-        return _getDefaultWeather();
-      }
-    } catch (e) {
-      print('Weather Service Error: $e');
-      return _getDefaultWeather();
-    }
-  }
-
   /// Default weather khi không có API key hoặc lỗi
   WeatherInfo _getDefaultWeather() {
     return WeatherInfo(

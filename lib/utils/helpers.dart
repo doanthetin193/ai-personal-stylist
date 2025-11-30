@@ -143,11 +143,3 @@ String getGreeting() {
   return 'Chào buổi tối';
 }
 
-/// Calculate color score description
-String getColorScoreDescription(int score) {
-  if (score >= 90) return 'Hoàn hảo! 🎯';
-  if (score >= 70) return 'Rất hợp! 👍';
-  if (score >= 50) return 'Tạm được 😊';
-  if (score >= 30) return 'Không hợp lắm 😕';
-  return 'Không nên phối 🚫';
-}

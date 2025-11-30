@@ -40,11 +40,6 @@ class FirebaseService {
   String convertToBase64(Uint8List bytes) {
     return base64Encode(bytes);
   }
-  
-  /// Convert Base64 string back to bytes
-  Uint8List convertFromBase64(String base64String) {
-    return base64Decode(base64String);
-  }
 
   // ==================== AUTH ====================
   
@@ -135,29 +130,7 @@ class FirebaseService {
     }
   }
 
-  /// Upload clothing image from bytes (for Web)
-  Future<String?> uploadClothingImageBytes(Uint8List imageBytes) async {
-    try {
-      final userId = currentUser?.uid;
-      if (userId == null) throw Exception('User not logged in');
-      
-      final fileName = '${_uuid.v4()}.jpg';
-      final ref = _storage.ref()
-          .child(AppConstants.clothingImagesPath)
-          .child(userId)
-          .child(fileName);
-      
-      final uploadTask = await ref.putData(
-        imageBytes,
-        SettableMetadata(contentType: 'image/jpeg'),
-      );
-      
-      return await uploadTask.ref.getDownloadURL();
-    } catch (e) {
-      print('Upload Bytes Error: $e');
-      return null;
-    }
-  }
+  
   
   /// Delete image from storage
   Future<bool> deleteImage(String imageUrl) async {
@@ -247,50 +220,7 @@ class FirebaseService {
     }
   }
   
-  /// Get items stream for real-time updates
-  Stream<List<ClothingItem>> getUserItemsStream() {
-    final userId = currentUser?.uid;
-    if (userId == null) return Stream.value([]);
-    
-    return _itemsRef
-        .where('userId', isEqualTo: userId)
-        .orderBy('createdAt', descending: true)
-        .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => ClothingItem.fromJson(doc.data(), doc.id))
-            .toList());
-  }
   
-  /// Get items by type
-  Future<List<ClothingItem>> getItemsByType(ClothingType type) async {
-    try {
-      final userId = currentUser?.uid;
-      if (userId == null) return [];
-      
-      final snapshot = await _itemsRef
-          .where('userId', isEqualTo: userId)
-          .where('type', isEqualTo: type.name)
-          .get();
-      
-      return snapshot.docs
-          .map((doc) => ClothingItem.fromJson(doc.data(), doc.id))
-          .toList();
-    } catch (e) {
-      print('Get Items By Type Error: $e');
-      return [];
-    }
-  }
-  
-  /// Get items by category (top, bottom, etc.)
-  Future<List<ClothingItem>> getItemsByCategory(String category) async {
-    try {
-      final allItems = await getUserItems();
-      return allItems.where((item) => item.type.category == category).toList();
-    } catch (e) {
-      print('Get Items By Category Error: $e');
-      return [];
-    }
-  }
   
   /// Update item's last worn date
   Future<bool> markAsWorn(String itemId) async {
@@ -317,42 +247,4 @@ class FirebaseService {
     }
   }
 
-  // ==================== STATS ====================
-  
-  /// Get wardrobe statistics
-  Future<Map<String, dynamic>> getWardrobeStats() async {
-    try {
-      final items = await getUserItems();
-      
-      // Count by type
-      final typeCounts = <String, int>{};
-      for (final item in items) {
-        typeCounts[item.type.name] = (typeCounts[item.type.name] ?? 0) + 1;
-      }
-      
-      // Count by style
-      final styleCounts = <String, int>{};
-      for (final item in items) {
-        for (final style in item.styles) {
-          styleCounts[style.name] = (styleCounts[style.name] ?? 0) + 1;
-        }
-      }
-      
-      // Find least worn items
-      final sortedByWear = List<ClothingItem>.from(items)
-        ..sort((a, b) => a.wearCount.compareTo(b.wearCount));
-      final leastWorn = sortedByWear.take(5).toList();
-      
-      return {
-        'totalItems': items.length,
-        'typeCounts': typeCounts,
-        'styleCounts': styleCounts,
-        'leastWorn': leastWorn,
-        'favorites': items.where((i) => i.isFavorite).length,
-      };
-    } catch (e) {
-      print('Get Stats Error: $e');
-      return {};
-    }
   }
-}
