@@ -355,12 +355,12 @@ class _WardrobeScreenState extends State<WardrobeScreen> {
           ),
           ElevatedButton(
             onPressed: () async {
+              final wardrobeProvider = context.read<WardrobeProvider>();
+              final scaffoldMessenger = ScaffoldMessenger.of(context);
               Navigator.pop(context);
-              final success = await context
-                  .read<WardrobeProvider>()
-                  .deleteItem(item.id);
+              final success = await wardrobeProvider.deleteItem(item.id);
               if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
+                scaffoldMessenger.showSnackBar(
                   SnackBar(
                     content: Text(
                       success ? 'Đã xóa thành công!' : 'Không thể xóa',

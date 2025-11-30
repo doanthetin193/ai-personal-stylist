@@ -87,26 +87,37 @@ class _MyAppState extends State<MyApp> {
         title: 'AI Personal Stylist',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
-        home: Consumer<AuthProvider>(
-          builder: (context, auth, _) {
-            // Show loading while checking auth state
-            if (auth.status == AuthStatus.initial) {
-              return const Scaffold(
-                body: Center(
-                  child: CircularProgressIndicator(),
-                ),
-              );
-            }
-            
-            // Navigate based on auth state
-            if (auth.isAuthenticated) {
-              return const HomeScreen();
-            }
-            
-            return const LoginScreen();
-          },
-        ),
+        home: const AuthWrapper(),
       ),
+    );
+  }
+}
+
+/// Widget wrapper để handle authentication state changes
+/// Sử dụng widget riêng để đảm bảo rebuild khi auth state thay đổi
+class AuthWrapper extends StatelessWidget {
+  const AuthWrapper({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<AuthProvider>(
+      builder: (context, auth, _) {
+        // Show loading while checking auth state
+        if (auth.status == AuthStatus.initial) {
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+        
+        // Navigate based on auth state
+        if (auth.isAuthenticated) {
+          return const HomeScreen();
+        }
+        
+        return const LoginScreen();
+      },
     );
   }
 }

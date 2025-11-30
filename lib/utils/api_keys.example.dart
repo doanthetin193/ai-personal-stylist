@@ -6,6 +6,7 @@
 /// 3. File api_keys.dart sẽ được gitignore, không bị push lên GitHub
 ///
 /// ⚠️ KHÔNG SỬA FILE NÀY - Chỉ dùng làm template!
+library;
 
 class ApiKeys {
   // Gemini AI API Key

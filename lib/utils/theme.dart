@@ -233,20 +233,4 @@ class AppDecorations {
       ),
     ],
   );
-
-  static BoxDecoration get gradientDecoration => const BoxDecoration(
-    gradient: AppTheme.primaryGradient,
-    borderRadius: BorderRadius.all(Radius.circular(16)),
-  );
-
-  static BoxDecoration imageDecoration(String? imageUrl) => BoxDecoration(
-    borderRadius: BorderRadius.circular(12),
-    image: imageUrl != null
-        ? DecorationImage(
-            image: NetworkImage(imageUrl),
-            fit: BoxFit.cover,
-          )
-        : null,
-    color: Colors.grey.shade200,
-  );
 }

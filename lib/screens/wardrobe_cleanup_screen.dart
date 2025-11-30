@@ -535,9 +535,11 @@ class _WardrobeCleanupScreenState extends State<WardrobeCleanupScreen> {
         });
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Lỗi: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Lỗi: $e')),
+        );
+      }
     } finally {
       setState(() => _isAnalyzing = false);
     }

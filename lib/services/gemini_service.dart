@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:typed_data';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import '../models/clothing_item.dart';
@@ -48,22 +47,6 @@ class GeminiService {
 
   /// Check if initialized
   bool get isInitialized => _isInitialized;
-
-  /// Analyze clothing image
-  Future<Map<String, dynamic>?> analyzeClothingImage(File imageFile) async {
-    if (!_isInitialized) {
-      print('Gemini not initialized');
-      return null;
-    }
-
-    try {
-      final imageBytes = await imageFile.readAsBytes();
-      return await analyzeClothingImageBytes(imageBytes);
-    } catch (e) {
-      print('Analyze Image Error: $e');
-      return null;
-    }
-  }
 
   /// Analyze clothing image from bytes
   Future<Map<String, dynamic>?> analyzeClothingImageBytes(Uint8List imageBytes) async {

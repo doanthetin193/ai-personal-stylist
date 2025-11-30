@@ -501,9 +501,11 @@ class _ColorHarmonyScreenState extends State<ColorHarmonyScreen> {
         });
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Lỗi: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Lỗi: $e')),
+        );
+      }
     } finally {
       setState(() => _isEvaluating = false);
     }

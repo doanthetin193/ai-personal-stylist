@@ -4,6 +4,7 @@ import '../providers/auth_provider.dart';
 import '../providers/wardrobe_provider.dart';
 import '../utils/theme.dart';
 import 'wardrobe_cleanup_screen.dart';
+import 'login_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -346,6 +347,9 @@ class ProfileScreen extends StatelessWidget {
   }
 
   void _showLogoutDialog(BuildContext context) {
+    final authProvider = context.read<AuthProvider>();
+    final navigator = Navigator.of(context);
+    
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -364,7 +368,12 @@ class ProfileScreen extends StatelessWidget {
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(dialogContext);
-              await context.read<AuthProvider>().signOut();
+              await authProvider.signOut();
+              // Force navigate to login screen và xóa hết navigation stack
+              navigator.pushAndRemoveUntil(
+                MaterialPageRoute(builder: (_) => const LoginScreen()),
+                (route) => false,
+              );
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppTheme.errorColor,
@@ -463,10 +472,11 @@ class ProfileScreen extends StatelessWidget {
           ElevatedButton(
             onPressed: () async {
               final newName = nameController.text.trim();
+              final navigator = Navigator.of(context);
               if (newName.isNotEmpty) {
                 await authProvider.updateDisplayName(newName);
               }
-              Navigator.pop(context);
+              navigator.pop();
             },
             child: const Text('Lưu'),
           ),
@@ -716,6 +726,7 @@ class ProfileScreen extends StatelessWidget {
               style: TextStyle(color: AppTheme.textSecondary),
             ),
             const SizedBox(height: 20),
+            // ignore: deprecated_member_use
             ...StylePreference.values.map((style) => RadioListTile<StylePreference>(
               value: style,
               groupValue: wardrobeProvider.stylePreference,
