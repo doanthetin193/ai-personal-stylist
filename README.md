@@ -198,10 +198,13 @@ MIT License - xem file [LICENSE](LICENSE) để biết thêm chi tiết.
 
 ## 📚 Tài liệu
 
+> **🚀 Mới bắt đầu?** Đọc [START_HERE.md](docs/START_HERE.md) trước!
+
 Xem thư mục `docs/` để đọc tài liệu chi tiết về từng phần của project:
 
 | Tài liệu | Mô tả |
 |----------|-------|
+| [🚀 START_HERE.md](docs/START_HERE.md) | **Bắt đầu từ đây** - Lộ trình đọc tài liệu |
 | [📐 ARCHITECTURE.md](docs/ARCHITECTURE.md) | Kiến trúc tổng quan, data flow, design patterns |
 | [📦 MODELS.md](docs/MODELS.md) | Data models: ClothingItem, Outfit, Weather |
 | [🔄 PROVIDERS.md](docs/PROVIDERS.md) | State management với Provider pattern |
