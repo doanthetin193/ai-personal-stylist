@@ -6,6 +6,27 @@
 ![Firebase](https://img.shields.io/badge/Firebase-Firestore-orange?logo=firebase)
 ![Gemini](https://img.shields.io/badge/AI-Gemini%202.0-green?logo=google)
 
+---
+
+## 🎓 Bắt Đầu Học Project
+
+### � Mới vào project? Đọc theo thứ tự:
+1. **[LEARNING_GUIDE.md](LEARNING_GUIDE.md)** ← **BẮT ĐẦU Ở ĐÂY!**
+   - Chiến lược học bằng thực hành (không phải đọc docs dài)
+   - 8 bước từ chạy app → debug → code feature
+   - ⏱️ ~2-3 giờ để hiểu toàn bộ flow
+
+2. **[DEBUG_CHEAT_SHEET.md](DEBUG_CHEAT_SHEET.md)** ← Tra nhanh khi code
+   - Debug từng feature
+   - Common errors & solutions
+   - Phím tắt, techniques
+
+3. **[docs/](docs/)** ← Đọc khi cần chi tiết
+   - Tham khảo khi gặp code không hiểu
+   - Mỗi file ~5-10 phút đọc
+
+---
+
 ## ✨ Tính năng chính
 
 ### 1. 📸 Thêm quần áo với AI
