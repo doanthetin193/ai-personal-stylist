@@ -163,7 +163,6 @@ enum Season {
 class ClothingItem {
   final String id;
   final String userId;
-  final String? imageUrl; // Deprecated - giữ lại cho backward compatibility
   final String? imageBase64; // Lưu ảnh dạng Base64 vào Firestore
   final ClothingType type;
   final String color;
@@ -180,7 +179,6 @@ class ClothingItem {
   ClothingItem({
     required this.id,
     required this.userId,
-    this.imageUrl,
     this.imageBase64,
     required this.type,
     required this.color,
@@ -200,7 +198,6 @@ class ClothingItem {
     return ClothingItem(
       id: docId,
       userId: json['userId'] ?? '',
-      imageUrl: json['imageUrl'],
       imageBase64: json['imageBase64'],
       type: ClothingType.fromString(json['type'] ?? 'other'),
       color: json['color'] ?? 'unknown',
@@ -226,7 +223,6 @@ class ClothingItem {
   Map<String, dynamic> toJson() {
     return {
       'userId': userId,
-      'imageUrl': imageUrl,
       'imageBase64': imageBase64,
       'type': type.name,
       'color': color,
@@ -253,7 +249,6 @@ class ClothingItem {
   ClothingItem copyWith({
     String? id,
     String? userId,
-    String? imageUrl,
     String? imageBase64,
     ClothingType? type,
     String? color,
@@ -270,7 +265,6 @@ class ClothingItem {
     return ClothingItem(
       id: id ?? this.id,
       userId: userId ?? this.userId,
-      imageUrl: imageUrl ?? this.imageUrl,
       imageBase64: imageBase64 ?? this.imageBase64,
       type: type ?? this.type,
       color: color ?? this.color,

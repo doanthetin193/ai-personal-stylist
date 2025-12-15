@@ -35,7 +35,6 @@ dependencies:
   firebase_core: ^3.8.1
   firebase_auth: ^5.3.4
   cloud_firestore: ^5.6.5
-  firebase_storage: ^12.4.4
   
   # AI - Gemini
   google_generative_ai: ^0.4.6
@@ -45,7 +44,7 @@ dependencies:
   
   # Image & Camera
   image_picker: ^1.1.2
-  cached_network_image: ^3.4.1
+  flutter_image_compress: ^2.3.0
   
   # Network
   http: ^1.2.2

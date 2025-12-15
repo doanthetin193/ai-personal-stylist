@@ -14,9 +14,6 @@ class AppConstants {
   // Firebase Collections
   static const String itemsCollection = 'items';
   
-  // Storage Paths
-  static const String clothingImagesPath = 'clothing_images';
-  
   // Cache Duration
   static const Duration weatherCacheDuration = Duration(minutes: 30);
   

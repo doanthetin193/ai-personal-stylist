@@ -49,12 +49,12 @@ class WeatherInfo {
   /// Tạo mô tả cho AI
   String toAIDescription() {
     return '''
-Weather: $description
-Temperature: ${temperature.round()}°C (feels like ${feelsLike.round()}°C)
-Humidity: $humidity%
-Wind: ${windSpeed.round()} m/s
-Condition: $temperatureDescription
-''';
+          Weather: $description
+          Temperature: ${temperature.round()}°C (feels like ${feelsLike.round()}°C)
+          Humidity: $humidity%
+          Wind: ${windSpeed.round()} m/s
+          Condition: $temperatureDescription
+          ''';
   }
 
   /// Icon URL

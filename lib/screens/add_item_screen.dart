@@ -711,9 +711,10 @@ class _AddItemScreenState extends State<AddItemScreen> {
           material: _selectedMaterial,
         );
       } else {
-        // For mobile, use file
-        item = await wardrobeProvider.addItemFromFile(
-          File(_pickedFile!.path),
+        // For mobile, read file as bytes and use addItemFromBytes
+        final bytes = await File(_pickedFile!.path).readAsBytes();
+        item = await wardrobeProvider.addItemFromBytes(
+          bytes,
           type: _selectedType!,
           color: _selectedColor!,
           styles: _selectedStyles,

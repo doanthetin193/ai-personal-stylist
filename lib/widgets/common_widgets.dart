@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import '../models/weather.dart';
 import '../utils/theme.dart';
 import '../utils/helpers.dart';
@@ -39,11 +38,11 @@ class WeatherWidget extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          CachedNetworkImage(
-            imageUrl: weather.iconUrl,
+          Image.network(
+            weather.iconUrl,
             width: 32,
             height: 32,
-            errorWidget: (_, __, ___) => const Icon(Icons.cloud, size: 24),
+            errorBuilder: (_, __, ___) => const Icon(Icons.cloud, size: 24),
           ),
           const SizedBox(width: 8),
           Text(
@@ -85,11 +84,11 @@ class WeatherWidget extends StatelessWidget {
         children: [
           Row(
             children: [
-              CachedNetworkImage(
-                imageUrl: weather.iconUrl,
+              Image.network(
+                weather.iconUrl,
                 width: 64,
                 height: 64,
-                errorWidget: (_, __, ___) => const Icon(
+                errorBuilder: (_, __, ___) => const Icon(
                   Icons.cloud,
                   size: 48,
                   color: Colors.white,

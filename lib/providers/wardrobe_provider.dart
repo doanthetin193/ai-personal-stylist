@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 import '../models/clothing_item.dart';
@@ -161,22 +160,11 @@ class WardrobeProvider extends ChangeNotifier {
       _errorMessage = null;
       notifyListeners();
 
-      // Compress nếu ảnh quá lớn (> 100KB)
-      Uint8List finalBytes = imageBytes;
-      if (imageBytes.length > 100000) {
-        print('⚠️ Image is large (${imageBytes.length} bytes), consider compressing');
-      }
-
-      print('📤 Converting image to Base64... (${finalBytes.length} bytes)');
+      print('🖼️ Original image size: ${(imageBytes.length / 1024).toStringAsFixed(1)}KB');
       
-      // 1. Convert image to Base64 (không cần Firebase Storage)
-      final imageBase64 = _firebaseService.convertToBase64(finalBytes);
-      print('✅ Image converted to Base64 (${imageBase64.length} chars)');
-      
-      // Cảnh báo nếu data quá lớn
-      if (imageBase64.length > 500000) {
-        print('⚠️ WARNING: Base64 data is very large (${imageBase64.length} chars). This may cause slow save.');
-      }
+      // 1. Tự động nén và convert image to Base64 (thay thế Firebase Storage)
+      final imageBase64 = await _firebaseService.compressAndConvertToBase64(imageBytes);
+      print('✅ Image compressed and converted to Base64 (${imageBase64.length} chars)');
 
       // 2. Create ClothingItem with provided data
       final userId = _firebaseService.currentUser?.uid;
@@ -214,65 +202,6 @@ class WardrobeProvider extends ChangeNotifier {
       return savedItem;
     } catch (e) {
       print('❌ Error saving item: $e');
-      _isAnalyzing = false;
-      _errorMessage = e.toString();
-      notifyListeners();
-      return null;
-    }
-  }
-
-  /// Add item from file (for Mobile)
-  Future<ClothingItem?> addItemFromFile(
-    File imageFile, {
-    required ClothingType type,
-    required String color,
-    required List<ClothingStyle> styles,
-    required List<Season> seasons,
-    String? material,
-  }) async {
-    try {
-      _isAnalyzing = true;
-      _errorMessage = null;
-      notifyListeners();
-
-      // 1. Upload image to Firebase Storage
-      final imageUrl = await _firebaseService.uploadClothingImage(imageFile);
-      if (imageUrl == null) {
-        throw Exception('Không thể upload ảnh');
-      }
-
-      // 2. Create ClothingItem with provided data
-      final userId = _firebaseService.currentUser?.uid;
-      if (userId == null) {
-        throw Exception('Chưa đăng nhập');
-      }
-
-      final item = ClothingItem(
-        id: '',
-        userId: userId,
-        imageUrl: imageUrl,
-        type: type,
-        color: color,
-        material: material,
-        styles: styles,
-        seasons: seasons,
-        createdAt: DateTime.now(),
-      );
-
-      // 3. Save to Firestore
-      final docId = await _firebaseService.addClothingItem(item);
-      if (docId == null) {
-        throw Exception('Không thể lưu item');
-      }
-
-      final savedItem = item.copyWith(id: docId);
-      _items.insert(0, savedItem);
-      
-      _isAnalyzing = false;
-      notifyListeners();
-      
-      return savedItem;
-    } catch (e) {
       _isAnalyzing = false;
       _errorMessage = e.toString();
       notifyListeners();
@@ -422,10 +351,7 @@ class WardrobeProvider extends ChangeNotifier {
   Future<bool> deleteItem(String itemId) async {
     try {
       final item = _items.firstWhere((i) => i.id == itemId);
-      final success = await _firebaseService.deleteClothingItem(
-        item.id, 
-        item.imageUrl,
-      );
+      final success = await _firebaseService.deleteClothingItem(item.id);
       if (success) {
         _items.removeWhere((i) => i.id == itemId);
         notifyListeners();

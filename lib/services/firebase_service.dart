@@ -1,19 +1,15 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:uuid/uuid.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import '../models/clothing_item.dart';
 import '../utils/constants.dart';
 
 class FirebaseService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseStorage _storage = FirebaseStorage.instance;
-  final _uuid = const Uuid();
   
   bool _persistenceSet = false;
   
@@ -34,9 +30,37 @@ class FirebaseService {
     _persistenceSet = true;
   }
   
-  // ==================== BASE64 UTILS ====================
+  // ==================== BASE64 & COMPRESSION UTILS ====================
   
-  /// Convert bytes to Base64 string (thay thế Firebase Storage)
+  /// Compress image automatically and convert to Base64
+  Future<String> compressAndConvertToBase64(Uint8List bytes) async {
+    try {
+      // Nén ảnh xuống còn ~200KB để đảm bảo an toàn với Firestore (1MB limit)
+      // Base64 encoding thêm ~37% overhead, nên 200KB raw → ~270KB Base64
+      final compressed = await FlutterImageCompress.compressWithList(
+        bytes,
+        minWidth: 800,  // Giảm width tối đa xuống 800px
+        minHeight: 800, // Giảm height tối đa xuống 800px
+        quality: 85,    // Chất lượng 85% (balance giữa size và quality)
+      );
+      
+      final originalSize = bytes.length;
+      final compressedSize = compressed.length;
+      final ratio = ((originalSize - compressedSize) / originalSize * 100).toStringAsFixed(1);
+      
+      print('📦 Image compressed: ${(originalSize / 1024).toStringAsFixed(1)}KB → '
+            '${(compressedSize / 1024).toStringAsFixed(1)}KB '
+            '(saved $ratio%)');
+      
+      return base64Encode(compressed);
+    } catch (e) {
+      print('⚠️ Compression failed, using original: $e');
+      return base64Encode(bytes);
+    }
+  }
+  
+  /// Convert bytes to Base64 string (không nén - deprecated)
+  @Deprecated('Use compressAndConvertToBase64 instead')
   String convertToBase64(Uint8List bytes) {
     return base64Encode(bytes);
   }
@@ -108,46 +132,6 @@ class FirebaseService {
     await _auth.signOut();
   }
 
-  // ==================== STORAGE ====================
-  
-  /// Upload clothing image
-  Future<String?> uploadClothingImage(File imageFile) async {
-    try {
-      final userId = currentUser?.uid;
-      if (userId == null) throw Exception('User not logged in');
-      
-      final fileName = '${_uuid.v4()}.jpg';
-      final ref = _storage.ref()
-          .child(AppConstants.clothingImagesPath)
-          .child(userId)
-          .child(fileName);
-      
-      final uploadTask = await ref.putFile(
-        imageFile,
-        SettableMetadata(contentType: 'image/jpeg'),
-      );
-      
-      return await uploadTask.ref.getDownloadURL();
-    } catch (e) {
-      print('Upload Error: $e');
-      return null;
-    }
-  }
-
-  
-  
-  /// Delete image from storage
-  Future<bool> deleteImage(String imageUrl) async {
-    try {
-      final ref = _storage.refFromURL(imageUrl);
-      await ref.delete();
-      return true;
-    } catch (e) {
-      print('Delete Image Error: $e');
-      return false;
-    }
-  }
-
   // ==================== FIRESTORE - ITEMS ====================
   
   /// Get items collection reference
@@ -189,12 +173,8 @@ class FirebaseService {
   }
   
   /// Delete clothing item
-  Future<bool> deleteClothingItem(String itemId, String? imageUrl) async {
+  Future<bool> deleteClothingItem(String itemId) async {
     try {
-      // Nếu có imageUrl (legacy), xóa từ storage
-      if (imageUrl != null && imageUrl.isNotEmpty && imageUrl.startsWith('http')) {
-        await deleteImage(imageUrl);
-      }
       // Delete document from Firestore (Base64 sẽ tự động bị xóa cùng document)
       await _itemsRef.doc(itemId).delete();
       return true;

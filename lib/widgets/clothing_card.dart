@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shimmer/shimmer.dart';
 import '../models/clothing_item.dart';
 import '../utils/theme.dart';
@@ -23,7 +22,7 @@ class ClothingImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Ưu tiên Base64 nếu có
+    // Chỉ dùng Base64 (không còn fallback URL)
     if (item.imageBase64 != null && item.imageBase64!.isNotEmpty) {
       try {
         final bytes = base64Decode(item.imageBase64!);
@@ -39,26 +38,8 @@ class ClothingImage extends StatelessWidget {
       }
     }
     
-    // Fallback về URL nếu có (backward compatibility)
-    if (item.imageUrl != null && item.imageUrl!.isNotEmpty) {
-      return CachedNetworkImage(
-        imageUrl: item.imageUrl!,
-        fit: fit,
-        placeholder: (context, url) => placeholder ?? _buildPlaceholder(),
-        errorWidget: (context, url, error) => errorWidget ?? _buildErrorWidget(),
-      );
-    }
-    
     // Không có ảnh
     return errorWidget ?? _buildErrorWidget();
-  }
-
-  Widget _buildPlaceholder() {
-    return Shimmer.fromColors(
-      baseColor: Colors.grey.shade300,
-      highlightColor: Colors.grey.shade100,
-      child: Container(color: Colors.white),
-    );
   }
 
   Widget _buildErrorWidget() {
