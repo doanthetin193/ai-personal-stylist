@@ -397,13 +397,7 @@ Future<ClothingItem?> addItemFromBytes(
 └─────────────────────────────────────────────────────────────┘
 ```
 
-#### `addItemFromFile()` - Thêm item (Mobile)
-
-```dart
-Future<ClothingItem?> addItemFromFile(File imageFile, {...}) async
-```
-
-**Note:** Dùng Firebase Storage thay vì Base64.
+---
 
 #### `updateItem()` - Cập nhật item
 
