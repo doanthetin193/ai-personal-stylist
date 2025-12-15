@@ -39,12 +39,9 @@ class ClothingImage extends StatelessWidget {
 │  item.imageBase64 != null?                              │
 │     │                                                   │
 │     ├── YES → base64Decode() → Image.memory()           │
+│     │            (Ảnh đã được nén tự động)            │
 │     │                                                   │
-│     └── NO → item.imageUrl != null?                     │
-│               │                                         │
-│               ├── YES → CachedNetworkImage()            │
-│               │                                         │
-│               └── NO → errorWidget (placeholder)        │
+│     └── NO → errorWidget (No image placeholder)         │
 │                                                         │
 └─────────────────────────────────────────────────────────┘
 ```

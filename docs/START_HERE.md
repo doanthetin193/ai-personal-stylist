@@ -57,7 +57,7 @@ ClothingItem(
   name: "Áo thun trắng",      // Tên
   category: "Áo",              // Loại
   color: "Trắng",              // Màu
-  imageUrl: "https://...",     // Ảnh
+  imageBase64: "base64...",    // Ảnh (Base64 encoded)
   // ... các field khác
 )
 ```

@@ -20,14 +20,15 @@ lib/services/
 Quản lý tất cả tương tác với Firebase:
 - **Authentication**: Google Sign-in, Email/Password, Anonymous
 - **Firestore**: CRUD operations cho clothing items
-- **Storage**: Upload/Delete images (legacy, hiện dùng Base64)
+- **Image Storage**: Base64 encoding (lưu trực tiếp trong Firestore)
+- **Compression**: Tự động nén ảnh trước khi lưu
 
 ### 1.2 Dependencies
 
 ```dart
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 ```
 
 ### 1.3 Instances
@@ -35,7 +36,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 ```dart
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-final FirebaseStorage _storage = FirebaseStorage.instance;
 ```
 
 ---
@@ -166,13 +166,13 @@ Future<bool> updateClothingItem(ClothingItem item) async {
 #### `deleteClothingItem()` - Xóa item
 
 ```dart
-Future<bool> deleteClothingItem(String itemId, String? imageUrl) async
+Future<bool> deleteClothingItem(String itemId) async
 ```
 
 **Flow:**
 ```
-1. Nếu có imageUrl (legacy) → xóa từ Storage
-2. Xóa document từ Firestore (Base64 tự động xóa)
+1. Xóa document từ Firestore
+2. Base64 image data tự động bị xóa cùng document
 ```
 
 ---
@@ -218,45 +218,45 @@ Future<bool> toggleFavorite(String itemId, bool isFavorite) async {
 
 ---
 
-### 1.6 Storage Methods
+### 1.6 Image Compression & Base64 Utils
 
-#### `uploadClothingImage()` - Upload ảnh (Mobile)
+#### `compressAndConvertToBase64()` - Nén và convert ảnh
 
 ```dart
-Future<String?> uploadClothingImage(File imageFile) async
+Future<String> compressAndConvertToBase64(Uint8List bytes) async
 ```
 
-**Path:** `clothing_images/{userId}/{uuid}.jpg`
+**Flow:**
+```
+1. Nén ảnh với FlutterImageCompress
+   - Target: 800x800px max
+   - Quality: 85%
+   - Result: ~200KB raw → ~270KB Base64
+2. Convert to Base64 string
+3. Return Base64 string để lưu vào Firestore
+```
 
-**Note:** Legacy method, hiện tại Web dùng Base64.
+**Lợi ích:**
+- ✅ Không cần Firebase Storage (miễn phí hoàn toàn)
+- ✅ Tự động nén để đảm bảo < 1MB (Firestore limit)
+- ✅ Đơn giản hóa architecture
+- ✅ Hoạt động trên cả Web và Mobile
+
+**Log output:**
+```
+📦 Image compressed: 2500.5KB → 180.3KB (saved 92.8%)
+```
 
 ---
 
-#### `deleteImage()` - Xóa ảnh từ Storage
+#### `convertToBase64()` - Deprecated method
 
 ```dart
-Future<bool> deleteImage(String imageUrl) async {
-  final ref = _storage.refFromURL(imageUrl);
-  await ref.delete();
-  return true;
-}
+@Deprecated('Use compressAndConvertToBase64 instead')
+String convertToBase64(Uint8List bytes)
 ```
 
----
-
-### 1.7 Base64 Utils
-
-```dart
-/// Convert bytes to Base64 (thay thế Firebase Storage cho Web)
-String convertToBase64(Uint8List bytes) {
-  return base64Encode(bytes);
-}
-```
-
-**Tại sao dùng Base64?**
-- Web không hỗ trợ Firebase Storage upload trực tiếp
-- Base64 lưu thẳng vào Firestore document
-- Đơn giản hóa flow, không cần CORS config
+**Note:** Giữ lại cho backward compatibility, nhưng không nên dùng (không có compression).
 
 ---
 

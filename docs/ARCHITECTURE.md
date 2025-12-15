@@ -202,7 +202,7 @@ User (Firebase Auth)
          │
          ├── id: String
          ├── userId: String ◀── Link với User
-         ├── imageUrl: String
+         ├── imageBase64: String (compressed, auto-encoded)
          ├── type: ClothingType (enum)
          ├── color: String
          ├── styles: List<ClothingStyle>

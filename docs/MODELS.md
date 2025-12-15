@@ -115,8 +115,7 @@ enum Season {
 |-------|------|----------|-------|
 | `id` | `String` | ✅ | Document ID từ Firestore |
 | `userId` | `String` | ✅ | User ID sở hữu item |
-| `imageUrl` | `String?` | ❌ | URL ảnh (deprecated, giữ backward compat) |
-| `imageBase64` | `String?` | ❌ | Ảnh dạng Base64 lưu Firestore |
+| `imageBase64` | `String?` | ✅ | Ảnh dạng Base64 lưu Firestore (tự động nén) |
 | `type` | `ClothingType` | ✅ | Loại quần áo |
 | `color` | `String` | ✅ | Màu sắc (từ AI phân tích) |
 | `material` | `String?` | ❌ | Chất liệu |
@@ -443,7 +442,7 @@ print('Vibe: ${result.vibe}');
 
 ## 📝 Notes
 
-1. **imageBase64 vs imageUrl**: Hiện tại app lưu ảnh dưới dạng Base64 trực tiếp vào Firestore thay vì upload lên Storage. Field `imageUrl` giữ lại để backward compatibility.
+1. **Image Storage**: App lưu ảnh dưới dạng Base64 trực tiếp vào Firestore, tự động nén xuống ~200KB trước khi lưu. Không cần Firebase Storage (miễn phí hoàn toàn).
 
 2. **Default values**: Các enum đều có `fromString()` với giá trị default để tránh crash khi parse data không hợp lệ.
 
