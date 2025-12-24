@@ -4,19 +4,21 @@ import 'api_keys.dart';
 class AppConstants {
   // API Keys - Import từ file riêng (đã gitignore)
   static const String geminiApiKey = ApiKeys.geminiApiKey;
+  static const String groqApiKey = ApiKeys.groqApiKey;
   static const String weatherApiKey = ApiKeys.weatherApiKey;
-  
+
   // Weather API
-  static const String weatherBaseUrl = 'https://api.openweathermap.org/data/2.5';
+  static const String weatherBaseUrl =
+      'https://api.openweathermap.org/data/2.5';
   static const String defaultCity = 'Quy Nhon';
   static const String defaultCountryCode = 'VN';
-  
+
   // Firebase Collections
   static const String itemsCollection = 'items';
-  
+
   // Cache Duration
   static const Duration weatherCacheDuration = Duration(minutes: 30);
-  
+
   // AI Settings
   static const Duration aiTimeout = Duration(seconds: 30);
 }
@@ -34,7 +36,7 @@ class Occasions {
     {'id': 'beach', 'name': 'Đi biển', 'icon': '🏖️'},
     {'id': 'casual', 'name': 'Cafe/Đi chơi', 'icon': '☕'},
   ];
-  
+
   static String getName(String id) {
     return list.firstWhere(
       (o) => o['id'] == id,
@@ -86,8 +88,8 @@ CHỈ TRẢ VỀ JSON. Không markdown, không giải thích, không text thừa
     required String occasion,
     String? stylePreference,
   }) {
-    final styleContext = stylePreference != null 
-        ? '\nSTYLE PREFERENCE:\n$stylePreference\n' 
+    final styleContext = stylePreference != null
+        ? '\nSTYLE PREFERENCE:\n$stylePreference\n'
         : '';
     return '''
 You are a professional fashion stylist. Based on the wardrobe items and conditions below, suggest the best outfit.

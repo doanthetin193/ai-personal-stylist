@@ -4,22 +4,17 @@ import '../models/clothing_item.dart';
 import '../models/outfit.dart';
 import '../models/weather.dart';
 import '../services/firebase_service.dart';
-import '../services/gemini_service.dart';
+import '../services/groq_service.dart';
 import '../services/weather_service.dart';
 import '../utils/constants.dart';
 
-enum WardrobeStatus {
-  initial,
-  loading,
-  loaded,
-  error,
-}
+enum WardrobeStatus { initial, loading, loaded, error }
 
 /// Style preference cho gợi ý outfit
 enum StylePreference {
-  loose,    // Thích đồ rộng
-  regular,  // Vừa vặn
-  fitted;   // Ôm body
+  loose, // Thích đồ rộng
+  regular, // Vừa vặn
+  fitted; // Ôm body
 
   String get displayName {
     switch (this) {
@@ -46,7 +41,7 @@ enum StylePreference {
 
 class WardrobeProvider extends ChangeNotifier {
   final FirebaseService _firebaseService;
-  final GeminiService _geminiService;
+  final GroqService _geminiService;
   final WeatherService _weatherService;
   final _uuid = const Uuid();
 
@@ -57,13 +52,13 @@ class WardrobeProvider extends ChangeNotifier {
   String? _errorMessage;
   bool _isAnalyzing = false;
   bool _isSuggestingOutfit = false;
-  
+
   // Style preference
   StylePreference _stylePreference = StylePreference.regular;
-  
+
   // Current outfit suggestion
   Outfit? _currentOutfit;
-  
+
   // Filter state
   ClothingType? _filterType;
   String? _filterCategory;
@@ -87,14 +82,16 @@ class WardrobeProvider extends ChangeNotifier {
   ClothingType? get filterType => _filterType;
   String? get filterCategory => _filterCategory;
   StylePreference get stylePreference => _stylePreference;
-  
+
   // Filtered items
   List<ClothingItem> get _filteredItems {
     if (_filterType != null) {
       return _items.where((item) => item.type == _filterType).toList();
     }
     if (_filterCategory != null) {
-      return _items.where((item) => item.type.category == _filterCategory).toList();
+      return _items
+          .where((item) => item.type.category == _filterCategory)
+          .toList();
     }
     return _items;
   }
@@ -160,11 +157,17 @@ class WardrobeProvider extends ChangeNotifier {
       _errorMessage = null;
       notifyListeners();
 
-      print('🖼️ Original image size: ${(imageBytes.length / 1024).toStringAsFixed(1)}KB');
-      
+      print(
+        '🖼️ Original image size: ${(imageBytes.length / 1024).toStringAsFixed(1)}KB',
+      );
+
       // 1. Tự động nén và convert image to Base64 (thay thế Firebase Storage)
-      final imageBase64 = await _firebaseService.compressAndConvertToBase64(imageBytes);
-      print('✅ Image compressed and converted to Base64 (${imageBase64.length} chars)');
+      final imageBase64 = await _firebaseService.compressAndConvertToBase64(
+        imageBytes,
+      );
+      print(
+        '✅ Image compressed and converted to Base64 (${imageBase64.length} chars)',
+      );
 
       // 2. Create ClothingItem with provided data
       final userId = _firebaseService.currentUser?.uid;
@@ -189,16 +192,18 @@ class WardrobeProvider extends ChangeNotifier {
       // 3. Save to Firestore
       final docId = await _firebaseService.addClothingItem(item);
       if (docId == null) {
-        throw Exception('Không thể lưu item. Vui lòng kiểm tra:\n1. Firestore Rules đã cho phép write\n2. Kết nối internet ổn định');
+        throw Exception(
+          'Không thể lưu item. Vui lòng kiểm tra:\n1. Firestore Rules đã cho phép write\n2. Kết nối internet ổn định',
+        );
       }
       print('✅ Saved with ID: $docId');
 
       final savedItem = item.copyWith(id: docId);
       _items.insert(0, savedItem);
-      
+
       _isAnalyzing = false;
       notifyListeners();
-      
+
       return savedItem;
     } catch (e) {
       print('❌ Error saving item: $e');
@@ -270,7 +275,8 @@ class WardrobeProvider extends ChangeNotifier {
       notifyListeners();
 
       // Get weather context
-      final weatherContext = _weather?.toAIDescription() ?? 
+      final weatherContext =
+          _weather?.toAIDescription() ??
           'Temperature: 28°C, Humidity: 70%, Condition: Ấm áp';
 
       // Call AI
@@ -288,10 +294,10 @@ class WardrobeProvider extends ChangeNotifier {
       // Build outfit from suggestion
       final outfit = _buildOutfitFromSuggestion(suggestion, occasion);
       _currentOutfit = outfit;
-      
+
       _isSuggestingOutfit = false;
       notifyListeners();
-      
+
       return outfit;
     } catch (e) {
       _isSuggestingOutfit = false;
@@ -368,11 +374,11 @@ class WardrobeProvider extends ChangeNotifier {
   Future<bool> deleteAllItems() async {
     try {
       final itemIds = _items.map((i) => i.id).toList();
-      
+
       for (final id in itemIds) {
         await deleteItem(id);
       }
-      
+
       _items.clear();
       notifyListeners();
       return true;

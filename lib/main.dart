@@ -5,7 +5,7 @@ import 'firebase_options.dart';
 
 // Services
 import 'services/firebase_service.dart';
-import 'services/gemini_service.dart';
+import 'services/groq_service.dart';
 import 'services/weather_service.dart';
 
 // Providers
@@ -22,21 +22,19 @@ import 'screens/home_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
   // Thiết lập persistence cho Firebase Auth trước khi runApp
   // Điều này giúp giữ phiên đăng nhập giữa các lần reload/restart
   final firebaseService = FirebaseService();
   await firebaseService.ensurePersistence();
-  
+
   runApp(MyApp(firebaseService: firebaseService));
 }
 
 class MyApp extends StatefulWidget {
   final FirebaseService firebaseService;
-  
+
   const MyApp({super.key, required this.firebaseService});
 
   @override
@@ -45,7 +43,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   // Services
-  late final GeminiService _geminiService;
+  late final GroqService _groqService;
   late final WeatherService _weatherService;
 
   @override
@@ -55,11 +53,11 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _initServices() {
-    _geminiService = GeminiService();
+    _groqService = GroqService();
     _weatherService = WeatherService();
-    
-    // Initialize Gemini with API key
-    _geminiService.initialize(AppConstants.geminiApiKey);
+
+    // Initialize Groq with API key
+    _groqService.initialize(AppConstants.groqApiKey);
   }
 
   @override
@@ -67,7 +65,7 @@ class _MyAppState extends State<MyApp> {
     return MultiProvider(
       providers: [
         // Services - cần Provider để các screen khác access được
-        Provider<GeminiService>.value(value: _geminiService),
+        Provider<GroqService>.value(value: _groqService),
         Provider<WeatherService>.value(value: _weatherService),
         Provider<FirebaseService>.value(value: widget.firebaseService),
         // Auth Provider
@@ -78,7 +76,7 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(
           create: (_) => WardrobeProvider(
             widget.firebaseService,
-            _geminiService,
+            _groqService,
             _weatherService,
           ),
         ),
@@ -105,17 +103,15 @@ class AuthWrapper extends StatelessWidget {
         // Show loading while checking auth state
         if (auth.status == AuthStatus.initial) {
           return const Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
-            ),
+            body: Center(child: CircularProgressIndicator()),
           );
         }
-        
+
         // Navigate based on auth state
         if (auth.isAuthenticated) {
           return const HomeScreen();
         }
-        
+
         return const LoginScreen();
       },
     );

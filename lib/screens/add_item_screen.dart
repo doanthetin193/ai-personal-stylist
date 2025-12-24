@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import '../providers/wardrobe_provider.dart';
 import '../models/clothing_item.dart';
-import '../services/gemini_service.dart';
+import '../services/groq_service.dart';
 import '../utils/theme.dart';
 import '../widgets/loading_widgets.dart';
 
@@ -19,17 +19,17 @@ class AddItemScreen extends StatefulWidget {
 
 class _AddItemScreenState extends State<AddItemScreen> {
   final ImagePicker _picker = ImagePicker();
-  GeminiService? _geminiService;
+  GroqService? _geminiService;
   XFile? _pickedFile;
   Uint8List? _imageBytes;
   bool _isAnalyzing = false;
   bool _isSaving = false;
   Map<String, dynamic>? _analysisResult;
-  
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _geminiService ??= context.read<GeminiService>();
+    _geminiService ??= context.read<GroqService>();
   }
 
   // Editable fields
@@ -66,34 +66,34 @@ class _AddItemScreenState extends State<AddItemScreen> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Color(0xFFECFDF5),  // Cyan 50
+              Color(0xFFECFDF5), // Cyan 50
               AppTheme.backgroundColor,
             ],
             stops: [0.0, 0.2],
           ),
         ),
         child: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Image picker
-            _buildImageSection(),
-            
-            const SizedBox(height: 24),
-            
-            // AI Analysis result
-            if (_isAnalyzing) _buildAnalyzingState(),
-            
-            if (_analysisResult != null && !_isAnalyzing) ...[
-              _buildAnalysisResult(),
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Image picker
+              _buildImageSection(),
+
               const SizedBox(height: 24),
-              _buildEditableFields(),
-              const SizedBox(height: 32),
-              _buildSaveButton(),
+
+              // AI Analysis result
+              if (_isAnalyzing) _buildAnalyzingState(),
+
+              if (_analysisResult != null && !_isAnalyzing) ...[
+                _buildAnalysisResult(),
+                const SizedBox(height: 24),
+                _buildEditableFields(),
+                const SizedBox(height: 32),
+                _buildSaveButton(),
+              ],
             ],
-          ],
-        ),
+          ),
         ),
       ),
     );
@@ -109,7 +109,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: _imageBytes == null 
+            color: _imageBytes == null
                 ? AppTheme.primaryColor.withValues(alpha: 0.3)
                 : Colors.transparent,
             width: 2,
@@ -158,9 +158,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
         const SizedBox(height: 8),
         const Text(
           'AI sẽ tự động phân tích',
-          style: TextStyle(
-            color: AppTheme.textSecondary,
-          ),
+          style: TextStyle(color: AppTheme.textSecondary),
         ),
       ],
     );
@@ -238,9 +236,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
       decoration: BoxDecoration(
         color: AppTheme.successColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: AppTheme.successColor.withValues(alpha: 0.3),
-        ),
+        border: Border.all(color: AppTheme.successColor.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [
@@ -250,11 +246,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
               color: AppTheme.successColor,
               shape: BoxShape.circle,
             ),
-            child: const Icon(
-              Icons.check,
-              color: Colors.white,
-              size: 20,
-            ),
+            child: const Icon(Icons.check, color: Colors.white, size: 20),
           ),
           const SizedBox(width: 16),
           const Expanded(
@@ -263,17 +255,11 @@ class _AddItemScreenState extends State<AddItemScreen> {
               children: [
                 Text(
                   'Phân tích thành công!',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16,
-                  ),
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
                 ),
                 Text(
                   'Kiểm tra và chỉnh sửa nếu cần',
-                  style: TextStyle(
-                    color: AppTheme.textSecondary,
-                    fontSize: 13,
-                  ),
+                  style: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
                 ),
               ],
             ),
@@ -303,24 +289,20 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   vertical: 10,
                 ),
                 decoration: BoxDecoration(
-                  color: isSelected 
-                      ? AppTheme.primaryColor 
-                      : Colors.white,
+                  color: isSelected ? AppTheme.primaryColor : Colors.white,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: isSelected 
-                        ? AppTheme.primaryColor 
+                    color: isSelected
+                        ? AppTheme.primaryColor
                         : Colors.grey.shade300,
                   ),
                 ),
                 child: Text(
                   type.displayName,
                   style: TextStyle(
-                    color: isSelected 
-                        ? Colors.white 
-                        : AppTheme.textPrimary,
-                    fontWeight: isSelected 
-                        ? FontWeight.w600 
+                    color: isSelected ? Colors.white : AppTheme.textPrimary,
+                    fontWeight: isSelected
+                        ? FontWeight.w600
                         : FontWeight.normal,
                   ),
                 ),
@@ -377,24 +359,24 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   vertical: 10,
                 ),
                 decoration: BoxDecoration(
-                  color: isSelected 
-                      ? AppTheme.accentColor.withValues(alpha: 0.2) 
+                  color: isSelected
+                      ? AppTheme.accentColor.withValues(alpha: 0.2)
                       : Colors.white,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: isSelected 
-                        ? AppTheme.accentColor 
+                    color: isSelected
+                        ? AppTheme.accentColor
                         : Colors.grey.shade300,
                   ),
                 ),
                 child: Text(
                   style.displayName,
                   style: TextStyle(
-                    color: isSelected 
-                        ? AppTheme.accentColor 
+                    color: isSelected
+                        ? AppTheme.accentColor
                         : AppTheme.textPrimary,
-                    fontWeight: isSelected 
-                        ? FontWeight.w600 
+                    fontWeight: isSelected
+                        ? FontWeight.w600
                         : FontWeight.normal,
                   ),
                 ),
@@ -429,24 +411,24 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   vertical: 10,
                 ),
                 decoration: BoxDecoration(
-                  color: isSelected 
-                      ? AppTheme.warningColor.withValues(alpha: 0.2) 
+                  color: isSelected
+                      ? AppTheme.warningColor.withValues(alpha: 0.2)
                       : Colors.white,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: isSelected 
-                        ? AppTheme.warningColor 
+                    color: isSelected
+                        ? AppTheme.warningColor
                         : Colors.grey.shade300,
                   ),
                 ),
                 child: Text(
                   season.displayName,
                   style: TextStyle(
-                    color: isSelected 
-                        ? AppTheme.warningColor 
+                    color: isSelected
+                        ? AppTheme.warningColor
                         : AppTheme.textPrimary,
-                    fontWeight: isSelected 
-                        ? FontWeight.w600 
+                    fontWeight: isSelected
+                        ? FontWeight.w600
                         : FontWeight.normal,
                   ),
                 ),
@@ -461,10 +443,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
   Widget _buildFieldLabel(String label) {
     return Text(
       label,
-      style: const TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w600,
-      ),
+      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
     );
   }
 
@@ -492,10 +471,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   Text('Đang lưu...', style: TextStyle(fontSize: 16)),
                 ],
               )
-            : const Text(
-                'Lưu vào tủ đồ',
-                style: TextStyle(fontSize: 16),
-              ),
+            : const Text('Lưu vào tủ đồ', style: TextStyle(fontSize: 16)),
       ),
     );
   }
@@ -531,10 +507,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
             const SizedBox(height: 20),
             const Text(
               'Chọn nguồn ảnh',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 20),
             Row(
@@ -585,12 +558,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
           children: [
             Icon(icon, size: 40, color: AppTheme.primaryColor),
             const SizedBox(height: 12),
-            Text(
-              label,
-              style: const TextStyle(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+            Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
           ],
         ),
       ),
@@ -617,9 +585,9 @@ class _AddItemScreenState extends State<AddItemScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Lỗi: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Lỗi: $e')));
       }
     }
   }
@@ -631,14 +599,18 @@ class _AddItemScreenState extends State<AddItemScreen> {
 
     try {
       // Gọi Gemini AI phân tích ảnh thật
-      _analysisResult = await _geminiService?.analyzeClothingImageBytes(_imageBytes!);
-      
+      _analysisResult = await _geminiService?.analyzeClothingImageBytes(
+        _imageBytes!,
+      );
+
       if (_analysisResult != null) {
         // Set editable fields from AI analysis
-        _selectedType = ClothingType.fromString(_analysisResult!['type'] ?? 'other');
+        _selectedType = ClothingType.fromString(
+          _analysisResult!['type'] ?? 'other',
+        );
         _selectedColor = _analysisResult!['color'] ?? 'unknown';
         _selectedMaterial = _analysisResult!['material'];
-        
+
         if (_analysisResult!['styles'] != null) {
           _selectedStyles = (_analysisResult!['styles'] as List)
               .map((s) => ClothingStyle.fromString(s.toString()))
@@ -646,7 +618,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
         } else {
           _selectedStyles = [ClothingStyle.casual];
         }
-        
+
         if (_analysisResult!['seasons'] != null) {
           _selectedSeasons = (_analysisResult!['seasons'] as List)
               .map((s) => Season.fromString(s.toString()))
@@ -660,7 +632,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
         _selectedColor = 'unknown';
         _selectedStyles = [ClothingStyle.casual];
         _selectedSeasons = [Season.summer];
-        
+
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -670,12 +642,11 @@ class _AddItemScreenState extends State<AddItemScreen> {
           );
         }
       }
-
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Lỗi phân tích: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Lỗi phân tích: $e')));
       }
       // Set defaults on error
       _selectedType = ClothingType.other;
@@ -696,10 +667,10 @@ class _AddItemScreenState extends State<AddItemScreen> {
 
     try {
       final wardrobeProvider = context.read<WardrobeProvider>();
-      
+
       // Create item with selected data
       ClothingItem? item;
-      
+
       if (kIsWeb) {
         // For web, use bytes
         item = await wardrobeProvider.addItemFromBytes(
@@ -722,7 +693,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
           material: _selectedMaterial,
         );
       }
-      
+
       if (item != null && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -741,9 +712,9 @@ class _AddItemScreenState extends State<AddItemScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Lỗi: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Lỗi: $e')));
       }
     } finally {
       if (mounted) {

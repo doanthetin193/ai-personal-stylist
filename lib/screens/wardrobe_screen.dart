@@ -157,13 +157,14 @@ class _WardrobeScreenState extends State<WardrobeScreen> {
                 itemBuilder: (context, index) {
                   final category = _categories[index];
                   final isSelected = _selectedCategory == category['id'];
-                  
+
                   return Padding(
                     padding: const EdgeInsets.only(right: 8),
                     child: GestureDetector(
                       onTap: () {
                         setState(() => _selectedCategory = category['id']);
-                        final wardrobeProvider = context.read<WardrobeProvider>();
+                        final wardrobeProvider = context
+                            .read<WardrobeProvider>();
                         if (category['id'] == 'all') {
                           wardrobeProvider.clearFilter();
                         } else {
@@ -174,42 +175,46 @@ class _WardrobeScreenState extends State<WardrobeScreen> {
                         duration: const Duration(milliseconds: 200),
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         decoration: BoxDecoration(
-                          gradient: isSelected 
-                              ? AppTheme.primaryGradient 
+                          gradient: isSelected
+                              ? AppTheme.primaryGradient
                               : null,
                           color: isSelected ? null : Colors.white,
                           borderRadius: BorderRadius.circular(22),
                           border: Border.all(
-                            color: isSelected 
-                                ? Colors.transparent 
+                            color: isSelected
+                                ? Colors.transparent
                                 : Colors.grey.shade300,
                           ),
-                          boxShadow: isSelected ? [
-                            BoxShadow(
-                              color: AppTheme.primaryColor.withValues(alpha: 0.3),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
-                          ] : null,
+                          boxShadow: isSelected
+                              ? [
+                                  BoxShadow(
+                                    color: AppTheme.primaryColor.withValues(
+                                      alpha: 0.3,
+                                    ),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ]
+                              : null,
                         ),
                         child: Row(
                           children: [
                             Icon(
                               category['icon'],
                               size: 18,
-                              color: isSelected 
-                                  ? Colors.white 
+                              color: isSelected
+                                  ? Colors.white
                                   : AppTheme.textSecondary,
                             ),
                             const SizedBox(width: 6),
                             Text(
                               category['name'],
                               style: TextStyle(
-                                color: isSelected 
-                                    ? Colors.white 
+                                color: isSelected
+                                    ? Colors.white
                                     : AppTheme.textSecondary,
-                                fontWeight: isSelected 
-                                    ? FontWeight.w600 
+                                fontWeight: isSelected
+                                    ? FontWeight.w600
                                     : FontWeight.normal,
                               ),
                             ),
@@ -263,12 +268,13 @@ class _WardrobeScreenState extends State<WardrobeScreen> {
                     onRefresh: () => wardrobe.loadItems(),
                     child: GridView.builder(
                       padding: const EdgeInsets.all(16),
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 12,
-                        mainAxisSpacing: 12,
-                        childAspectRatio: 0.75,
-                      ),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 12,
+                            mainAxisSpacing: 12,
+                            childAspectRatio: 0.75,
+                          ),
                       itemCount: wardrobe.items.length,
                       itemBuilder: (context, index) {
                         final item = wardrobe.items[index];
@@ -293,9 +299,7 @@ class _WardrobeScreenState extends State<WardrobeScreen> {
   void _navigateToDetail(ClothingItem item) {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => ItemDetailScreen(item: item),
-      ),
+      MaterialPageRoute(builder: (_) => ItemDetailScreen(item: item)),
     );
   }
 
@@ -305,99 +309,96 @@ class _WardrobeScreenState extends State<WardrobeScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(2),
+      builder: (context) => SafeArea(
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(2),
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
-            
-            // Item preview
-            Row(
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: SizedBox(
-                    width: 60,
-                    height: 60,
-                    child: ClothingImage(
-                      item: item,
-                      fit: BoxFit.cover,
+              const SizedBox(height: 20),
+
+              // Item preview
+              Row(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: SizedBox(
+                      width: 60,
+                      height: 60,
+                      child: ClothingImage(item: item, fit: BoxFit.cover),
                     ),
                   ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        item.type.displayName,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          item.type.displayName,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                          ),
                         ),
-                      ),
-                      Text(
-                        getColorNameVN(item.color),
-                        style: const TextStyle(
-                          color: AppTheme.textSecondary,
+                        Text(
+                          getColorNameVN(item.color),
+                          style: const TextStyle(color: AppTheme.textSecondary),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
-            
-            const SizedBox(height: 24),
-            
-            // Options
-            _buildOptionTile(
-              icon: Icons.visibility,
-              title: 'Xem chi tiết',
-              onTap: () {
-                Navigator.pop(context);
-                _navigateToDetail(item);
-              },
-            ),
-            _buildOptionTile(
-              icon: item.isFavorite ? Icons.favorite : Icons.favorite_border,
-              title: item.isFavorite ? 'Bỏ yêu thích' : 'Yêu thích',
-              onTap: () {
-                context.read<WardrobeProvider>().toggleFavorite(item);
-                Navigator.pop(context);
-              },
-            ),
-            _buildOptionTile(
-              icon: Icons.checkroom,
-              title: 'Đánh dấu đã mặc',
-              onTap: () {
-                context.read<WardrobeProvider>().markAsWorn(item);
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Đã cập nhật!')),
-                );
-              },
-            ),
-            _buildOptionTile(
-              icon: Icons.delete_outline,
-              title: 'Xóa',
-              color: AppTheme.errorColor,
-              onTap: () {
-                Navigator.pop(context);
-                _confirmDelete(item);
-              },
-            ),
-          ],
+                ],
+              ),
+
+              const SizedBox(height: 24),
+
+              // Options
+              _buildOptionTile(
+                icon: Icons.visibility,
+                title: 'Xem chi tiết',
+                onTap: () {
+                  Navigator.pop(context);
+                  _navigateToDetail(item);
+                },
+              ),
+              _buildOptionTile(
+                icon: item.isFavorite ? Icons.favorite : Icons.favorite_border,
+                title: item.isFavorite ? 'Bỏ yêu thích' : 'Yêu thích',
+                onTap: () {
+                  context.read<WardrobeProvider>().toggleFavorite(item);
+                  Navigator.pop(context);
+                },
+              ),
+              _buildOptionTile(
+                icon: Icons.checkroom,
+                title: 'Đánh dấu đã mặc',
+                onTap: () {
+                  context.read<WardrobeProvider>().markAsWorn(item);
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(const SnackBar(content: Text('Đã cập nhật!')));
+                },
+              ),
+              _buildOptionTile(
+                icon: Icons.delete_outline,
+                title: 'Xóa',
+                color: AppTheme.errorColor,
+                onTap: () {
+                  Navigator.pop(context);
+                  _confirmDelete(item);
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -416,9 +417,7 @@ class _WardrobeScreenState extends State<WardrobeScreen> {
         style: TextStyle(color: color ?? AppTheme.textPrimary),
       ),
       onTap: onTap,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     );
   }
 
