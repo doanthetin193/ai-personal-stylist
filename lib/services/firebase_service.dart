@@ -10,13 +10,13 @@ import '../utils/constants.dart';
 class FirebaseService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  
+
   bool _persistenceSet = false;
-  
+
   /// Thiết lập persistence cho Firebase Auth (gọi trước khi đăng nhập)
   Future<void> ensurePersistence() async {
     if (_persistenceSet) return;
-    
+
     if (kIsWeb) {
       try {
         // Trên Web: giữ phiên đăng nhập trong localStorage (persist qua reload/restart)
@@ -29,9 +29,9 @@ class FirebaseService {
     // Trên Mobile: Firebase Auth tự động persist bằng secure storage
     _persistenceSet = true;
   }
-  
+
   // ==================== BASE64 & COMPRESSION UTILS ====================
-  
+
   /// Compress image automatically and convert to Base64
   Future<String> compressAndConvertToBase64(Uint8List bytes) async {
     try {
@@ -39,58 +39,53 @@ class FirebaseService {
       // Base64 encoding thêm ~37% overhead, nên 200KB raw → ~270KB Base64
       final compressed = await FlutterImageCompress.compressWithList(
         bytes,
-        minWidth: 800,  // Giảm width tối đa xuống 800px
+        minWidth: 800, // Giảm width tối đa xuống 800px
         minHeight: 800, // Giảm height tối đa xuống 800px
-        quality: 85,    // Chất lượng 85% (balance giữa size và quality)
+        quality: 85, // Chất lượng 85% (balance giữa size và quality)
       );
-      
+
       final originalSize = bytes.length;
       final compressedSize = compressed.length;
-      final ratio = ((originalSize - compressedSize) / originalSize * 100).toStringAsFixed(1);
-      
-      print('📦 Image compressed: ${(originalSize / 1024).toStringAsFixed(1)}KB → '
-            '${(compressedSize / 1024).toStringAsFixed(1)}KB '
-            '(saved $ratio%)');
-      
+      final ratio = ((originalSize - compressedSize) / originalSize * 100)
+          .toStringAsFixed(1);
+
+      print(
+        '📦 Image compressed: ${(originalSize / 1024).toStringAsFixed(1)}KB → '
+        '${(compressedSize / 1024).toStringAsFixed(1)}KB '
+        '(saved $ratio%)',
+      );
+
       return base64Encode(compressed);
     } catch (e) {
       print('⚠️ Compression failed, using original: $e');
       return base64Encode(bytes);
     }
   }
-  
-  /// Convert bytes to Base64 string (không nén - deprecated)
-  @Deprecated('Use compressAndConvertToBase64 instead')
-  String convertToBase64(Uint8List bytes) {
-    return base64Encode(bytes);
-  }
 
   // ==================== AUTH ====================
-  
+
   /// Current user
   User? get currentUser => _auth.currentUser;
-  
+
   /// Auth state stream
   Stream<User?> get authStateChanges => _auth.authStateChanges();
-  
+
   /// Check if logged in
   bool get isLoggedIn => currentUser != null;
-  
+
   /// Sign in with Google
   Future<UserCredential?> signInWithGoogle() async {
     try {
       final GoogleAuthProvider googleProvider = GoogleAuthProvider();
       // Force account selection prompt every time
-      googleProvider.setCustomParameters({
-        'prompt': 'select_account',
-      });
+      googleProvider.setCustomParameters({'prompt': 'select_account'});
       return await _auth.signInWithPopup(googleProvider);
     } catch (e) {
       print('Google Sign-In Error: $e');
       return null;
     }
   }
-  
+
   /// Sign in anonymously (for testing)
   Future<UserCredential?> signInAnonymously() async {
     try {
@@ -115,7 +110,10 @@ class FirebaseService {
   }
 
   /// Register with Email/Password
-  Future<UserCredential?> registerWithEmail(String email, String password) async {
+  Future<UserCredential?> registerWithEmail(
+    String email,
+    String password,
+  ) async {
     try {
       return await _auth.createUserWithEmailAndPassword(
         email: email,
@@ -126,18 +124,18 @@ class FirebaseService {
       rethrow;
     }
   }
-  
+
   /// Sign out
   Future<void> signOut() async {
     await _auth.signOut();
   }
 
   // ==================== FIRESTORE - ITEMS ====================
-  
+
   /// Get items collection reference
   CollectionReference<Map<String, dynamic>> get _itemsRef =>
       _firestore.collection(AppConstants.itemsCollection);
-  
+
   /// Add new clothing item
   Future<String?> addClothingItem(ClothingItem item) async {
     try {
@@ -145,14 +143,16 @@ class FirebaseService {
       final json = item.toJson();
       print('📦 JSON data size: ${json.toString().length} chars');
       print('🔄 Adding to collection: ${AppConstants.itemsCollection}');
-      
-      final docRef = await _itemsRef.add(json).timeout(
-        const Duration(seconds: 30),
-        onTimeout: () {
-          throw Exception('Firestore timeout after 30 seconds');
-        },
-      );
-      
+
+      final docRef = await _itemsRef
+          .add(json)
+          .timeout(
+            const Duration(seconds: 30),
+            onTimeout: () {
+              throw Exception('Firestore timeout after 30 seconds');
+            },
+          );
+
       print('✅ Document added with ID: ${docRef.id}');
       return docRef.id;
     } catch (e) {
@@ -160,7 +160,7 @@ class FirebaseService {
       return null;
     }
   }
-  
+
   /// Update clothing item
   Future<bool> updateClothingItem(ClothingItem item) async {
     try {
@@ -171,7 +171,7 @@ class FirebaseService {
       return false;
     }
   }
-  
+
   /// Delete clothing item
   Future<bool> deleteClothingItem(String itemId) async {
     try {
@@ -183,18 +183,18 @@ class FirebaseService {
       return false;
     }
   }
-  
+
   /// Get all items for current user
   Future<List<ClothingItem>> getUserItems() async {
     try {
       final userId = currentUser?.uid;
       if (userId == null) return [];
-      
+
       final snapshot = await _itemsRef
           .where('userId', isEqualTo: userId)
           .orderBy('createdAt', descending: true)
           .get();
-      
+
       return snapshot.docs
           .map((doc) => ClothingItem.fromJson(doc.data(), doc.id))
           .toList();
@@ -203,9 +203,7 @@ class FirebaseService {
       return [];
     }
   }
-  
-  
-  
+
   /// Update item's last worn date
   Future<bool> markAsWorn(String itemId) async {
     try {
@@ -219,7 +217,7 @@ class FirebaseService {
       return false;
     }
   }
-  
+
   /// Toggle favorite
   Future<bool> toggleFavorite(String itemId, bool isFavorite) async {
     try {
@@ -230,5 +228,4 @@ class FirebaseService {
       return false;
     }
   }
-
-  }
+}

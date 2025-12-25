@@ -41,7 +41,7 @@ enum StylePreference {
 
 class WardrobeProvider extends ChangeNotifier {
   final FirebaseService _firebaseService;
-  final GroqService _geminiService;
+  final GroqService _groqService;
   final WeatherService _weatherService;
   final _uuid = const Uuid();
 
@@ -60,12 +60,11 @@ class WardrobeProvider extends ChangeNotifier {
   Outfit? _currentOutfit;
 
   // Filter state
-  ClothingType? _filterType;
   String? _filterCategory;
 
   WardrobeProvider(
     this._firebaseService,
-    this._geminiService,
+    this._groqService,
     this._weatherService,
   );
 
@@ -79,15 +78,11 @@ class WardrobeProvider extends ChangeNotifier {
   bool get isAnalyzing => _isAnalyzing;
   bool get isSuggestingOutfit => _isSuggestingOutfit;
   Outfit? get currentOutfit => _currentOutfit;
-  ClothingType? get filterType => _filterType;
   String? get filterCategory => _filterCategory;
   StylePreference get stylePreference => _stylePreference;
 
   // Filtered items
   List<ClothingItem> get _filteredItems {
-    if (_filterType != null) {
-      return _items.where((item) => item.type == _filterType).toList();
-    }
     if (_filterCategory != null) {
       return _items
           .where((item) => item.type.category == _filterCategory)
@@ -280,7 +275,7 @@ class WardrobeProvider extends ChangeNotifier {
           'Temperature: 28°C, Humidity: 70%, Condition: Ấm áp';
 
       // Call AI
-      final suggestion = await _geminiService.suggestOutfit(
+      final suggestion = await _groqService.suggestOutfit(
         wardrobe: _items,
         weatherContext: weatherContext,
         occasion: occasion,
@@ -344,13 +339,13 @@ class WardrobeProvider extends ChangeNotifier {
     ClothingItem item1,
     ClothingItem item2,
   ) async {
-    return await _geminiService.evaluateColorHarmony(item1, item2);
+    return await _groqService.evaluateColorHarmony(item1, item2);
   }
 
   /// Get cleanup suggestions from AI
   Future<Map<String, dynamic>?> getCleanupSuggestions() async {
     if (_items.isEmpty) return null;
-    return await _geminiService.getCleanupSuggestions(_items);
+    return await _groqService.getCleanupSuggestions(_items);
   }
 
   /// Delete item by ID
@@ -392,12 +387,10 @@ class WardrobeProvider extends ChangeNotifier {
   /// Set filter by category
   void setFilterCategory(String? category) {
     _filterCategory = category;
-    _filterType = null;
     notifyListeners();
   }
 
   void clearFilter() {
-    _filterType = null;
     _filterCategory = null;
     notifyListeners();
   }

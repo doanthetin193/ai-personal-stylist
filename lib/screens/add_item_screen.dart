@@ -19,7 +19,7 @@ class AddItemScreen extends StatefulWidget {
 
 class _AddItemScreenState extends State<AddItemScreen> {
   final ImagePicker _picker = ImagePicker();
-  GroqService? _geminiService;
+  GroqService? _groqService;
   XFile? _pickedFile;
   Uint8List? _imageBytes;
   bool _isAnalyzing = false;
@@ -29,7 +29,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _geminiService ??= context.read<GroqService>();
+    _groqService ??= context.read<GroqService>();
   }
 
   // Editable fields
@@ -598,8 +598,8 @@ class _AddItemScreenState extends State<AddItemScreen> {
     setState(() => _isAnalyzing = true);
 
     try {
-      // Gọi Gemini AI phân tích ảnh thật
-      _analysisResult = await _geminiService?.analyzeClothingImageBytes(
+      // Gọi Groq AI phân tích ảnh
+      _analysisResult = await _groqService?.analyzeClothingImageBytes(
         _imageBytes!,
       );
 

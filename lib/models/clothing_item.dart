@@ -53,7 +53,7 @@ enum ClothingType {
     }
   }
 
-  /// Phân loại để phối đồ
+  /// Phân loại để phối đồ (dùng cho filter)
   String get category {
     switch (this) {
       case ClothingType.shirt:
@@ -169,8 +169,6 @@ class ClothingItem {
   final String? material;
   final List<ClothingStyle> styles;
   final List<Season> seasons;
-  final String? brand;
-  final String? notes;
   final DateTime createdAt;
   final DateTime? lastWorn;
   final int wearCount;
@@ -185,8 +183,6 @@ class ClothingItem {
     this.material,
     required this.styles,
     required this.seasons,
-    this.brand,
-    this.notes,
     required this.createdAt,
     this.lastWorn,
     this.wearCount = 0,
@@ -202,16 +198,16 @@ class ClothingItem {
       type: ClothingType.fromString(json['type'] ?? 'other'),
       color: json['color'] ?? 'unknown',
       material: json['material'],
-      styles: (json['styles'] as List<dynamic>?)
+      styles:
+          (json['styles'] as List<dynamic>?)
               ?.map((s) => ClothingStyle.fromString(s.toString()))
               .toList() ??
           [ClothingStyle.casual],
-      seasons: (json['seasons'] as List<dynamic>?)
+      seasons:
+          (json['seasons'] as List<dynamic>?)
               ?.map((s) => Season.fromString(s.toString()))
               .toList() ??
           [Season.summer],
-      brand: json['brand'],
-      notes: json['notes'],
       createdAt: (json['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       lastWorn: (json['lastWorn'] as Timestamp?)?.toDate(),
       wearCount: json['wearCount'] ?? 0,
@@ -229,8 +225,6 @@ class ClothingItem {
       'material': material,
       'styles': styles.map((s) => s.name).toList(),
       'seasons': seasons.map((s) => s.name).toList(),
-      'brand': brand,
-      'notes': notes,
       'createdAt': Timestamp.fromDate(createdAt),
       'lastWorn': lastWorn != null ? Timestamp.fromDate(lastWorn!) : null,
       'wearCount': wearCount,
@@ -255,8 +249,6 @@ class ClothingItem {
     String? material,
     List<ClothingStyle>? styles,
     List<Season>? seasons,
-    String? brand,
-    String? notes,
     DateTime? createdAt,
     DateTime? lastWorn,
     int? wearCount,
@@ -271,8 +263,6 @@ class ClothingItem {
       material: material ?? this.material,
       styles: styles ?? this.styles,
       seasons: seasons ?? this.seasons,
-      brand: brand ?? this.brand,
-      notes: notes ?? this.notes,
       createdAt: createdAt ?? this.createdAt,
       lastWorn: lastWorn ?? this.lastWorn,
       wearCount: wearCount ?? this.wearCount,
