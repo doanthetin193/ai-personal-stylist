@@ -47,141 +47,141 @@ class _ColorHarmonyScreenState extends State<ColorHarmonyScreen> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Color(0xFFFDF4FF),  // Purple 50
+              Color(0xFFFDF4FF), // Purple 50
               AppTheme.backgroundColor,
             ],
             stops: [0.0, 0.25],
           ),
         ),
         child: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Instructions
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: AppTheme.primaryColor.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: const BoxDecoration(
-                      color: AppTheme.primaryColor,
-                      shape: BoxShape.circle,
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Instructions
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: const BoxDecoration(
+                        color: AppTheme.primaryColor,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.palette,
+                        color: Colors.white,
+                        size: 24,
+                      ),
                     ),
-                    child: const Icon(
-                      Icons.palette,
-                      color: Colors.white,
-                      size: 24,
+                    const SizedBox(width: 16),
+                    const Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Chọn 2 món đồ',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            'AI sẽ phân tích độ hợp màu',
+                            style: TextStyle(
+                              color: AppTheme.textSecondary,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              // Item selection
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildItemSelector(
+                      label: 'Món đồ 1',
+                      item: _item1,
+                      onSelect: () => _selectItem(1),
                     ),
                   ),
                   const SizedBox(width: 16),
-                  const Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Chọn 2 món đồ',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 16,
-                          ),
-                        ),
-                        SizedBox(height: 4),
-                        Text(
-                          'AI sẽ phân tích độ hợp màu',
-                          style: TextStyle(
-                            color: AppTheme.textSecondary,
-                            fontSize: 14,
-                          ),
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.1),
+                          blurRadius: 8,
                         ),
                       ],
+                    ),
+                    child: const Icon(
+                      Icons.compare_arrows,
+                      color: AppTheme.primaryColor,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: _buildItemSelector(
+                      label: 'Món đồ 2',
+                      item: _item2,
+                      onSelect: () => _selectItem(2),
                     ),
                   ),
                 ],
               ),
-            ),
 
-            const SizedBox(height: 24),
+              const SizedBox(height: 24),
 
-            // Item selection
-            Row(
-              children: [
-                Expanded(
-                  child: _buildItemSelector(
-                    label: 'Món đồ 1',
-                    item: _item1,
-                    onSelect: () => _selectItem(1),
+              // Evaluate button
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: _canEvaluate && !_isEvaluating
+                      ? _evaluateHarmony
+                      : null,
+                  icon: _isEvaluating
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Icon(Icons.auto_awesome),
+                  label: Text(
+                    _isEvaluating ? 'Đang phân tích...' : 'Chấm điểm',
                   ),
-                ),
-                const SizedBox(width: 16),
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.1),
-                        blurRadius: 8,
-                      ),
-                    ],
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
-                  child: const Icon(
-                    Icons.compare_arrows,
-                    color: AppTheme.primaryColor,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: _buildItemSelector(
-                    label: 'Món đồ 2',
-                    item: _item2,
-                    onSelect: () => _selectItem(2),
-                  ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 24),
-
-            // Evaluate button
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: _canEvaluate && !_isEvaluating
-                    ? _evaluateHarmony
-                    : null,
-                icon: _isEvaluating
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
-                        ),
-                      )
-                    : const Icon(Icons.auto_awesome),
-                label: Text(
-                  _isEvaluating ? 'Đang phân tích...' : 'Chấm điểm',
-                ),
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
               ),
-            ),
 
-            const SizedBox(height: 32),
+              const SizedBox(height: 32),
 
-            // Result
-            if (_result != null) _buildResult(),
-          ],
+              // Result
+              if (_result != null) _buildResult(),
+            ],
+          ),
         ),
-      ),
       ),
     );
   }
@@ -199,9 +199,7 @@ class _ColorHarmonyScreenState extends State<ColorHarmonyScreen> {
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: item != null 
-                ? AppTheme.primaryColor 
-                : Colors.grey.shade300,
+            color: item != null ? AppTheme.primaryColor : Colors.grey.shade300,
             width: item != null ? 2 : 1,
           ),
           boxShadow: [
@@ -237,10 +235,7 @@ class _ColorHarmonyScreenState extends State<ColorHarmonyScreen> {
                     child: SizedBox(
                       width: double.infinity,
                       height: double.infinity,
-                      child: ClothingImage(
-                        item: item,
-                        fit: BoxFit.cover,
-                      ),
+                      child: ClothingImage(item: item, fit: BoxFit.cover),
                     ),
                   ),
                   Positioned(
@@ -323,11 +318,7 @@ class _ColorHarmonyScreenState extends State<ColorHarmonyScreen> {
       child: Column(
         children: [
           // Score
-          ScoreDisplay(
-            score: _result!.score,
-            label: 'Điểm hợp màu',
-            size: 100,
-          ),
+          ScoreDisplay(score: _result!.score, label: 'Điểm hợp màu', size: 70),
 
           const SizedBox(height: 20),
 
@@ -381,26 +372,25 @@ class _ColorHarmonyScreenState extends State<ColorHarmonyScreen> {
           // Tips
           if (_result!.tips.isNotEmpty) ...[
             const SizedBox(height: 16),
-            ...(_result!.tips.map((tip) => Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Icon(
-                    Icons.check_circle,
-                    color: AppTheme.successColor,
-                    size: 18,
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      tip,
-                      style: const TextStyle(fontSize: 14),
+            ...(_result!.tips.map(
+              (tip) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Icon(
+                      Icons.check_circle,
+                      color: AppTheme.successColor,
+                      size: 18,
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(tip, style: const TextStyle(fontSize: 14)),
+                    ),
+                  ],
+                ),
               ),
-            ))),
+            )),
           ],
         ],
       ),
@@ -453,12 +443,13 @@ class _ColorHarmonyScreenState extends State<ColorHarmonyScreen> {
                     child: GridView.builder(
                       controller: scrollController,
                       padding: const EdgeInsets.all(16),
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3,
-                        crossAxisSpacing: 8,
-                        mainAxisSpacing: 8,
-                        childAspectRatio: 0.75,
-                      ),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 3,
+                            crossAxisSpacing: 8,
+                            mainAxisSpacing: 8,
+                            childAspectRatio: 0.75,
+                          ),
                       itemCount: wardrobe.allItems.length,
                       itemBuilder: (context, index) {
                         final item = wardrobe.allItems[index];
@@ -476,10 +467,7 @@ class _ColorHarmonyScreenState extends State<ColorHarmonyScreen> {
                           },
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(12),
-                            child: ClothingImage(
-                              item: item,
-                              fit: BoxFit.cover,
-                            ),
+                            child: ClothingImage(item: item, fit: BoxFit.cover),
                           ),
                         );
                       },
@@ -516,7 +504,8 @@ class _ColorHarmonyScreenState extends State<ColorHarmonyScreen> {
         setState(() {
           _result = ColorHarmonyResult(
             score: 75,
-            reason: 'Hai màu này tạo nên sự cân bằng tốt. ${_item1!.color} và ${_item2!.color} bổ trợ cho nhau.',
+            reason:
+                'Hai màu này tạo nên sự cân bằng tốt. ${_item1!.color} và ${_item2!.color} bổ trợ cho nhau.',
             vibe: 'Casual & Balanced',
             tips: [
               'Có thể thêm phụ kiện màu trung tính',
@@ -527,9 +516,9 @@ class _ColorHarmonyScreenState extends State<ColorHarmonyScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Lỗi: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Lỗi: $e')));
       }
     } finally {
       setState(() => _isEvaluating = false);

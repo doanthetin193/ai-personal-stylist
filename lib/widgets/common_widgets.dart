@@ -8,11 +8,7 @@ class WeatherWidget extends StatelessWidget {
   final WeatherInfo weather;
   final bool compact;
 
-  const WeatherWidget({
-    super.key,
-    required this.weather,
-    this.compact = false,
-  });
+  const WeatherWidget({super.key, required this.weather, this.compact = false});
 
   @override
   Widget build(BuildContext context) {
@@ -29,10 +25,7 @@ class WeatherWidget extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 8,
-          ),
+          BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8),
         ],
       ),
       child: Row(
@@ -47,18 +40,12 @@ class WeatherWidget extends StatelessWidget {
           const SizedBox(width: 8),
           Text(
             formatTemperature(weather.temperature),
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
           const SizedBox(width: 4),
           Text(
             weather.cityName,
-            style: const TextStyle(
-              fontSize: 12,
-              color: AppTheme.textSecondary,
-            ),
+            style: const TextStyle(fontSize: 12, color: AppTheme.textSecondary),
           ),
         ],
       ),
@@ -88,11 +75,8 @@ class WeatherWidget extends StatelessWidget {
                 weather.iconUrl,
                 width: 64,
                 height: 64,
-                errorBuilder: (_, __, ___) => const Icon(
-                  Icons.cloud,
-                  size: 48,
-                  color: Colors.white,
-                ),
+                errorBuilder: (_, __, ___) =>
+                    const Icon(Icons.cloud, size: 48, color: Colors.white),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -122,8 +106,10 @@ class WeatherWidget extends StatelessWidget {
           const SizedBox(height: 16),
           Row(
             children: [
-              _buildInfoChip(Icons.thermostat, 
-                  'Cảm giác ${formatTemperature(weather.feelsLike)}'),
+              _buildInfoChip(
+                Icons.thermostat,
+                'Cảm giác ${formatTemperature(weather.feelsLike)}',
+              ),
               const SizedBox(width: 12),
               _buildInfoChip(Icons.water_drop, '${weather.humidity}%'),
               const SizedBox(width: 12),
@@ -157,13 +143,7 @@ class WeatherWidget extends StatelessWidget {
         children: [
           Icon(icon, size: 16, color: Colors.white),
           const SizedBox(width: 4),
-          Text(
-            text,
-            style: const TextStyle(
-              fontSize: 12,
-              color: Colors.white,
-            ),
-          ),
+          Text(text, style: const TextStyle(fontSize: 12, color: Colors.white)),
         ],
       ),
     );
@@ -267,35 +247,23 @@ class EmptyState extends StatelessWidget {
                 color: AppTheme.primaryColor.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                icon,
-                size: 48,
-                color: AppTheme.primaryColor,
-              ),
+              child: Icon(icon, size: 48, color: AppTheme.primaryColor),
             ),
             const SizedBox(height: 24),
             Text(
               title,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
               textAlign: TextAlign.center,
             ),
             if (subtitle != null) ...[
               const SizedBox(height: 8),
               Text(
                 subtitle!,
-                style: const TextStyle(
-                  color: AppTheme.textSecondary,
-                ),
+                style: const TextStyle(color: AppTheme.textSecondary),
                 textAlign: TextAlign.center,
               ),
             ],
-            if (action != null) ...[
-              const SizedBox(height: 24),
-              action!,
-            ],
+            if (action != null) ...[const SizedBox(height: 24), action!],
           ],
         ),
       ),
@@ -321,37 +289,30 @@ class ScoreDisplay extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        SizedBox(
+        Container(
           width: size,
           height: size,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              CircularProgressIndicator(
-                value: score / 100,
-                strokeWidth: 8,
-                backgroundColor: Colors.grey.shade200,
-                valueColor: AlwaysStoppedAnimation<Color>(_getScoreColor()),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: _getScoreColor().withValues(alpha: 0.1),
+            border: Border.all(color: _getScoreColor(), width: 3),
+          ),
+          child: Center(
+            child: Text(
+              '$score',
+              style: TextStyle(
+                fontSize: size * 0.35,
+                fontWeight: FontWeight.bold,
+                color: _getScoreColor(),
               ),
-              Text(
-                '$score',
-                style: TextStyle(
-                  fontSize: size * 0.3,
-                  fontWeight: FontWeight.bold,
-                  color: _getScoreColor(),
-                ),
-              ),
-            ],
+            ),
           ),
         ),
         if (label != null) ...[
           const SizedBox(height: 8),
           Text(
             label!,
-            style: const TextStyle(
-              fontSize: 12,
-              color: AppTheme.textSecondary,
-            ),
+            style: const TextStyle(fontSize: 12, color: AppTheme.textSecondary),
           ),
         ],
       ],
