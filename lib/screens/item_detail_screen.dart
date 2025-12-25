@@ -30,7 +30,10 @@ class ItemDetailScreen extends StatelessWidget {
                   color: Colors.white.withValues(alpha: 0.9),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.arrow_back, color: AppTheme.textPrimary),
+                child: const Icon(
+                  Icons.arrow_back,
+                  color: AppTheme.textPrimary,
+                ),
               ),
             ),
             actions: [
@@ -49,11 +52,11 @@ class ItemDetailScreen extends StatelessWidget {
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
-                        currentItem.isFavorite 
-                            ? Icons.favorite 
+                        currentItem.isFavorite
+                            ? Icons.favorite
                             : Icons.favorite_border,
-                        color: currentItem.isFavorite 
-                            ? AppTheme.secondaryColor 
+                        color: currentItem.isFavorite
+                            ? AppTheme.secondaryColor
                             : AppTheme.textPrimary,
                       ),
                     ),
@@ -68,7 +71,10 @@ class ItemDetailScreen extends StatelessWidget {
                     color: Colors.white.withValues(alpha: 0.9),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.more_vert, color: AppTheme.textPrimary),
+                  child: const Icon(
+                    Icons.more_vert,
+                    color: AppTheme.textPrimary,
+                  ),
                 ),
               ),
             ],
@@ -128,33 +134,43 @@ class ItemDetailScreen extends StatelessWidget {
                             ],
                           ),
                         ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppTheme.primaryColor.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(
-                                Icons.checkroom,
-                                size: 16,
-                                color: AppTheme.primaryColor,
+                        Consumer<WardrobeProvider>(
+                          builder: (context, wardrobe, _) {
+                            final currentItem = wardrobe.allItems.firstWhere(
+                              (i) => i.id == item.id,
+                              orElse: () => item,
+                            );
+                            return Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
                               ),
-                              const SizedBox(width: 4),
-                              Text(
-                                '${item.wearCount}x',
-                                style: const TextStyle(
-                                  color: AppTheme.primaryColor,
-                                  fontWeight: FontWeight.w600,
+                              decoration: BoxDecoration(
+                                color: AppTheme.primaryColor.withValues(
+                                  alpha: 0.1,
                                 ),
+                                borderRadius: BorderRadius.circular(20),
                               ),
-                            ],
-                          ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    Icons.checkroom,
+                                    size: 16,
+                                    color: AppTheme.primaryColor,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    '${currentItem.wearCount}x',
+                                    style: const TextStyle(
+                                      color: AppTheme.primaryColor,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
                         ),
                       ],
                     ),
@@ -175,10 +191,14 @@ class ItemDetailScreen extends StatelessWidget {
                               vertical: 8,
                             ),
                             decoration: BoxDecoration(
-                              color: AppTheme.accentColor.withValues(alpha: 0.1),
+                              color: AppTheme.accentColor.withValues(
+                                alpha: 0.1,
+                              ),
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
-                                color: AppTheme.accentColor.withValues(alpha: 0.3),
+                                color: AppTheme.accentColor.withValues(
+                                  alpha: 0.3,
+                                ),
                               ),
                             ),
                             child: Text(
@@ -209,10 +229,14 @@ class ItemDetailScreen extends StatelessWidget {
                               vertical: 8,
                             ),
                             decoration: BoxDecoration(
-                              color: AppTheme.warningColor.withValues(alpha: 0.1),
+                              color: AppTheme.warningColor.withValues(
+                                alpha: 0.1,
+                              ),
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
-                                color: AppTheme.warningColor.withValues(alpha: 0.3),
+                                color: AppTheme.warningColor.withValues(
+                                  alpha: 0.3,
+                                ),
                               ),
                             ),
                             child: Text(
@@ -229,67 +253,64 @@ class ItemDetailScreen extends StatelessWidget {
 
                     const SizedBox(height: 20),
 
-                    // Info
-                    _buildSection(
-                      'Thông tin',
-                      Icons.info_outline,
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: AppTheme.backgroundColor,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Column(
-                          children: [
-                            _buildInfoRow(
-                              'Thêm ngày',
-                              formatDateVN(item.createdAt),
+                    // Info - Dùng Consumer để cập nhật realtime
+                    Consumer<WardrobeProvider>(
+                      builder: (context, wardrobe, _) {
+                        final currentItem = wardrobe.allItems.firstWhere(
+                          (i) => i.id == item.id,
+                          orElse: () => item,
+                        );
+                        return _buildSection(
+                          'Thông tin',
+                          Icons.info_outline,
+                          Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: AppTheme.backgroundColor,
+                              borderRadius: BorderRadius.circular(12),
                             ),
-                            const Divider(height: 24),
-                            _buildInfoRow(
-                              'Mặc lần cuối',
-                              item.lastWorn != null
-                                  ? formatRelativeTime(item.lastWorn!)
-                                  : 'Chưa mặc',
+                            child: Column(
+                              children: [
+                                _buildInfoRow(
+                                  'Thêm ngày',
+                                  formatDateVN(currentItem.createdAt),
+                                ),
+                                const Divider(height: 24),
+                                _buildInfoRow(
+                                  'Mặc lần cuối',
+                                  currentItem.lastWorn != null
+                                      ? formatRelativeTime(
+                                          currentItem.lastWorn!,
+                                        )
+                                      : 'Chưa mặc',
+                                ),
+                                const Divider(height: 24),
+                                _buildInfoRow(
+                                  'Số lần mặc',
+                                  '${currentItem.wearCount} lần',
+                                ),
+                              ],
                             ),
-                            const Divider(height: 24),
-                            _buildInfoRow(
-                              'Số lần mặc',
-                              '${item.wearCount} lần',
-                            ),
-                          ],
-                        ),
-                      ),
+                          ),
+                        );
+                      },
                     ),
 
                     const SizedBox(height: 32),
 
-                    // Action buttons
-                    Row(
-                      children: [
-                        Expanded(
-                          child: OutlinedButton.icon(
-                            onPressed: () {
-                              context.read<WardrobeProvider>().markAsWorn(item);
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Đã cập nhật!')),
-                              );
-                            },
-                            icon: const Icon(Icons.checkroom),
-                            label: const Text('Đánh dấu đã mặc'),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: ElevatedButton.icon(
-                            onPressed: () {
-                              // Navigate to outfit suggest with this item
-                            },
-                            icon: const Icon(Icons.auto_awesome),
-                            label: const Text('Phối với item này'),
-                          ),
-                        ),
-                      ],
+                    // Action button
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: () {
+                          context.read<WardrobeProvider>().markAsWorn(item);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Đã cập nhật!')),
+                          );
+                        },
+                        icon: const Icon(Icons.checkroom),
+                        label: const Text('Đánh dấu đã mặc'),
+                      ),
                     ),
                   ],
                 ),
@@ -311,10 +332,7 @@ class ItemDetailScreen extends StatelessWidget {
             const SizedBox(width: 8),
             Text(
               title,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
           ],
         ),
@@ -328,18 +346,8 @@ class ItemDetailScreen extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          label,
-          style: const TextStyle(
-            color: AppTheme.textSecondary,
-          ),
-        ),
-        Text(
-          value,
-          style: const TextStyle(
-            fontWeight: FontWeight.w500,
-          ),
-        ),
+        Text(label, style: const TextStyle(color: AppTheme.textSecondary)),
+        Text(value, style: const TextStyle(fontWeight: FontWeight.w500)),
       ],
     );
   }
@@ -356,16 +364,14 @@ class ItemDetailScreen extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: const Icon(Icons.edit),
-              title: const Text('Chỉnh sửa'),
-              onTap: () {
-                Navigator.pop(context);
-                // Navigate to edit screen
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.delete_outline, color: AppTheme.errorColor),
-              title: const Text('Xóa', style: TextStyle(color: AppTheme.errorColor)),
+              leading: const Icon(
+                Icons.delete_outline,
+                color: AppTheme.errorColor,
+              ),
+              title: const Text(
+                'Xóa',
+                style: TextStyle(color: AppTheme.errorColor),
+              ),
               onTap: () {
                 Navigator.pop(context);
                 _confirmDelete(context);
@@ -391,14 +397,14 @@ class ItemDetailScreen extends StatelessWidget {
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(ctx);
-              final success = await context
-                  .read<WardrobeProvider>()
-                  .deleteItem(item.id);
+              final success = await context.read<WardrobeProvider>().deleteItem(
+                item.id,
+              );
               if (success && context.mounted) {
                 Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Đã xóa!')),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(const SnackBar(content: Text('Đã xóa!')));
               }
             },
             style: ElevatedButton.styleFrom(

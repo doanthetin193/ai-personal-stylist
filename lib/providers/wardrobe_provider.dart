@@ -78,7 +78,6 @@ class WardrobeProvider extends ChangeNotifier {
   bool get isAnalyzing => _isAnalyzing;
   bool get isSuggestingOutfit => _isSuggestingOutfit;
   Outfit? get currentOutfit => _currentOutfit;
-  String? get filterCategory => _filterCategory;
   StylePreference get stylePreference => _stylePreference;
 
   // Filtered items
