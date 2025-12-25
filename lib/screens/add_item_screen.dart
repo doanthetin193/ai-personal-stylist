@@ -1,6 +1,4 @@
-import 'dart:io';
 import 'dart:typed_data';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
@@ -671,28 +669,15 @@ class _AddItemScreenState extends State<AddItemScreen> {
       // Create item with selected data
       ClothingItem? item;
 
-      if (kIsWeb) {
-        // For web, use bytes
-        item = await wardrobeProvider.addItemFromBytes(
-          _imageBytes!,
-          type: _selectedType!,
-          color: _selectedColor!,
-          styles: _selectedStyles,
-          seasons: _selectedSeasons,
-          material: _selectedMaterial,
-        );
-      } else {
-        // For mobile, read file as bytes and use addItemFromBytes
-        final bytes = await File(_pickedFile!.path).readAsBytes();
-        item = await wardrobeProvider.addItemFromBytes(
-          bytes,
-          type: _selectedType!,
-          color: _selectedColor!,
-          styles: _selectedStyles,
-          seasons: _selectedSeasons,
-          material: _selectedMaterial,
-        );
-      }
+      // Dùng _imageBytes đã có sẵn (cho cả Web và Mobile)
+      item = await wardrobeProvider.addItemFromBytes(
+        _imageBytes!,
+        type: _selectedType!,
+        color: _selectedColor!,
+        styles: _selectedStyles,
+        seasons: _selectedSeasons,
+        material: _selectedMaterial,
+      );
 
       if (item != null && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
