@@ -97,7 +97,8 @@ class ProfileScreen extends StatelessWidget {
                           _buildDivider(),
                           _buildStat(
                             label: 'Loại đồ',
-                            value: wardrobeProvider.itemsByType.length.toString(),
+                            value: wardrobeProvider.itemsByType.length
+                                .toString(),
                             icon: Icons.style,
                           ),
                           _buildDivider(),
@@ -133,13 +134,15 @@ class ProfileScreen extends StatelessWidget {
                       icon: Icons.person_outline,
                       title: 'Thông tin cá nhân',
                       subtitle: 'Chỉnh sửa hồ sơ của bạn',
-                      onTap: () => _showEditProfileDialog(context, authProvider),
+                      onTap: () =>
+                          _showEditProfileDialog(context, authProvider),
                     ),
                     _buildMenuItem(
                       icon: Icons.bar_chart_rounded,
                       title: 'Thống kê tủ đồ',
                       subtitle: 'Xem chi tiết tủ đồ của bạn',
-                      onTap: () => _showWardrobeStats(context, wardrobeProvider),
+                      onTap: () =>
+                          _showWardrobeStats(context, wardrobeProvider),
                     ),
                     _buildMenuItem(
                       icon: Icons.cleaning_services_outlined,
@@ -147,14 +150,17 @@ class ProfileScreen extends StatelessWidget {
                       subtitle: 'AI gợi ý đồ nên bỏ',
                       onTap: () => Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => const WardrobeCleanupScreen()),
+                        MaterialPageRoute(
+                          builder: (_) => const WardrobeCleanupScreen(),
+                        ),
                       ),
                     ),
                     _buildMenuItem(
                       icon: Icons.style_outlined,
                       title: 'Sở thích phong cách',
                       subtitle: wardrobeProvider.stylePreference.displayName,
-                      onTap: () => _showStylePreferenceDialog(context, wardrobeProvider),
+                      onTap: () =>
+                          _showStylePreferenceDialog(context, wardrobeProvider),
                     ),
 
                     const SizedBox(height: 24),
@@ -180,7 +186,10 @@ class ProfileScreen extends StatelessWidget {
                       width: double.infinity,
                       child: OutlinedButton.icon(
                         onPressed: () => _showLogoutDialog(context),
-                        icon: const Icon(Icons.logout, color: AppTheme.errorColor),
+                        icon: const Icon(
+                          Icons.logout,
+                          color: AppTheme.errorColor,
+                        ),
                         label: const Text(
                           'Đăng xuất',
                           style: TextStyle(color: AppTheme.errorColor),
@@ -262,16 +271,10 @@ class ProfileScreen extends StatelessWidget {
           ),
           child: Icon(icon, color: AppTheme.primaryColor),
         ),
-        title: Text(
-          title,
-          style: const TextStyle(fontWeight: FontWeight.w600),
-        ),
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
         subtitle: Text(
           subtitle,
-          style: const TextStyle(
-            color: AppTheme.textSecondary,
-            fontSize: 12,
-          ),
+          style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12),
         ),
         trailing: const Icon(
           Icons.chevron_right,
@@ -286,9 +289,7 @@ class ProfileScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -298,19 +299,12 @@ class ProfileScreen extends StatelessWidget {
                 gradient: AppTheme.primaryGradient,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
-                Icons.checkroom,
-                size: 40,
-                color: Colors.white,
-              ),
+              child: const Icon(Icons.checkroom, size: 40, color: Colors.white),
             ),
             const SizedBox(height: 16),
             const Text(
               'AI Personal Stylist',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             const Text(
@@ -321,18 +315,12 @@ class ProfileScreen extends StatelessWidget {
             const Text(
               'Ứng dụng quản lý tủ đồ thông minh với AI, giúp bạn phối đồ hoàn hảo mỗi ngày.',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                color: AppTheme.textSecondary,
-                height: 1.5,
-              ),
+              style: TextStyle(color: AppTheme.textSecondary, height: 1.5),
             ),
             const SizedBox(height: 20),
             const Text(
               '© 2025 AI Personal Stylist',
-              style: TextStyle(
-                color: AppTheme.textSecondary,
-                fontSize: 12,
-              ),
+              style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
             ),
           ],
         ),
@@ -349,17 +337,13 @@ class ProfileScreen extends StatelessWidget {
   void _showLogoutDialog(BuildContext context) {
     final authProvider = context.read<AuthProvider>();
     final navigator = Navigator.of(context);
-    
+
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Text('Đăng xuất?'),
-        content: const Text(
-          'Bạn có chắc chắn muốn đăng xuất khỏi tài khoản?',
-        ),
+        content: const Text('Bạn có chắc chắn muốn đăng xuất khỏi tài khoản?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
@@ -393,9 +377,7 @@ class ProfileScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Text('Chỉnh sửa hồ sơ'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -451,7 +433,10 @@ class ProfileScreen extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.email_outlined, color: AppTheme.textSecondary),
+                  const Icon(
+                    Icons.email_outlined,
+                    color: AppTheme.textSecondary,
+                  ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
@@ -485,14 +470,17 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  void _showWardrobeStats(BuildContext context, WardrobeProvider wardrobeProvider) {
+  void _showWardrobeStats(
+    BuildContext context,
+    WardrobeProvider wardrobeProvider,
+  ) {
     final items = wardrobeProvider.allItems;
     final itemsByType = wardrobeProvider.itemsByType;
-    
+
     // Calculate stats
     final totalItems = items.length;
     final favoriteCount = items.where((i) => i.isFavorite).length;
-    final mostWornItem = items.isNotEmpty 
+    final mostWornItem = items.isNotEmpty
         ? items.reduce((a, b) => a.wearCount > b.wearCount ? a : b)
         : null;
     final leastWornItems = items.where((i) => i.wearCount == 0).length;
@@ -526,13 +514,10 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-              
+
               const Text(
                 'Thống kê tủ đồ',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 20),
 
@@ -567,14 +552,12 @@ class ProfileScreen extends StatelessWidget {
               // By type
               const Text(
                 'Theo loại',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 12),
               ...itemsByType.entries.map((entry) {
-                final percentage = (entry.value.length / totalItems * 100).toStringAsFixed(0);
+                final percentage = (entry.value.length / totalItems * 100)
+                    .toStringAsFixed(0);
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 8),
                   child: Row(
@@ -592,7 +575,9 @@ class ProfileScreen extends StatelessWidget {
                           child: LinearProgressIndicator(
                             value: entry.value.length / totalItems,
                             backgroundColor: Colors.grey.shade200,
-                            valueColor: const AlwaysStoppedAnimation(AppTheme.primaryColor),
+                            valueColor: const AlwaysStoppedAnimation(
+                              AppTheme.primaryColor,
+                            ),
                             minHeight: 8,
                           ),
                         ),
@@ -614,10 +599,7 @@ class ProfileScreen extends StatelessWidget {
                 const SizedBox(height: 24),
                 const Text(
                   'Đồ mặc nhiều nhất',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 12),
                 Container(
@@ -628,7 +610,10 @@ class ProfileScreen extends StatelessWidget {
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.emoji_events, color: AppTheme.warningColor),
+                      const Icon(
+                        Icons.emoji_events,
+                        color: AppTheme.warningColor,
+                      ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(
@@ -636,7 +621,9 @@ class ProfileScreen extends StatelessWidget {
                           children: [
                             Text(
                               '${mostWornItem.type.displayName} - ${mostWornItem.color}',
-                              style: const TextStyle(fontWeight: FontWeight.w600),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                             Text(
                               'Đã mặc ${mostWornItem.wearCount} lần',
@@ -701,7 +688,10 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  void _showStylePreferenceDialog(BuildContext context, WardrobeProvider wardrobeProvider) {
+  void _showStylePreferenceDialog(
+    BuildContext context,
+    WardrobeProvider wardrobeProvider,
+  ) {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -715,10 +705,7 @@ class ProfileScreen extends StatelessWidget {
           children: [
             const Text(
               'Sở thích phong cách',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             const Text(
@@ -727,23 +714,25 @@ class ProfileScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             // ignore: deprecated_member_use
-            ...StylePreference.values.map((style) => RadioListTile<StylePreference>(
-              value: style,
-              groupValue: wardrobeProvider.stylePreference,
-              onChanged: (value) {
-                if (value != null) {
-                  wardrobeProvider.setStylePreference(value);
-                  Navigator.pop(context);
-                }
-              },
-              title: Text(style.displayName),
-              subtitle: Text(
-                _getStyleDescription(style),
-                style: const TextStyle(fontSize: 12),
+            ...StylePreference.values.map(
+              (style) => RadioListTile<StylePreference>(
+                value: style,
+                groupValue: wardrobeProvider.stylePreference,
+                onChanged: (value) {
+                  if (value != null) {
+                    wardrobeProvider.setStylePreference(value);
+                    Navigator.pop(context);
+                  }
+                },
+                title: Text(style.displayName),
+                subtitle: Text(
+                  _getStyleDescription(style),
+                  style: const TextStyle(fontSize: 12),
+                ),
+                activeColor: AppTheme.primaryColor,
+                contentPadding: EdgeInsets.zero,
               ),
-              activeColor: AppTheme.primaryColor,
-              contentPadding: EdgeInsets.zero,
-            )),
+            ),
             const SizedBox(height: 10),
           ],
         ),
