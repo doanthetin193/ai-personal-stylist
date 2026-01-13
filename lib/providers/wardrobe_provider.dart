@@ -70,8 +70,9 @@ class WardrobeProvider extends ChangeNotifier {
 
   // Getters
   WardrobeStatus get status => _status;
-  List<ClothingItem> get items => _filteredItems;
-  List<ClothingItem> get allItems => _items;
+  List<ClothingItem> get items =>
+      _filteredItems; //để hiển thị UI bao gồm cả lọc hoặc tất cả
+  List<ClothingItem> get allItems => _items; //để AI gợi ý
   WeatherInfo? get weather => _weather;
   String? get errorMessage => _errorMessage;
   bool get isLoading => _status == WardrobeStatus.loading;
@@ -308,10 +309,12 @@ class WardrobeProvider extends ChangeNotifier {
   ) {
     ClothingItem? findItem(String? id) {
       if (id == null || id == 'null') return null;
-      return _items.firstWhere(
-        (item) => item.id == id,
-        orElse: () => _items.first,
-      );
+      final found = _items.where((item) => item.id == id);
+      if (found.isEmpty) {
+        print('⚠️ AI returned invalid item ID: $id');
+        return null;
+      }
+      return found.first;
     }
 
     final accessoryIds = suggestion['accessories'] as List<dynamic>? ?? [];

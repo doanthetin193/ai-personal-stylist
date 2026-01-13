@@ -70,10 +70,7 @@ class OutfitShimmer extends StatelessWidget {
       highlightColor: Colors.grey.shade100,
       child: Container(
         padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-        ),
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(16)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -88,19 +85,10 @@ class OutfitShimmer extends StatelessWidget {
                     borderRadius: BorderRadius.circular(14),
                   ),
                 ),
-                const Spacer(),
-                Container(
-                  width: 50,
-                  height: 24,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
               ],
             ),
             const SizedBox(height: 16),
-            
+
             // Items shimmer
             Row(
               children: List.generate(
@@ -131,9 +119,9 @@ class OutfitShimmer extends StatelessWidget {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Reason shimmer
             Container(
               width: double.infinity,
@@ -216,10 +204,7 @@ class _AIAnalyzingAnimationState extends State<AIAnalyzingAnimation>
           const SizedBox(height: 20),
           Text(
             widget.message,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-            ),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: 8),
           SizedBox(

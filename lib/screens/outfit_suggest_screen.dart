@@ -30,7 +30,7 @@ class _OutfitSuggestScreenState extends State<OutfitSuggestScreen> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Color(0xFFFCE7F3),  // Pink 100
+              Color(0xFFFCE7F3), // Pink 100
               AppTheme.backgroundColor,
             ],
             stops: [0.0, 0.3],
@@ -52,7 +52,9 @@ class _OutfitSuggestScreenState extends State<OutfitSuggestScreen> {
                           borderRadius: BorderRadius.circular(18),
                           boxShadow: [
                             BoxShadow(
-                              color: AppTheme.primaryColor.withValues(alpha: 0.35),
+                              color: AppTheme.primaryColor.withValues(
+                                alpha: 0.35,
+                              ),
                               blurRadius: 12,
                               offset: const Offset(0, 4),
                             ),
@@ -101,10 +103,7 @@ class _OutfitSuggestScreenState extends State<OutfitSuggestScreen> {
                       if (wardrobe.weather == null) {
                         return const SizedBox.shrink();
                       }
-                      return WeatherWidget(
-                        weather: wardrobe.weather!,
-                        compact: false,
-                      );
+                      return WeatherWidget(weather: wardrobe.weather!);
                     },
                   ),
                 ),
@@ -137,7 +136,9 @@ class _OutfitSuggestScreenState extends State<OutfitSuggestScreen> {
                             Container(
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
-                                color: AppTheme.accentColor.withValues(alpha: 0.1),
+                                color: AppTheme.accentColor.withValues(
+                                  alpha: 0.1,
+                                ),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: const Icon(
@@ -163,7 +164,9 @@ class _OutfitSuggestScreenState extends State<OutfitSuggestScreen> {
                           children: [
                             // Các dịp có sẵn
                             ...Occasions.list.map((occasion) {
-                              final isSelected = _selectedOccasion == occasion['id'] && _customOccasion == null;
+                              final isSelected =
+                                  _selectedOccasion == occasion['id'] &&
+                                  _customOccasion == null;
                               return OccasionChip(
                                 id: occasion['id']!,
                                 name: occasion['name']!,
@@ -191,15 +194,23 @@ class _OutfitSuggestScreenState extends State<OutfitSuggestScreen> {
                         if (_customOccasion != null) ...[
                           const SizedBox(height: 12),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 12,
+                            ),
                             decoration: BoxDecoration(
-                              color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                              color: AppTheme.primaryColor.withValues(
+                                alpha: 0.1,
+                              ),
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(color: AppTheme.primaryColor),
                             ),
                             child: Row(
                               children: [
-                                const Icon(Icons.edit_note, color: AppTheme.primaryColor),
+                                const Icon(
+                                  Icons.edit_note,
+                                  color: AppTheme.primaryColor,
+                                ),
                                 const SizedBox(width: 12),
                                 Expanded(
                                   child: Text(
@@ -230,87 +241,91 @@ class _OutfitSuggestScreenState extends State<OutfitSuggestScreen> {
                 ),
               ),
 
-            const SliverToBoxAdapter(child: SizedBox(height: 24)),
+              const SliverToBoxAdapter(child: SizedBox(height: 24)),
 
-            // Generate button
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: (_selectedOccasion != null || _customOccasion != null) && !_isGenerating
-                        ? _generateOutfit
-                        : null,
-                    icon: _isGenerating
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            ),
-                          )
-                        : const Icon(Icons.auto_awesome),
-                    label: Text(
-                      _isGenerating ? 'Đang tạo outfit...' : 'Gợi ý outfit cho tôi',
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+              // Generate button
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed:
+                          (_selectedOccasion != null ||
+                                  _customOccasion != null) &&
+                              !_isGenerating
+                          ? _generateOutfit
+                          : null,
+                      icon: _isGenerating
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : const Icon(Icons.auto_awesome),
+                      label: Text(
+                        _isGenerating
+                            ? 'Đang tạo outfit...'
+                            : 'Gợi ý outfit cho tôi',
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
 
-            const SliverToBoxAdapter(child: SizedBox(height: 32)),
+              const SliverToBoxAdapter(child: SizedBox(height: 32)),
 
-            // Outfit result
-            Consumer<WardrobeProvider>(
-              builder: (context, wardrobe, _) {
-                if (wardrobe.isSuggestingOutfit) {
-                  return const SliverToBoxAdapter(
-                    child: Padding(
-                      padding: EdgeInsets.all(20),
-                      child: OutfitShimmer(),
-                    ),
-                  );
-                }
+              // Outfit result
+              Consumer<WardrobeProvider>(
+                builder: (context, wardrobe, _) {
+                  if (wardrobe.isSuggestingOutfit) {
+                    return const SliverToBoxAdapter(
+                      child: Padding(
+                        padding: EdgeInsets.all(20),
+                        child: OutfitShimmer(),
+                      ),
+                    );
+                  }
 
-                if (wardrobe.currentOutfit == null) {
+                  if (wardrobe.currentOutfit == null) {
+                    return SliverToBoxAdapter(child: _buildEmptyState());
+                  }
+
                   return SliverToBoxAdapter(
-                    child: _buildEmptyState(),
-                  );
-                }
-
-                return SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Outfit được gợi ý',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Outfit được gợi ý',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 16),
-                        OutfitCard(
-                          outfit: wardrobe.currentOutfit!,
-                          onWear: () => _markOutfitAsWorn(wardrobe.currentOutfit!),
-                        ),
-                      ],
+                          const SizedBox(height: 16),
+                          OutfitCard(
+                            outfit: wardrobe.currentOutfit!,
+                            onWear: () =>
+                                _markOutfitAsWorn(wardrobe.currentOutfit!),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              },
-            ),
+                  );
+                },
+              ),
 
-            const SliverToBoxAdapter(child: SizedBox(height: 100)),
-          ],
-        ),
+              const SliverToBoxAdapter(child: SizedBox(height: 100)),
+            ],
+          ),
         ),
       ),
     );
@@ -336,17 +351,12 @@ class _OutfitSuggestScreenState extends State<OutfitSuggestScreen> {
           const SizedBox(height: 24),
           const Text(
             'Chọn dịp để bắt đầu',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 8),
           const Text(
             'AI sẽ phân tích tủ đồ và thời tiết\nđể gợi ý outfit phù hợp nhất',
-            style: TextStyle(
-              color: AppTheme.textSecondary,
-            ),
+            style: TextStyle(color: AppTheme.textSecondary),
             textAlign: TextAlign.center,
           ),
         ],
@@ -361,7 +371,7 @@ class _OutfitSuggestScreenState extends State<OutfitSuggestScreen> {
 
     try {
       final wardrobeProvider = context.read<WardrobeProvider>();
-      
+
       if (wardrobeProvider.allItems.isEmpty) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -374,13 +384,14 @@ class _OutfitSuggestScreenState extends State<OutfitSuggestScreen> {
       }
 
       // Sử dụng custom occasion nếu có, ngược lại dùng occasion từ danh sách
-      final occasionName = _customOccasion ?? Occasions.getName(_selectedOccasion!);
+      final occasionName =
+          _customOccasion ?? Occasions.getName(_selectedOccasion!);
       await wardrobeProvider.suggestOutfit(occasionName);
 
       if (wardrobeProvider.errorMessage != null && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(wardrobeProvider.errorMessage!)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(wardrobeProvider.errorMessage!)));
       }
     } finally {
       if (mounted) {
@@ -391,13 +402,11 @@ class _OutfitSuggestScreenState extends State<OutfitSuggestScreen> {
 
   void _showCustomOccasionDialog() {
     final dialogController = TextEditingController(text: _customOccasion ?? '');
-    
+
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Row(
           children: [
             Icon(Icons.edit_note, color: AppTheme.primaryColor),
@@ -467,7 +476,7 @@ class _OutfitSuggestScreenState extends State<OutfitSuggestScreen> {
 
   void _markOutfitAsWorn(Outfit outfit) {
     final wardrobeProvider = context.read<WardrobeProvider>();
-    
+
     // Mark all items as worn
     for (final item in outfit.allItems) {
       wardrobeProvider.markAsWorn(item);

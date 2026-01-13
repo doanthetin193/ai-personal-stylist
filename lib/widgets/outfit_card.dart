@@ -32,7 +32,10 @@ class OutfitCard extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     gradient: AppTheme.primaryGradient,
                     borderRadius: BorderRadius.circular(20),
@@ -47,43 +50,16 @@ class OutfitCard extends StatelessWidget {
                   ),
                 ),
                 const Spacer(),
-                if (outfit.colorScore != null)
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: _getScoreColor(outfit.colorScore!).withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.palette,
-                          size: 14,
-                          color: _getScoreColor(outfit.colorScore!),
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          '${outfit.colorScore}',
-                          style: TextStyle(
-                            color: _getScoreColor(outfit.colorScore!),
-                            fontWeight: FontWeight.w600,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
               ],
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Items display
             _buildItemsGrid(),
-            
+
             const SizedBox(height: 16),
-            
+
             // Reason
             Container(
               padding: const EdgeInsets.all(12),
@@ -113,7 +89,7 @@ class OutfitCard extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             // Actions
             if (showActions) ...[
               const SizedBox(height: 16),
@@ -134,7 +110,7 @@ class OutfitCard extends StatelessWidget {
 
   Widget _buildItemsGrid() {
     final items = outfit.allItems;
-    
+
     if (items.isEmpty) {
       return Container(
         height: 100,
@@ -147,10 +123,8 @@ class OutfitCard extends StatelessWidget {
       spacing: 12,
       runSpacing: 12,
       children: [
-        if (outfit.top != null)
-          _buildItemWithLabel(outfit.top!, 'Áo'),
-        if (outfit.bottom != null)
-          _buildItemWithLabel(outfit.bottom!, 'Quần'),
+        if (outfit.top != null) _buildItemWithLabel(outfit.top!, 'Áo'),
+        if (outfit.bottom != null) _buildItemWithLabel(outfit.bottom!, 'Quần'),
         if (outfit.outerwear != null)
           _buildItemWithLabel(outfit.outerwear!, 'Khoác'),
         if (outfit.footwear != null)
@@ -169,21 +143,9 @@ class OutfitCard extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 11,
-            color: AppTheme.textSecondary,
-          ),
+          style: const TextStyle(fontSize: 11, color: AppTheme.textSecondary),
         ),
       ],
     );
   }
-
-  Color _getScoreColor(int score) {
-    if (score >= 80) return AppTheme.successColor;
-    if (score >= 60) return AppTheme.accentColor;
-    if (score >= 40) return AppTheme.warningColor;
-    return AppTheme.errorColor;
-  }
 }
-
-

@@ -10,7 +10,6 @@ class Outfit {
   final List<ClothingItem> accessories;
   final String occasion;
   final String reason;
-  final int? colorScore;
   final DateTime createdAt;
 
   Outfit({
@@ -22,7 +21,6 @@ class Outfit {
     this.accessories = const [],
     required this.occasion,
     required this.reason,
-    this.colorScore,
     required this.createdAt,
   });
 
@@ -50,7 +48,6 @@ class Outfit {
     List<ClothingItem>? accessories,
     String? occasion,
     String? reason,
-    int? colorScore,
     DateTime? createdAt,
   }) {
     return Outfit(
@@ -62,7 +59,6 @@ class Outfit {
       accessories: accessories ?? this.accessories,
       occasion: occasion ?? this.occasion,
       reason: reason ?? this.reason,
-      colorScore: colorScore ?? this.colorScore,
       createdAt: createdAt ?? this.createdAt,
     );
   }

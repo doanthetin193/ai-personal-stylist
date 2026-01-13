@@ -6,53 +6,11 @@ import '../utils/helpers.dart';
 /// Weather display widget
 class WeatherWidget extends StatelessWidget {
   final WeatherInfo weather;
-  final bool compact;
 
-  const WeatherWidget({super.key, required this.weather, this.compact = false});
+  const WeatherWidget({super.key, required this.weather});
 
   @override
   Widget build(BuildContext context) {
-    if (compact) {
-      return _buildCompact();
-    }
-    return _buildFull();
-  }
-
-  Widget _buildCompact() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8),
-        ],
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Image.network(
-            weather.iconUrl,
-            width: 32,
-            height: 32,
-            errorBuilder: (_, __, ___) => const Icon(Icons.cloud, size: 24),
-          ),
-          const SizedBox(width: 8),
-          Text(
-            formatTemperature(weather.temperature),
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(width: 4),
-          Text(
-            weather.cityName,
-            style: const TextStyle(fontSize: 12, color: AppTheme.textSecondary),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFull() {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
