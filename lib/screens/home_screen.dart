@@ -50,10 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
-      ),
+      body: IndexedStack(index: _currentIndex, children: _screens),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -101,8 +98,8 @@ class _HomeScreenState extends State<HomeScreen> {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected 
-              ? AppTheme.primaryColor.withValues(alpha: 0.1) 
+          color: isSelected
+              ? AppTheme.primaryColor.withValues(alpha: 0.1)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
         ),
@@ -146,11 +143,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
-        child: const Icon(
-          Icons.add,
-          color: Colors.white,
-          size: 28,
-        ),
+        child: const Icon(Icons.add, color: Colors.white, size: 28),
       ),
     );
   }
@@ -166,7 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
 /// Tab Home chính
 class _HomeTab extends StatelessWidget {
   final VoidCallback? onViewAllTap;
-  
+
   const _HomeTab({this.onViewAllTap});
 
   @override
@@ -177,7 +170,7 @@ class _HomeTab extends StatelessWidget {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            Color(0xFFEDE9FE),  // Purple 100
+            Color(0xFFEDE9FE), // Purple 100
             AppTheme.backgroundColor,
           ],
           stops: [0.0, 0.3],
@@ -185,311 +178,330 @@ class _HomeTab extends StatelessWidget {
       ),
       child: SafeArea(
         child: CustomScrollView(
-        slivers: [
-          // Premium Header
-          SliverToBoxAdapter(
-            child: Container(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-              child: Row(
-                children: [
-                  // Avatar với gradient border
-                  Consumer<AuthProvider>(
-                    builder: (context, auth, _) => Container(
-                      padding: const EdgeInsets.all(3),
-                      decoration: BoxDecoration(
-                        gradient: AppTheme.primaryGradient,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppTheme.primaryColor.withValues(alpha: 0.3),
-                            blurRadius: 12,
-                            offset: const Offset(0, 4),
+          slivers: [
+            // Premium Header
+            SliverToBoxAdapter(
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+                child: Row(
+                  children: [
+                    // Avatar với gradient border
+                    Consumer<AuthProvider>(
+                      builder: (context, auth, _) => Container(
+                        padding: const EdgeInsets.all(3),
+                        decoration: BoxDecoration(
+                          gradient: AppTheme.primaryGradient,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppTheme.primaryColor.withValues(
+                                alpha: 0.3,
+                              ),
+                              blurRadius: 12,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: CircleAvatar(
+                          radius: 28,
+                          backgroundColor: Colors.white,
+                          backgroundImage: auth.photoUrl != null
+                              ? NetworkImage(auth.photoUrl!)
+                              : null,
+                          child: auth.photoUrl == null
+                              ? const Icon(
+                                  Icons.person,
+                                  color: AppTheme.primaryColor,
+                                  size: 28,
+                                )
+                              : null,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    // Greeting text
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                getGreeting(),
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: AppTheme.primaryColor.withValues(
+                                    alpha: 0.8,
+                                  ),
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              const Text('👋', style: TextStyle(fontSize: 16)),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          Consumer<AuthProvider>(
+                            builder: (context, auth, _) => Text(
+                              auth.displayName,
+                              style: const TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: AppTheme.textPrimary,
+                              ),
+                            ),
                           ),
                         ],
                       ),
-                      child: CircleAvatar(
-                        radius: 28,
-                        backgroundColor: Colors.white,
-                        backgroundImage: auth.photoUrl != null
-                            ? NetworkImage(auth.photoUrl!)
-                            : null,
-                        child: auth.photoUrl == null
-                            ? const Icon(Icons.person, color: AppTheme.primaryColor, size: 28)
-                            : null,
+                    ),
+                    // Notification icon
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.05),
+                            blurRadius: 10,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.notifications_outlined,
+                        color: AppTheme.primaryColor,
+                        size: 22,
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 16),
-                  // Greeting text
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                  ],
+                ),
+              ),
+            ),
+
+            // Weather Card
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Consumer<WardrobeProvider>(
+                  builder: (context, wardrobe, _) {
+                    if (wardrobe.weather == null) {
+                      return const SizedBox.shrink();
+                    }
+                    return GestureDetector(
+                      onTap: () => _showChangeLocationDialog(context, wardrobe),
+                      child: WeatherWidget(weather: wardrobe.weather!),
+                    );
+                  },
+                ),
+              ),
+            ),
+
+            const SliverToBoxAdapter(child: SizedBox(height: 24)),
+
+            // Quick Actions
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Hành động nhanh',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
                       children: [
-                        Row(
-                          children: [
-                            Text(
-                              getGreeting(),
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: AppTheme.primaryColor.withValues(alpha: 0.8),
-                                fontWeight: FontWeight.w500,
+                        Expanded(
+                          child: _QuickActionCard(
+                            icon: Icons.add_a_photo,
+                            title: 'Thêm đồ mới',
+                            color: AppTheme.primaryColor,
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const AddItemScreen(),
                               ),
                             ),
-                            const SizedBox(width: 4),
-                            const Text('👋', style: TextStyle(fontSize: 16)),
-                          ],
+                          ),
                         ),
-                        const SizedBox(height: 4),
-                        Consumer<AuthProvider>(
-                          builder: (context, auth, _) => Text(
-                            auth.displayName,
-                            style: const TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: AppTheme.textPrimary,
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: _QuickActionCard(
+                            icon: Icons.auto_awesome,
+                            title: 'Gợi ý outfit',
+                            color: AppTheme.accentColor,
+                            onTap: () {
+                              // Navigate to Outfit tab (index 2)
+                              final homeState = context
+                                  .findAncestorStateOfType<_HomeScreenState>();
+                              homeState?._navigateToTab(2);
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _QuickActionCard(
+                            icon: Icons.palette,
+                            title: 'Chấm màu',
+                            color: AppTheme.secondaryColor,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const ColorHarmonyScreen(),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: _QuickActionCard(
+                            icon: Icons.cleaning_services,
+                            title: 'Dọn tủ đồ',
+                            color: AppTheme.warningColor,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const WardrobeCleanupScreen(),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            const SliverToBoxAdapter(child: SizedBox(height: 24)),
+
+            // Recent Items
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Thêm gần đây',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: onViewAllTap,
+                      child: const Text('Xem tất cả'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            // Recent items list
+            Consumer<WardrobeProvider>(
+              builder: (context, wardrobe, _) {
+                if (wardrobe.isLoading) {
+                  return const SliverToBoxAdapter(
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                }
+
+                if (wardrobe.allItems.isEmpty) {
+                  return SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: EmptyState(
+                        icon: Icons.checkroom,
+                        title: 'Tủ đồ trống',
+                        subtitle: 'Hãy thêm quần áo đầu tiên của bạn!',
+                        action: ElevatedButton.icon(
+                          onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const AddItemScreen(),
                             ),
                           ),
+                          icon: const Icon(Icons.add),
+                          label: const Text('Thêm ngay'),
                         ),
-                      ],
+                      ),
                     ),
-                  ),
-                  // Notification icon
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.05),
-                          blurRadius: 10,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: const Icon(
-                      Icons.notifications_outlined,
-                      color: AppTheme.primaryColor,
-                      size: 22,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          // Weather Card
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Consumer<WardrobeProvider>(
-                builder: (context, wardrobe, _) {
-                  if (wardrobe.weather == null) {
-                    return const SizedBox.shrink();
-                  }
-                  return GestureDetector(
-                    onTap: () => _showChangeLocationDialog(context, wardrobe),
-                    child: WeatherWidget(weather: wardrobe.weather!),
                   );
-                },
-              ),
-            ),
-          ),
+                }
 
-          const SliverToBoxAdapter(child: SizedBox(height: 24)),
-
-          // Quick Actions
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Hành động nhanh',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _QuickActionCard(
-                          icon: Icons.add_a_photo,
-                          title: 'Thêm đồ mới',
-                          color: AppTheme.primaryColor,
-                          onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (_) => const AddItemScreen()),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _QuickActionCard(
-                          icon: Icons.auto_awesome,
-                          title: 'Gợi ý outfit',
-                          color: AppTheme.accentColor,
-                          onTap: () {
-                            // Navigate to Outfit tab (index 2)
-                            if (context.findAncestorStateOfType<_HomeScreenState>() != null) {
-                              context.findAncestorStateOfType<_HomeScreenState>()!._navigateToTab(2);
-                            }
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _QuickActionCard(
-                          icon: Icons.palette,
-                          title: 'Chấm màu',
-                          color: AppTheme.secondaryColor,
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (_) => const ColorHarmonyScreen()),
-                            );
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _QuickActionCard(
-                          icon: Icons.cleaning_services,
-                          title: 'Dọn tủ đồ',
-                          color: AppTheme.warningColor,
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (_) => const WardrobeCleanupScreen()),
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          const SliverToBoxAdapter(child: SizedBox(height: 24)),
-
-          // Recent Items
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Thêm gần đây',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: onViewAllTap,
-                    child: const Text('Xem tất cả'),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          // Recent items list
-          Consumer<WardrobeProvider>(
-            builder: (context, wardrobe, _) {
-              if (wardrobe.isLoading) {
-                return const SliverToBoxAdapter(
-                  child: Center(child: CircularProgressIndicator()),
-                );
-              }
-
-              if (wardrobe.allItems.isEmpty) {
+                final recentItems = wardrobe.allItems.take(4).toList();
                 return SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: EmptyState(
-                      icon: Icons.checkroom,
-                      title: 'Tủ đồ trống',
-                      subtitle: 'Hãy thêm quần áo đầu tiên của bạn!',
-                      action: ElevatedButton.icon(
-                        onPressed: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => const AddItemScreen()),
-                        ),
-                        icon: const Icon(Icons.add),
-                        label: const Text('Thêm ngay'),
-                      ),
-                    ),
-                  ),
-                );
-              }
-
-              final recentItems = wardrobe.allItems.take(4).toList();
-              return SliverToBoxAdapter(
-                child: SizedBox(
-                  height: 150,
-                  child: ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    scrollDirection: Axis.horizontal,
-                    itemCount: recentItems.length,
-                    itemBuilder: (context, index) {
-                      final item = recentItems[index];
-                      return Container(
-                        width: 110,
-                        margin: const EdgeInsets.only(right: 12),
-                        child: Column(
-                          children: [
-                            Expanded(
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(12),
-                                child: ClothingImage(
-                                  item: item,
-                                  fit: BoxFit.cover,
-                                  errorWidget: Container(
-                                    color: Colors.grey.shade200,
-                                    child: const Icon(Icons.image),
+                  child: SizedBox(
+                    height: 150,
+                    child: ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      scrollDirection: Axis.horizontal,
+                      itemCount: recentItems.length,
+                      itemBuilder: (context, index) {
+                        final item = recentItems[index];
+                        return Container(
+                          width: 110,
+                          margin: const EdgeInsets.only(right: 12),
+                          child: Column(
+                            children: [
+                              Expanded(
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: ClothingImage(
+                                    item: item,
+                                    fit: BoxFit.cover,
+                                    errorWidget: Container(
+                                      color: Colors.grey.shade200,
+                                      child: const Icon(Icons.image),
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              item.type.displayName,
-                              style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
+                              const SizedBox(height: 8),
+                              Text(
+                                item.type.displayName,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
-                        ),
-                      );
-                    },
+                            ],
+                          ),
+                        );
+                      },
+                    ),
                   ),
-                ),
-              );
-            },
-          ),
+                );
+              },
+            ),
 
-          const SliverToBoxAdapter(child: SizedBox(height: 100)),
-        ],
-      ),
+            const SliverToBoxAdapter(child: SizedBox(height: 100)),
+          ],
+        ),
       ),
     );
   }
 
-  void _showChangeLocationDialog(BuildContext context, WardrobeProvider wardrobe) {
+  void _showChangeLocationDialog(
+    BuildContext context,
+    WardrobeProvider wardrobe,
+  ) {
     final cities = [
       {'name': 'Quy Nhon', 'display': 'Quy Nhơn, Bình Định'},
       {'name': 'Ho Chi Minh City', 'display': 'TP. Hồ Chí Minh'},
@@ -522,10 +534,7 @@ class _HomeTab extends StatelessWidget {
                 const SizedBox(width: 8),
                 const Text(
                   'Chọn thành phố',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                 ),
               ],
             ),
@@ -542,17 +551,23 @@ class _HomeTab extends StatelessWidget {
                 itemBuilder: (context, index) {
                   final city = cities[index];
                   final currentCity = wardrobe.weather?.cityName;
-                  final isSelected = currentCity != null && currentCity.toLowerCase() == city['name']!.toLowerCase();
-                  
+                  final isSelected =
+                      currentCity != null &&
+                      currentCity.toLowerCase() == city['name']!.toLowerCase();
+
                   return ListTile(
                     leading: Icon(
                       isSelected ? Icons.check_circle : Icons.location_city,
-                      color: isSelected ? AppTheme.primaryColor : AppTheme.textSecondary,
+                      color: isSelected
+                          ? AppTheme.primaryColor
+                          : AppTheme.textSecondary,
                     ),
                     title: Text(
                       city['display']!,
                       style: TextStyle(
-                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                        fontWeight: isSelected
+                            ? FontWeight.w600
+                            : FontWeight.normal,
                         color: isSelected ? AppTheme.primaryColor : null,
                       ),
                     ),
@@ -561,7 +576,9 @@ class _HomeTab extends StatelessWidget {
                       wardrobe.changeWeatherLocation(city['name']!);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('Đang cập nhật thời tiết ${city['display']}...'),
+                          content: Text(
+                            'Đang cập nhật thời tiết ${city['display']}...',
+                          ),
                           duration: const Duration(seconds: 2),
                         ),
                       );
@@ -614,10 +631,7 @@ class _QuickActionCard extends StatelessWidget {
             Expanded(
               child: Text(
                 title,
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  color: color,
-                ),
+                style: TextStyle(fontWeight: FontWeight.w600, color: color),
               ),
             ),
           ],

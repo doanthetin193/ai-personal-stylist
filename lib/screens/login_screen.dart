@@ -35,9 +35,9 @@ class _LoginScreenState extends State<LoginScreen> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Color(0xFF7C3AED),  // Purple
-              Color(0xFFDB2777),  // Pink
-              Color(0xFFF97316),  // Orange
+              Color(0xFF7C3AED), // Purple
+              Color(0xFFDB2777), // Pink
+              Color(0xFFF97316), // Orange
             ],
             stops: [0.0, 0.5, 1.0],
           ),
@@ -47,22 +47,24 @@ class _LoginScreenState extends State<LoginScreen> {
             padding: const EdgeInsets.all(24),
             child: ConstrainedBox(
               constraints: BoxConstraints(
-                minHeight: MediaQuery.of(context).size.height - 
-                    MediaQuery.of(context).padding.top - 
-                    MediaQuery.of(context).padding.bottom - 48,
+                minHeight:
+                    MediaQuery.of(context).size.height -
+                    MediaQuery.of(context).padding.top -
+                    MediaQuery.of(context).padding.bottom -
+                    48,
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const SizedBox(height: 20),
-                  
+                  const SizedBox(height: 10),
+
                   // Logo/Icon với animation shimmer effect
                   Container(
-                    width: 130,
-                    height: 130,
+                    width: 90,
+                    height: 90,
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(36),
+                      borderRadius: BorderRadius.circular(24),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withValues(alpha: 0.25),
@@ -83,74 +85,82 @@ class _LoginScreenState extends State<LoginScreen> {
                       ).createShader(bounds),
                       child: const Icon(
                         Icons.checkroom,
-                        size: 70,
+                        size: 45,
                         color: Colors.white,
                       ),
                     ),
                   ),
-                  
-                  const SizedBox(height: 32),
-                  
+
+                  const SizedBox(height: 16),
+
                   // App name
                   const Text(
                     'AI Personal Stylist',
                     style: TextStyle(
-                      fontSize: 32,
+                      fontSize: 26,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
                   ),
-                  
-                  const SizedBox(height: 12),
-                  
+
+                  const SizedBox(height: 8),
+
                   Text(
                     'Stylist cá nhân thông minh\ngiúp bạn phối đồ mỗi ngày',
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: 14,
                       color: Colors.white.withValues(alpha: 0.9),
                       height: 1.5,
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  
-                  const SizedBox(height: 40),
-                  
-                  // Features
-                  Column(
-                    children: [
-                      _buildFeature(Icons.camera_alt, 'Số hóa tủ đồ bằng AI'),
-                      const SizedBox(height: 16),
-                      _buildFeature(Icons.auto_awesome, 'Gợi ý outfit thông minh'),
-                      const SizedBox(height: 16),
-                      _buildFeature(Icons.palette, 'Chấm điểm hợp màu'),
-                    ],
-                  ),
-                  
-                  const SizedBox(height: 40),
-                  
+
+                  // Features - ẩn khi mở form email
+                  if (!_showEmailForm) ...[
+                    const SizedBox(height: 20),
+                    Column(
+                      children: [
+                        _buildFeature(Icons.camera_alt, 'Số hóa tủ đồ bằng AI'),
+                        const SizedBox(height: 10),
+                        _buildFeature(
+                          Icons.auto_awesome,
+                          'Gợi ý outfit thông minh',
+                        ),
+                        const SizedBox(height: 10),
+                        _buildFeature(Icons.palette, 'Chấm điểm hợp màu'),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                  ],
+
                   // Login buttons
                   Consumer<AuthProvider>(
                     builder: (context, auth, _) {
                       if (auth.isLoading) {
-                        return const CircularProgressIndicator(color: Colors.white);
+                        return const CircularProgressIndicator(
+                          color: Colors.white,
+                        );
                       }
 
                       // Show email form
                       if (_showEmailForm) {
                         return _buildEmailForm(auth);
                       }
-                      
+
                       return Column(
                         children: [
                           // Email/Password Sign In
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton.icon(
-                              onPressed: () => setState(() => _showEmailForm = true),
+                              onPressed: () =>
+                                  setState(() => _showEmailForm = true),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.white,
                                 foregroundColor: AppTheme.textPrimary,
-                                padding: const EdgeInsets.symmetric(vertical: 16),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 16,
+                                ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(16),
                                 ),
@@ -165,7 +175,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                           ),
-                          
+
                           const SizedBox(height: 12),
 
                           // Google Sign In
@@ -175,8 +185,13 @@ class _LoginScreenState extends State<LoginScreen> {
                               onPressed: () => _signInWithGoogle(auth),
                               style: OutlinedButton.styleFrom(
                                 foregroundColor: Colors.white,
-                                side: const BorderSide(color: Colors.white, width: 2),
-                                padding: const EdgeInsets.symmetric(vertical: 16),
+                                side: const BorderSide(
+                                  color: Colors.white,
+                                  width: 2,
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 16,
+                                ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(16),
                                 ),
@@ -185,7 +200,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 'https://www.google.com/favicon.ico',
                                 width: 24,
                                 height: 24,
-                                errorBuilder: (_, __, ___) => const Icon(Icons.g_mobiledata),
+                                errorBuilder: (_, __, ___) =>
+                                    const Icon(Icons.g_mobiledata),
                               ),
                               label: const Text(
                                 'Đăng nhập với Google',
@@ -196,9 +212,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                           ),
-                        
+
                           const SizedBox(height: 16),
-                        
+
                           // Anonymous/Demo login
                           TextButton(
                             onPressed: () => _signInAnonymously(auth),
@@ -214,7 +230,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       );
                     },
                   ),
-                
+
                   const SizedBox(height: 24),
                 ],
               ),
@@ -257,9 +273,9 @@ class _LoginScreenState extends State<LoginScreen> {
         MaterialPageRoute(builder: (_) => const HomeScreen()),
       );
     } else if (auth.errorMessage != null && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(auth.errorMessage!)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(auth.errorMessage!)));
     }
   }
 
@@ -271,9 +287,9 @@ class _LoginScreenState extends State<LoginScreen> {
         MaterialPageRoute(builder: (_) => const HomeScreen()),
       );
     } else if (auth.errorMessage != null && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(auth.errorMessage!)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(auth.errorMessage!)));
     }
   }
 
@@ -352,7 +368,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   icon: Icon(
                     _obscurePassword ? Icons.visibility_off : Icons.visibility,
                   ),
-                  onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                  onPressed: () =>
+                      setState(() => _obscurePassword = !_obscurePassword),
                 ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -393,10 +410,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
             // Toggle mode
             TextButton(
-              onPressed: () => setState(() => _isRegisterMode = !_isRegisterMode),
+              onPressed: () =>
+                  setState(() => _isRegisterMode = !_isRegisterMode),
               child: Text(
-                _isRegisterMode 
-                    ? 'Đã có tài khoản? Đăng nhập' 
+                _isRegisterMode
+                    ? 'Đã có tài khoản? Đăng nhập'
                     : 'Chưa có tài khoản? Đăng ký',
                 style: const TextStyle(color: AppTheme.primaryColor),
               ),
