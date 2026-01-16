@@ -18,7 +18,6 @@ class AddItemScreen extends StatefulWidget {
 class _AddItemScreenState extends State<AddItemScreen> {
   final ImagePicker _picker = ImagePicker();
   GroqService? _groqService;
-  XFile? _pickedFile;
   Uint8List? _imageBytes;
   bool _isAnalyzing = false;
   bool _isSaving = false;
@@ -83,7 +82,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
               // AI Analysis result
               if (_isAnalyzing) _buildAnalyzingState(),
 
-              if (_analysisResult != null && !_isAnalyzing) ...[
+              if (_selectedType != null && !_isAnalyzing) ...[
                 _buildAnalysisResult(),
                 const SizedBox(height: 24),
                 _buildEditableFields(),
@@ -188,7 +187,6 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 icon: Icons.close,
                 onTap: () {
                   setState(() {
-                    _pickedFile = null;
                     _imageBytes = null;
                     _analysisResult = null;
                   });
@@ -575,7 +573,6 @@ class _AddItemScreenState extends State<AddItemScreen> {
       if (pickedFile != null) {
         final bytes = await pickedFile.readAsBytes();
         setState(() {
-          _pickedFile = pickedFile;
           _imageBytes = bytes;
           _analysisResult = null;
         });
@@ -659,7 +656,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
   }
 
   Future<void> _saveItem() async {
-    if (_imageBytes == null || _pickedFile == null || !_canSave) return;
+    if (_imageBytes == null || !_canSave) return;
 
     setState(() => _isSaving = true);
 

@@ -263,7 +263,7 @@ class WardrobeProvider extends ChangeNotifier {
   }
 
   /// Suggest outfit
-  Future<Outfit?> suggestOutfit(String occasion) async {
+  Future<void> suggestOutfit(String occasion) async {
     try {
       _isSuggestingOutfit = true;
       _errorMessage = null;
@@ -287,18 +287,14 @@ class WardrobeProvider extends ChangeNotifier {
       }
 
       // Build outfit from suggestion
-      final outfit = _buildOutfitFromSuggestion(suggestion, occasion);
-      _currentOutfit = outfit;
+      _currentOutfit = _buildOutfitFromSuggestion(suggestion, occasion);
 
       _isSuggestingOutfit = false;
       notifyListeners();
-
-      return outfit;
     } catch (e) {
       _isSuggestingOutfit = false;
       _errorMessage = e.toString();
       notifyListeners();
-      return null;
     }
   }
 

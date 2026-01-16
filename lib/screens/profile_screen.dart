@@ -713,24 +713,29 @@ class ProfileScreen extends StatelessWidget {
               style: TextStyle(color: AppTheme.textSecondary),
             ),
             const SizedBox(height: 20),
-            // ignore: deprecated_member_use
-            ...StylePreference.values.map(
-              (style) => RadioListTile<StylePreference>(
-                value: style,
-                groupValue: wardrobeProvider.stylePreference,
-                onChanged: (value) {
-                  if (value != null) {
-                    wardrobeProvider.setStylePreference(value);
-                    Navigator.pop(context);
-                  }
-                },
-                title: Text(style.displayName),
-                subtitle: Text(
-                  _getStyleDescription(style),
-                  style: const TextStyle(fontSize: 12),
-                ),
-                activeColor: AppTheme.primaryColor,
-                contentPadding: EdgeInsets.zero,
+            RadioGroup<StylePreference>(
+              groupValue: wardrobeProvider.stylePreference,
+              onChanged: (StylePreference? value) {
+                if (value != null) {
+                  wardrobeProvider.setStylePreference(value);
+                  Navigator.pop(context);
+                }
+              },
+              child: Column(
+                children: StylePreference.values
+                    .map(
+                      (style) => RadioListTile<StylePreference>(
+                        value: style,
+                        title: Text(style.displayName),
+                        subtitle: Text(
+                          _getStyleDescription(style),
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                        activeColor: AppTheme.primaryColor,
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    )
+                    .toList(),
               ),
             ),
             const SizedBox(height: 10),

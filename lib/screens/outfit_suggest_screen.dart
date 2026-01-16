@@ -174,7 +174,11 @@ class _OutfitSuggestScreenState extends State<OutfitSuggestScreen> {
                                 isSelected: isSelected,
                                 onTap: () {
                                   setState(() {
-                                    _selectedOccasion = occasion['id'];
+                                    if (_selectedOccasion == occasion['id']) {
+                                      _selectedOccasion = null; // Toggle off
+                                    } else {
+                                      _selectedOccasion = occasion['id'];
+                                    }
                                     _customOccasion = null;
                                   });
                                 },
@@ -365,8 +369,6 @@ class _OutfitSuggestScreenState extends State<OutfitSuggestScreen> {
   }
 
   Future<void> _generateOutfit() async {
-    if (_selectedOccasion == null && _customOccasion == null) return;
-
     setState(() => _isGenerating = true);
 
     try {
@@ -436,10 +438,11 @@ class _OutfitSuggestScreenState extends State<OutfitSuggestScreen> {
               maxLength: 100,
               textCapitalization: TextCapitalization.sentences,
               onSubmitted: (value) {
-                if (value.trim().isNotEmpty) {
+                final text = value.trim();
+                if (text.isNotEmpty) {
                   Navigator.pop(dialogContext);
                   setState(() {
-                    _customOccasion = value.trim();
+                    _customOccasion = text;
                     _selectedOccasion = null;
                   });
                 }
@@ -449,16 +452,14 @@ class _OutfitSuggestScreenState extends State<OutfitSuggestScreen> {
         ),
         actions: [
           TextButton(
-            onPressed: () {
-              Navigator.pop(dialogContext);
-            },
+            onPressed: () => Navigator.pop(dialogContext),
             child: const Text('Hủy'),
           ),
           ElevatedButton(
             onPressed: () {
               final text = dialogController.text.trim();
+              Navigator.pop(dialogContext);
               if (text.isNotEmpty) {
-                Navigator.pop(dialogContext);
                 setState(() {
                   _customOccasion = text;
                   _selectedOccasion = null;
@@ -469,9 +470,7 @@ class _OutfitSuggestScreenState extends State<OutfitSuggestScreen> {
           ),
         ],
       ),
-    ).then((_) {
-      dialogController.dispose();
-    });
+    );
   }
 
   void _markOutfitAsWorn(Outfit outfit) {

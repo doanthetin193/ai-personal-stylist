@@ -37,7 +37,7 @@ class ClothingImage extends StatelessWidget {
         return errorWidget ?? _buildErrorWidget();
       }
     }
-    
+
     // Không có ảnh
     return errorWidget ?? _buildErrorWidget();
   }
@@ -91,19 +91,22 @@ class ClothingCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           child: Stack(
             children: [
-              // Image
+              // Image with Hero animation
               Positioned.fill(
-                child: ClothingImage(
-                  item: item,
-                  fit: BoxFit.cover,
-                  placeholder: _buildShimmer(),
-                  errorWidget: Container(
-                    color: Colors.grey.shade200,
-                    child: const Icon(Icons.image_not_supported, size: 40),
+                child: Hero(
+                  tag: 'item-${item.id}',
+                  child: ClothingImage(
+                    item: item,
+                    fit: BoxFit.cover,
+                    placeholder: _buildShimmer(),
+                    errorWidget: Container(
+                      color: Colors.grey.shade200,
+                      child: const Icon(Icons.image_not_supported, size: 40),
+                    ),
                   ),
                 ),
               ),
-              
+
               // Gradient overlay at bottom
               Positioned(
                 bottom: 0,
@@ -149,7 +152,7 @@ class ClothingCard extends StatelessWidget {
                   ),
                 ),
               ),
-              
+
               // Favorite button
               if (showFavorite)
                 Positioned(
@@ -170,16 +173,18 @@ class ClothingCard extends StatelessWidget {
                         ],
                       ),
                       child: Icon(
-                        item.isFavorite ? Icons.favorite : Icons.favorite_border,
+                        item.isFavorite
+                            ? Icons.favorite
+                            : Icons.favorite_border,
                         size: 20,
-                        color: item.isFavorite 
-                            ? AppTheme.secondaryColor 
+                        color: item.isFavorite
+                            ? AppTheme.secondaryColor
                             : AppTheme.textSecondary,
                       ),
                     ),
                   ),
                 ),
-              
+
               // Selection check
               if (isSelected)
                 Positioned(

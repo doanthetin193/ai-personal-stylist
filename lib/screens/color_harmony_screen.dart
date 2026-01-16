@@ -483,8 +483,6 @@ class _ColorHarmonyScreenState extends State<ColorHarmonyScreen> {
   }
 
   Future<void> _evaluateHarmony() async {
-    if (!_canEvaluate) return;
-
     setState(() {
       _isEvaluating = true;
       _result = null;

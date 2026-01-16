@@ -6,104 +6,91 @@ import 'clothing_card.dart';
 
 class OutfitCard extends StatelessWidget {
   final Outfit outfit;
-  final VoidCallback? onTap;
   final VoidCallback? onWear;
-  final bool showActions;
 
-  const OutfitCard({
-    super.key,
-    required this.outfit,
-    this.onTap,
-    this.onWear,
-    this.showActions = true,
-  });
+  const OutfitCard({super.key, required this.outfit, this.onWear});
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: AppDecorations.cardDecoration,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header
-            Row(
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: AppDecorations.cardDecoration,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  gradient: AppTheme.primaryGradient,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  outfit.occasion,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              const Spacer(),
+            ],
+          ),
+
+          const SizedBox(height: 16),
+
+          // Items display
+          _buildItemsGrid(),
+
+          const SizedBox(height: 16),
+
+          // Reason
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AppTheme.backgroundColor,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    gradient: AppTheme.primaryGradient,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
+                const Icon(
+                  Icons.auto_awesome,
+                  size: 18,
+                  color: AppTheme.primaryColor,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
                   child: Text(
-                    outfit.occasion,
+                    outfit.reason,
                     style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                      color: AppTheme.textSecondary,
+                      height: 1.4,
                     ),
                   ),
                 ),
-                const Spacer(),
               ],
             ),
+          ),
 
-            const SizedBox(height: 16),
-
-            // Items display
-            _buildItemsGrid(),
-
-            const SizedBox(height: 16),
-
-            // Reason
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: AppTheme.backgroundColor,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Icon(
-                    Icons.auto_awesome,
-                    size: 18,
-                    color: AppTheme.primaryColor,
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      outfit.reason,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: AppTheme.textSecondary,
-                        height: 1.4,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+          // Actions
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: onWear,
+              icon: const Icon(Icons.checkroom, size: 18),
+              label: const Text('Mặc hôm nay'),
             ),
-
-            // Actions
-            if (showActions) ...[
-              const SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: onWear,
-                  icon: const Icon(Icons.checkroom, size: 18),
-                  label: const Text('Mặc hôm nay'),
-                ),
-              ),
-            ],
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
