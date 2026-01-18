@@ -173,8 +173,9 @@ graph LR
 | 7 | Dọn tủ đồ | AI gợi ý đồ trùng, không phù hợp |
 | 8 | Thống kê tủ đồ | Số lượng, đồ mặc nhiều/ít |
 | 9 | Chọn style preference | Loose/Regular/Fitted |
+| 10 | Kiểm tra ảnh | AI phát hiện ảnh không phải quần áo |
 
-**Tổng: 9 chức năng chính** (16 loại quần áo, 8 styles, 4 mùa)
+**Tổng: 10 chức năng chính** (16 loại quần áo, 8 styles, 4 mùa)
 
 ---
 
@@ -362,9 +363,11 @@ graph LR
 | Debug | `flutter run -d chrome` |
 | Release | `flutter run -d chrome --release` |
 | Local Server | `python -m http.server 8080` |
-| Firebase Hosting | `firebase deploy` (sẵn sàng) |
+| **✅ Firebase Hosting** | https://ai-personal-stylist-b1162.web.app |
 
 **PWA:** Ứng dụng hoạt động offline sau lần load đầu tiên
+
+**Live Demo:** App đã deploy và chạy 24/7 trên server Google
 
 *[Vẽ Deployment Diagram từ mermaid này]*
 

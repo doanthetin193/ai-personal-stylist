@@ -1,10 +1,12 @@
 # 👔 AI Personal Stylist
 
-Ứng dụng Flutter giúp quản lý tủ đồ thông minh với AI. Sử dụng **Groq API** (Llama 4 Scout) để phân tích quần áo và gợi ý phối đồ dựa trên thời tiết, dịp đi, và màu sắc.
+Ứng dụng Flutter giúp quản lý tủ đồ thông minh với AI. Sử dụng **Groq API** (LLaMA 3.3 70B) để phân tích quần áo và gợi ý phối đồ dựa trên thời tiết, dịp đi, và màu sắc.
 
-![Flutter](https://img.shields.io/badge/Flutter-3.9.2-blue?logo=flutter)
+**🌐 Live Demo:** https://ai-personal-stylist-b1162.web.app
+
+![Flutter](https://img.shields.io/badge/Flutter-3.32+-blue?logo=flutter)
 ![Firebase](https://img.shields.io/badge/Firebase-Firestore-orange?logo=firebase)
-![Groq](https://img.shields.io/badge/AI-Groq%20Llama%204-green)
+![Groq](https://img.shields.io/badge/AI-Groq%20LLaMA%203.3-green)
 
 ---
 
@@ -14,6 +16,7 @@
 |------|----------|
 | **[SERVICES_NOTES.md](SERVICES_NOTES.md)** | Kiến thức về Firebase, Firestore, Groq API |
 | **[FILTER_NOTES.md](FILTER_NOTES.md)** | Cơ chế filter trong Tủ đồ |
+| **[DEPLOY_NOTES.md](DEPLOY_NOTES.md)** | Hướng dẫn deploy lên Firebase Hosting |
 | **[AI_INTEGRATION_ISSUES.md](AI_INTEGRATION_ISSUES.md)** | Ghi chú về migration từ Gemini sang Groq |
 
 ---

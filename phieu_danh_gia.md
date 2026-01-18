@@ -20,8 +20,8 @@
 | | | Sử dụng kỹ thuật kết nối dữ liệu bên ngoài: Web API, Firebase Firestore... | 5 | **Firebase Firestore:** CRUD quần áo (add/update/delete/deleteAll). **Groq API:** REST API call với HTTP POST, JSON encode/decode. **Weather API:** Lấy thông tin thời tiết để gợi ý outfit. **Google Sign-In:** OAuth 2.0 |
 | | Nghiệp vụ | Dự án có tính phức tạp, nhiều chức năng/nghiệp vụ | 10 | *GV vấn đáp, đánh giá trực tiếp.* |
 | **4. Nâng cao (15 điểm)** | Áp dụng kỹ thuật/công nghệ nâng cao | Áp dụng kiến thức nâng cao: dịch vụ chạy ngầm... | 5 | **State Management:** Provider pattern với `ChangeNotifier`, `notifyListeners()`. **Async:** `Future`, `async/await`, `StreamBuilder` cho auth. **Image Processing:** `FlutterImageCompress` nén ảnh. **Unit Testing:** 43 tests, 100% pass rate, test Models với `flutter_test` |
-| | Sử dụng công nghệ phức tạp, hiện đại | Sử dụng, tích hợp Cloud, AI, thư viện hiện đại | 5 | **AI Integration:** Groq API với LLaMA 3.3 70B: (1) phân tích quần áo, (2) gợi ý outfit, (3) đánh giá hợp màu, (4) gợi ý dọn tủ. **Firebase Cloud:** Authentication + Firestore NoSQL. **Prompt Engineering:** Custom prompts cho từng tính năng AI |
-| | Triển khai | Có triển khai thử nghiệm trên môi trường: Local / Cloud / Server | 5 | **Local Web:** `flutter run -d chrome` + `python -m http.server`. **PWA:** Progressive Web App với Service Worker, hoạt động offline. **Firebase:** Có thể deploy lên Firebase Hosting |
+| | Sử dụng công nghệ phức tạp, hiện đại | Sử dụng, tích hợp Cloud, AI, thư viện hiện đại | 5 | **AI Integration:** Groq API với LLaMA 3.3 70B: (1) phân tích quần áo, (2) gợi ý outfit, (3) đánh giá hợp màu, (4) gợi ý dọn tủ, (5) kiểm tra ảnh quần áo (is_clothing validation). **Firebase Cloud:** Authentication + Firestore NoSQL. **Prompt Engineering:** Custom prompts cho từng tính năng AI |
+| | Triển khai | Có triển khai thử nghiệm trên môi trường: Local / Cloud / Server | 5 | **✅ Đã Deploy:** https://ai-personal-stylist-b1162.web.app. **Firebase Hosting:** App chạy 24/7 trên server Google. **Local:** `flutter run -d chrome`. **PWA:** Progressive Web App với Service Worker |
 | **5. Báo cáo & Thuyết trình (10 điểm)** | Chất lượng báo cáo | Báo cáo bằng Slides: khoảng 10 slides, nội dung đầy đủ, logic, định dạng tốt | 5 | *GV vấn đáp, đánh giá trực tiếp.* |
 | | Thuyết trình & demo | Trình bày rõ ràng, mạch lạc, trả lời tốt câu hỏi, demo tốt | 5 | *GV vấn đáp, đánh giá trực tiếp.* |
 
@@ -38,6 +38,7 @@
 7. **Profile:** Chỉnh sửa thông tin, chọn style preference (loose/regular/fitted)
 8. **Yêu thích:** Đánh dấu và lọc quần áo yêu thích
 9. **Đếm số lần mặc:** Theo dõi wearCount cho từng item
+10. **Kiểm tra ảnh:** AI phát hiện ảnh không phải quần áo, cảnh báo người dùng
 
 ## Công nghệ sử dụng:
 
@@ -55,7 +56,7 @@ lib/
 ├── main.dart              # Entry point + AuthWrapper
 ├── firebase_options.dart  # Firebase config
 ├── models/                # 3 models
-│   ├── clothing_item.dart # ClothingItem + enums (ClothingType, ClothingStyle, Season)
+│   ├── clothing_item.dart # ClothingItem + enums (16 ClothingType, 8 ClothingStyle, 4 Season)
 │   ├── outfit.dart        # Outfit + ColorHarmonyResult
 │   └── weather.dart       # WeatherInfo
 ├── providers/             # 2 providers
