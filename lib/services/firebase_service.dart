@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import '../models/clothing_item.dart';
 import '../utils/constants.dart';
 
@@ -76,10 +77,31 @@ class FirebaseService {
   /// Sign in with Google
   Future<UserCredential?> signInWithGoogle() async {
     try {
-      final GoogleAuthProvider googleProvider = GoogleAuthProvider();
-      // Force account selection prompt every time
-      googleProvider.setCustomParameters({'prompt': 'select_account'});
-      return await _auth.signInWithPopup(googleProvider);
+      if (kIsWeb) {
+        // Web: use signInWithPopup
+        final GoogleAuthProvider googleProvider = GoogleAuthProvider();
+        googleProvider.setCustomParameters({'prompt': 'select_account'});
+        return await _auth.signInWithPopup(googleProvider);
+      } else {
+        // Android/iOS: use google_sign_in package
+        final googleSignIn = GoogleSignIn();
+        final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+
+        if (googleUser == null) {
+          print('Google Sign-In cancelled by user');
+          return null;
+        }
+
+        final GoogleSignInAuthentication googleAuth =
+            await googleUser.authentication;
+
+        final credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
+
+        return await _auth.signInWithCredential(credential);
+      }
     } catch (e) {
       print('Google Sign-In Error: $e');
       return null;

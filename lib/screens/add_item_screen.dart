@@ -599,6 +599,18 @@ class _AddItemScreenState extends State<AddItemScreen> {
       );
 
       if (_analysisResult != null) {
+        // Kiểm tra is_clothing trước
+        final isClothing = _analysisResult!['is_clothing'] ?? true;
+
+        if (isClothing == false) {
+          // Hiện cảnh báo không phải quần áo
+          if (mounted) {
+            setState(() => _isAnalyzing = false);
+            _showNotClothingWarning();
+          }
+          return;
+        }
+
         // Set editable fields from AI analysis
         _selectedType = ClothingType.fromString(
           _analysisResult!['type'] ?? 'other',
@@ -653,6 +665,57 @@ class _AddItemScreenState extends State<AddItemScreen> {
         setState(() => _isAnalyzing = false);
       }
     }
+  }
+
+  void _showNotClothingWarning() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            Icon(
+              Icons.warning_amber_rounded,
+              color: AppTheme.warningColor,
+              size: 28,
+            ),
+            const SizedBox(width: 12),
+            const Text('Không phải quần áo'),
+          ],
+        ),
+        content: const Text(
+          'AI nhận thấy ảnh này không phải là quần áo, giày dép hoặc phụ kiện thời trang.\n\nVui lòng chọn ảnh khác để thêm vào tủ đồ.',
+          style: TextStyle(fontSize: 15),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              setState(() {
+                _imageBytes = null;
+                _analysisResult = null;
+              });
+            },
+            child: const Text('Chọn ảnh khác'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              // Cho phép tiếp tục nếu user khẳng định đây là quần áo
+              _selectedType = ClothingType.other;
+              _selectedColor = 'unknown';
+              _selectedStyles = [ClothingStyle.casual];
+              _selectedSeasons = [Season.summer];
+              setState(() {});
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.warningColor,
+            ),
+            child: const Text('Vẫn tiếp tục'),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _saveItem() async {

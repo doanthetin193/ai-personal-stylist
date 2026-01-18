@@ -12,7 +12,8 @@
 
 | File | Mục đích |
 |------|----------|
-| **[FLOWS.md](FLOWS.md)** | ⭐ Tất cả các luồng xử lý trong app |
+| **[SERVICES_NOTES.md](SERVICES_NOTES.md)** | Kiến thức về Firebase, Firestore, Groq API |
+| **[FILTER_NOTES.md](FILTER_NOTES.md)** | Cơ chế filter trong Tủ đồ |
 | **[AI_INTEGRATION_ISSUES.md](AI_INTEGRATION_ISSUES.md)** | Ghi chú về migration từ Gemini sang Groq |
 
 ---
@@ -39,16 +40,29 @@
 - AI đánh giá độ hài hòa màu sắc (0-100 điểm)
 - Gợi ý cách phối tốt hơn
 
+### 5. 🧹 Dọn tủ đồ thông minh
+- AI phân tích và gợi ý đồ nên bỏ/donate
+- Phát hiện đồ trùng lặp, ít sử dụng
+
+### 6. ✅ Kiểm tra ảnh thông minh
+- AI tự động nhận diện ảnh không phải quần áo
+- Cảnh báo và yêu cầu chọn ảnh khác
+
+### 7. 🧪 Unit Testing
+- 43 unit tests
+- 100% pass rate
+- Test coverage cho tất cả Models
+
 ---
 
 ## 🛠️ Công nghệ sử dụng
 
 | Công nghệ | Mục đích |
 |-----------|----------|
-| **Flutter 3.9** | Framework phát triển đa nền tảng |
+| **Flutter 3.32+** | Framework phát triển đa nền tảng (Web + Mobile) |
 | **Firebase Auth** | Xác thực người dùng (Google, Email, Anonymous) |
 | **Cloud Firestore** | Cơ sở dữ liệu NoSQL lưu trữ items |
-| **Groq API** | AI phân tích ảnh và gợi ý outfit (Llama 4 Scout) |
+| **Groq API** | AI phân tích ảnh và gợi ý outfit (LLaMA 3.3 70B) |
 | **Provider** | Quản lý state |
 | **OpenWeatherMap** | API lấy thời tiết |
 

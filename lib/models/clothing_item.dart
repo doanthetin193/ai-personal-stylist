@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 enum ClothingType {
   shirt,
   tshirt,
+  polo,
   pants,
   jeans,
   shorts,
@@ -24,6 +25,8 @@ enum ClothingType {
         return 'Áo sơ mi';
       case ClothingType.tshirt:
         return 'Áo thun';
+      case ClothingType.polo:
+        return 'Áo polo';
       case ClothingType.pants:
         return 'Quần tây';
       case ClothingType.jeans:
@@ -58,6 +61,7 @@ enum ClothingType {
     switch (this) {
       case ClothingType.shirt:
       case ClothingType.tshirt:
+      case ClothingType.polo:
         return 'top';
       case ClothingType.hoodie:
       case ClothingType.jacket:

@@ -12,7 +12,20 @@
           "package_name": "com.example.ai_personal_stylist"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "417611516684-co94plkmnpme6k61g69bfqetn4675f04.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.ai_personal_stylist",
+            "certificate_hash": "7c331b9d0bea42d51e628598a99b912ab81f39eb"
+          }
+        },
+        {
+          "client_id": "417611516684-3upjslvr3le933ln5v3ghsn72o3ol1t2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCvF-x0G4Wt61zbHJFkmPxyNJ7lLLU0g7U"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "417611516684-3upjslvr3le933ln5v3ghsn72o3ol1t2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

@@ -49,11 +49,17 @@ class Occasions {
 class AIPrompts {
   /// Prompt phân tích ảnh quần áo - Cải thiện độ chính xác
   static const String analyzeClothing = '''
-Bạn là chuyên gia thời trang. Phân tích kỹ ảnh quần áo này và trả về JSON chính xác.
+Bạn là chuyên gia thời trang. Phân tích kỹ ảnh này và trả về JSON chính xác.
+
+ĐẦU TIÊN - KIỂM TRA ẢNH:
+- Nếu ảnh KHÔNG PHẢI quần áo/giày dép/phụ kiện thời trang → is_clothing = false
+- Ví dụ ảnh KHÔNG hợp lệ: đồ ăn, phong cảnh, con người (không có quần áo rõ ràng), đồ vật, con vật, xe cộ, v.v.
+- Chỉ chấp nhận: áo, quần, váy, giày, dép, túi xách, mũ nón, phụ kiện thời trang
 
 QUAN TRỌNG - PHÂN BIỆT LOẠI ÁO:
-- "tshirt": Áo thun (cổ tròn hoặc cổ tim, không có cổ áo, không có nút, thường làm từ cotton mềm)
-- "shirt": Áo sơ mi (có cổ áo cứng/lật, có hàng nút phía trước, vải cứng hơn)
+- "tshirt": Áo thun (cổ tròn hoặc cổ tim, KHÔNG có cổ lật, KHÔNG có nút, thường làm từ cotton mềm)
+- "polo": Áo polo (có cổ lật/bẻ, CHỈ CÓ 2-3 NÚT Ở NGỰC, vải pique/cotton, thường có logo)
+- "shirt": Áo sơ mi (có cổ áo cứng/lật, có HÀNG NÚT DÀI TỪ CỔ ĐẾN GẤU ÁO, vải cứng hơn)
 - "hoodie": Áo hoodie (có mũ trùm đầu)
 - "jacket": Áo khoác (mặc ngoài, có khóa kéo hoặc nút)
 
@@ -64,15 +70,18 @@ QUAN TRỌNG - MÀU SẮC:
 
 Trả về JSON với format CHÍNH XÁC như sau:
 {
-  "type": "shirt|tshirt|pants|jeans|shorts|jacket|hoodie|dress|skirt|shoes|sneakers|accessory|bag|hat|other",
-  "color": "màu chính bằng tiếng Việt (ví dụ: trắng, đen, xanh navy, be, nâu, xám, đỏ, hồng, vàng, cam, tím, xanh lá, xanh dương, trắng sọc đen, đen kẻ caro trắng)",
+  "is_clothing": true/false,
+  "type": "shirt|tshirt|polo|pants|jeans|shorts|jacket|hoodie|dress|skirt|shoes|sneakers|accessory|bag|hat|other",
+  "color": "màu chính bằng tiếng Việt",
   "material": "cotton|denim|polyester|leather|wool|silk|linen|synthetic|unknown",
   "styles": ["casual", "formal", "streetwear", "vintage", "sporty", "elegant", "minimalist"],
   "seasons": ["spring", "summer", "fall", "winter"]
 }
 
 Quy tắc:
-- type: Chọn CHÍNH XÁC loại quần áo. Áo thun (tshirt) KHÔNG có cổ áo cứng và nút. Áo sơ mi (shirt) CÓ cổ áo và nút.
+- is_clothing: TRUE nếu là quần áo/giày dép/phụ kiện, FALSE nếu không phải
+- Nếu is_clothing = false, các field khác có thể để giá trị mặc định
+- type: Chọn CHÍNH XÁC loại quần áo
 - color: Tiếng Việt, mô tả đầy đủ nếu có nhiều màu/họa tiết
 - material: Dự đoán chất liệu dựa trên hình ảnh
 - styles: Mảng 1-3 phong cách phù hợp
