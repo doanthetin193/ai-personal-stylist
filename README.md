@@ -1,12 +1,12 @@
 # 👔 AI Personal Stylist
 
-Ứng dụng Flutter giúp quản lý tủ đồ thông minh với AI. Sử dụng **Groq API** (LLaMA 3.3 70B) để phân tích quần áo và gợi ý phối đồ dựa trên thời tiết, dịp đi, và màu sắc.
+Ứng dụng Flutter giúp quản lý tủ đồ thông minh với AI. Sử dụng **Groq API** (LLaMA 4 Scout + LLaMA 3.3 70B) để phân tích quần áo và gợi ý phối đồ dựa trên thời tiết, dịp đi, và màu sắc.
 
 **🌐 Live Demo:** https://ai-personal-stylist-b1162.web.app
 
 ![Flutter](https://img.shields.io/badge/Flutter-3.32+-blue?logo=flutter)
 ![Firebase](https://img.shields.io/badge/Firebase-Firestore-orange?logo=firebase)
-![Groq](https://img.shields.io/badge/AI-Groq%20LLaMA%203.3-green)
+![Groq](https://img.shields.io/badge/AI-Groq%20LLaMA%204-green)
 
 ---
 
@@ -65,7 +65,7 @@
 | **Flutter 3.32+** | Framework phát triển đa nền tảng (Web + Mobile) |
 | **Firebase Auth** | Xác thực người dùng (Google, Email, Anonymous) |
 | **Cloud Firestore** | Cơ sở dữ liệu NoSQL lưu trữ items |
-| **Groq API** | AI phân tích ảnh và gợi ý outfit (LLaMA 3.3 70B) |
+| **Groq API** | AI phân tích ảnh (LLaMA 4 Scout) + gợi ý outfit (LLaMA 3.3 70B) |
 | **Provider** | Quản lý state |
 | **OpenWeatherMap** | API lấy thời tiết |
 
