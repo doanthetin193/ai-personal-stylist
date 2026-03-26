@@ -156,6 +156,15 @@ class ProfileScreen extends StatelessWidget {
                       ),
                     ),
                     _buildMenuItem(
+                      icon: Icons.wc,
+                      title: 'Giới tính hồ sơ',
+                      subtitle: _getGenderSubtitle(wardrobeProvider),
+                      onTap: () => _showGenderPreferenceDialog(
+                        context,
+                        wardrobeProvider,
+                      ),
+                    ),
+                    _buildMenuItem(
                       icon: Icons.style_outlined,
                       title: 'Sở thích phong cách',
                       subtitle: wardrobeProvider.stylePreference.displayName,
@@ -210,6 +219,19 @@ class ProfileScreen extends StatelessWidget {
         },
       ),
     );
+  }
+
+  String _getGenderSubtitle(WardrobeProvider wardrobeProvider) {
+    final gender = wardrobeProvider.genderPreference;
+    final styleProfile = wardrobeProvider.outfitStyleProfile;
+
+    if (gender == null && styleProfile == null) {
+      return 'Chưa thiết lập';
+    }
+
+    final genderLabel = gender?.displayName ?? 'Chưa chọn';
+    final styleLabel = styleProfile?.displayName ?? 'Mặc định';
+    return '$genderLabel • $styleLabel';
   }
 
   Widget _buildStat({
@@ -754,5 +776,145 @@ class ProfileScreen extends StatelessWidget {
       case StylePreference.fitted:
         return 'Ôm sát, tôn dáng, sleek';
     }
+  }
+
+  void _showGenderPreferenceDialog(
+    BuildContext outerContext,
+    WardrobeProvider wardrobeProvider,
+  ) {
+    GenderPreference selectedGender =
+        wardrobeProvider.genderPreference ?? GenderPreference.male;
+    OutfitStyleProfile selectedStyleProfile =
+        wardrobeProvider.outfitStyleProfile ??
+        OutfitStyleProfile.defaultForGender(selectedGender);
+
+    showModalBottomSheet(
+      context: outerContext,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (sheetContext) => StatefulBuilder(
+        builder: (modalContext, setState) {
+          final maxHeight = MediaQuery.of(sheetContext).size.height * 0.88;
+
+          return SafeArea(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxHeight: maxHeight),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Giới tính hồ sơ',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            const Text(
+                              'Thiết lập này giúp AI gợi ý outfit hợp lý và đúng vibe bạn mong muốn.',
+                              style: TextStyle(color: AppTheme.textSecondary),
+                            ),
+                            const SizedBox(height: 20),
+                            RadioListTile<GenderPreference>(
+                              value: GenderPreference.male,
+                              groupValue: selectedGender,
+                              onChanged: (value) {
+                                if (value != null) {
+                                  setState(() => selectedGender = value);
+                                }
+                              },
+                              title: const Text('Nam'),
+                              activeColor: AppTheme.primaryColor,
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                            RadioListTile<GenderPreference>(
+                              value: GenderPreference.female,
+                              groupValue: selectedGender,
+                              onChanged: (value) {
+                                if (value != null) {
+                                  setState(() => selectedGender = value);
+                                }
+                              },
+                              title: const Text('Nữ'),
+                              activeColor: AppTheme.primaryColor,
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                            const Divider(height: 24),
+                            const Text(
+                              'Phong cách hồ sơ',
+                              style: TextStyle(fontWeight: FontWeight.w600),
+                            ),
+                            const SizedBox(height: 8),
+                            ...OutfitStyleProfile.values.map(
+                              (profile) => RadioListTile<OutfitStyleProfile>(
+                                value: profile,
+                                groupValue: selectedStyleProfile,
+                                onChanged: (value) {
+                                  if (value != null) {
+                                    setState(
+                                      () => selectedStyleProfile = value,
+                                    );
+                                  }
+                                },
+                                title: Text(profile.displayName),
+                                subtitle: Text(profile.description),
+                                activeColor: AppTheme.primaryColor,
+                                contentPadding: EdgeInsets.zero,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          final saved = await wardrobeProvider
+                              .saveIdentityPreferences(
+                                gender: selectedGender,
+                                styleProfile: selectedStyleProfile,
+                              );
+
+                          if (!outerContext.mounted) return;
+
+                          if (saved) {
+                            Navigator.pop(sheetContext);
+                            ScaffoldMessenger.of(outerContext).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Đã cập nhật hồ sơ giới tính và phong cách',
+                                ),
+                              ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(outerContext).showSnackBar(
+                              const SnackBar(
+                                content: Text('Lưu thất bại, vui lòng thử lại'),
+                              ),
+                            );
+                          }
+                        },
+                        child: const Text('Lưu thay đổi'),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 }

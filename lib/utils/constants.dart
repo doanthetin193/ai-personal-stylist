@@ -15,6 +15,7 @@ class AppConstants {
 
   // Firebase Collections
   static const String itemsCollection = 'items';
+  static const String usersCollection = 'users';
 
   // Cache Duration
   static const Duration weatherCacheDuration = Duration(minutes: 30);
@@ -96,9 +97,17 @@ CHỈ TRẢ VỀ JSON. Không markdown, không giải thích, không text thừa
     required String weatherContext,
     required String occasion,
     String? stylePreference,
+    String? genderProfile,
+    String? styleProfile,
   }) {
     final styleContext = stylePreference != null
         ? '\nSTYLE PREFERENCE:\n$stylePreference\n'
+        : '';
+    final genderContext = genderProfile != null
+        ? '\nUSER GENDER PROFILE:\n$genderProfile\n'
+        : '';
+    final styleProfileContext = styleProfile != null
+        ? '\nUSER STYLE PROFILE:\n$styleProfile\n'
         : '';
     return '''
 You are a professional fashion stylist. Based on the wardrobe items and conditions below, suggest the best outfit.
@@ -110,13 +119,24 @@ WEATHER:
 $weatherContext
 
 OCCASION: $occasion
+$styleProfileContext
+$genderContext
 $styleContext
+
+PRIORITY ORDER (highest to lowest):
+1) USER STYLE PROFILE
+2) USER GENDER PROFILE
+3) STYLE PREFERENCE (fit only, secondary)
+
+If any signals conflict, follow the higher-priority one.
 Select items that:
 1. Match the weather conditions
 2. Are appropriate for the occasion
 3. Have harmonious colors
 4. Create a cohesive style
-5. Respect the user's style preference (if provided)
+5. Respect the user's style profile (masculine/feminine/unisex/flexible)
+6. Respect the user's gender profile (if provided)
+7. Use style preference only to fine-tune fit/silhouette
 
 Return ONLY a valid JSON object:
 {
@@ -132,6 +152,10 @@ Rules:
 - Use exact item IDs from the wardrobe
 - If no suitable item exists for a category, use null
 - For dress/fullbody items, put in "top" and set "bottom" to null
+- If style profile is masculine, avoid selecting dress/skirt items
+- If style profile is unisex, prioritize neutral pieces and avoid extreme styling
+- If style profile is flexible, you may mix masculine/feminine pieces when harmonious
+- Use style preference only as a fit refinement (loose/regular/fitted), never to override style profile
 - Reason should mention color harmony, style match, and weather appropriateness
 
 Return ONLY the JSON. No markdown, no extra text.

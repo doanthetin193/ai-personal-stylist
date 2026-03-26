@@ -158,6 +158,93 @@ class FirebaseService {
   CollectionReference<Map<String, dynamic>> get _itemsRef =>
       _firestore.collection(AppConstants.itemsCollection);
 
+  CollectionReference<Map<String, dynamic>> get _usersRef =>
+      _firestore.collection(AppConstants.usersCollection);
+
+  /// Get current user's gender preference
+  Future<String?> getUserGenderPreference() async {
+    try {
+      final userId = currentUser?.uid;
+      if (userId == null) return null;
+
+      final snapshot = await _usersRef.doc(userId).get();
+      if (!snapshot.exists) return null;
+
+      final data = snapshot.data();
+      final value = data?['gender'];
+      if (value is String && value.isNotEmpty) {
+        return value;
+      }
+
+      return null;
+    } catch (e) {
+      print('Get User Gender Preference Error: $e');
+      return null;
+    }
+  }
+
+  /// Save current user's gender preference
+  Future<bool> saveUserGenderPreference(String gender) async {
+    try {
+      final userId = currentUser?.uid;
+      if (userId == null) return false;
+
+      await _usersRef.doc(userId).set({
+        'gender': gender,
+        'updatedAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+
+      return true;
+    } catch (e) {
+      print('Save User Gender Preference Error: $e');
+      return false;
+    }
+  }
+
+  /// Get current user's style profile preference
+  Future<String?> getUserStyleProfilePreference() async {
+    try {
+      final userId = currentUser?.uid;
+      if (userId == null) return null;
+
+      final snapshot = await _usersRef.doc(userId).get();
+      if (!snapshot.exists) return null;
+
+      final data = snapshot.data();
+      final value = data?['styleProfile'];
+      if (value is String && value.isNotEmpty) {
+        return value;
+      }
+
+      return null;
+    } catch (e) {
+      print('Get User Style Profile Preference Error: $e');
+      return null;
+    }
+  }
+
+  /// Save current user's gender + style profile together
+  Future<bool> saveUserIdentityPreferences({
+    required String gender,
+    required String styleProfile,
+  }) async {
+    try {
+      final userId = currentUser?.uid;
+      if (userId == null) return false;
+
+      await _usersRef.doc(userId).set({
+        'gender': gender,
+        'styleProfile': styleProfile,
+        'updatedAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+
+      return true;
+    } catch (e) {
+      print('Save User Identity Preferences Error: $e');
+      return false;
+    }
+  }
+
   /// Add new clothing item
   Future<String?> addClothingItem(ClothingItem item) async {
     try {

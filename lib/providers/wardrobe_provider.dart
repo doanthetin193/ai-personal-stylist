@@ -30,11 +30,153 @@ enum StylePreference {
   String get aiDescription {
     switch (this) {
       case StylePreference.loose:
-        return 'User prefers loose, relaxed, oversized clothing. Prioritize comfort over fitted looks.';
+        return 'Secondary fit preference only: user prefers loose, relaxed, oversized silhouettes.';
       case StylePreference.regular:
-        return 'User prefers regular fit clothing, balanced between loose and fitted.';
+        return 'Secondary fit preference only: user prefers regular fit clothing, balanced between loose and fitted.';
       case StylePreference.fitted:
-        return 'User prefers fitted, slim, body-hugging clothing. Prioritize sleek silhouettes.';
+        return 'Secondary fit preference only: user prefers fitted, slim, body-hugging silhouettes.';
+    }
+  }
+}
+
+enum GenderPreference {
+  male,
+  female;
+
+  String get displayName {
+    switch (this) {
+      case GenderPreference.male:
+        return 'Nam';
+      case GenderPreference.female:
+        return 'Nữ';
+    }
+  }
+
+  String get firestoreValue {
+    switch (this) {
+      case GenderPreference.male:
+        return 'male';
+      case GenderPreference.female:
+        return 'female';
+    }
+  }
+
+  String get aiDescription {
+    switch (this) {
+      case GenderPreference.male:
+        return 'User gender profile is male. Avoid dress and skirt unless no other reasonable option exists.';
+      case GenderPreference.female:
+        return 'User gender profile is female. Standard women wardrobe suggestions are allowed.';
+    }
+  }
+
+  static GenderPreference? fromString(String? value) {
+    if (value == null || value.isEmpty) return null;
+
+    switch (value.toLowerCase()) {
+      case 'male':
+      case 'nam':
+        return GenderPreference.male;
+      case 'female':
+      case 'nu':
+      case 'nữ':
+        return GenderPreference.female;
+      default:
+        return null;
+    }
+  }
+}
+
+enum OutfitStyleProfile {
+  masculine,
+  feminine,
+  unisex,
+  flexible;
+
+  String get displayName {
+    switch (this) {
+      case OutfitStyleProfile.masculine:
+        return 'Nam tính';
+      case OutfitStyleProfile.feminine:
+        return 'Nữ tính';
+      case OutfitStyleProfile.unisex:
+        return 'Unisex';
+      case OutfitStyleProfile.flexible:
+        return 'Linh hoạt';
+    }
+  }
+
+  String get description {
+    switch (this) {
+      case OutfitStyleProfile.masculine:
+        return 'Ưu tiên outfit nam tính, hạn chế váy/chân váy.';
+      case OutfitStyleProfile.feminine:
+        return 'Ưu tiên outfit nữ tính.';
+      case OutfitStyleProfile.unisex:
+        return 'Ưu tiên đồ trung tính, nam nữ đều mặc hợp.';
+      case OutfitStyleProfile.flexible:
+        return 'Cho phép mix đa dạng miễn tổng thể hài hòa.';
+    }
+  }
+
+  String get firestoreValue {
+    switch (this) {
+      case OutfitStyleProfile.masculine:
+        return 'masculine';
+      case OutfitStyleProfile.feminine:
+        return 'feminine';
+      case OutfitStyleProfile.unisex:
+        return 'unisex';
+      case OutfitStyleProfile.flexible:
+        return 'flexible';
+    }
+  }
+
+  String get aiDescription {
+    switch (this) {
+      case OutfitStyleProfile.masculine:
+        return 'Style profile is masculine. Avoid dress and skirt items.';
+      case OutfitStyleProfile.feminine:
+        return 'Style profile is feminine. Feminine silhouettes are preferred.';
+      case OutfitStyleProfile.unisex:
+        return 'Style profile is unisex. Prioritize neutral, cross-gender styling.';
+      case OutfitStyleProfile.flexible:
+        return 'Style profile is flexible. You may mix feminine and masculine pieces when harmonious.';
+    }
+  }
+
+  static OutfitStyleProfile? fromString(String? value) {
+    if (value == null || value.isEmpty) return null;
+
+    switch (value.toLowerCase()) {
+      case 'masculine':
+      case 'nam_tinh':
+      case 'nam tính':
+        return OutfitStyleProfile.masculine;
+      case 'feminine':
+      case 'nu_tinh':
+      case 'nữ tính':
+        return OutfitStyleProfile.feminine;
+      case 'unisex':
+      case 'neutral':
+        return OutfitStyleProfile.unisex;
+      case 'flexible':
+      case 'linh_hoat':
+      case 'linh hoạt':
+        return OutfitStyleProfile.flexible;
+      default:
+        return null;
+    }
+  }
+
+  static OutfitStyleProfile defaultForGender(GenderPreference? gender) {
+    switch (gender) {
+      case GenderPreference.male:
+        return OutfitStyleProfile.masculine;
+      case GenderPreference.female:
+        return OutfitStyleProfile.feminine;
+      default:
+        return OutfitStyleProfile.unisex;
     }
   }
 }
@@ -55,6 +197,8 @@ class WardrobeProvider extends ChangeNotifier {
 
   // Style preference
   StylePreference _stylePreference = StylePreference.regular;
+  GenderPreference? _genderPreference;
+  OutfitStyleProfile? _outfitStyleProfile;
 
   // Current outfit suggestion
   Outfit? _currentOutfit;
@@ -80,6 +224,16 @@ class WardrobeProvider extends ChangeNotifier {
   bool get isSuggestingOutfit => _isSuggestingOutfit;
   Outfit? get currentOutfit => _currentOutfit;
   StylePreference get stylePreference => _stylePreference;
+  GenderPreference? get genderPreference => _genderPreference;
+  OutfitStyleProfile? get outfitStyleProfile => _outfitStyleProfile;
+  bool get hasGenderPreference => _genderPreference != null;
+  bool get hasIdentityPreferences =>
+      _genderPreference != null && _outfitStyleProfile != null;
+
+  OutfitStyleProfile get effectiveOutfitStyleProfile {
+    return _outfitStyleProfile ??
+        OutfitStyleProfile.defaultForGender(_genderPreference);
+  }
 
   // Filtered items
   List<ClothingItem> get _filteredItems {
@@ -262,6 +416,84 @@ class WardrobeProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> loadGenderPreference() async {
+    final rawGender = await _firebaseService.getUserGenderPreference();
+    final rawStyleProfile = await _firebaseService
+        .getUserStyleProfilePreference();
+    final parsedGender = GenderPreference.fromString(rawGender);
+    final parsedStyleProfile = OutfitStyleProfile.fromString(rawStyleProfile);
+
+    if (parsedGender != _genderPreference ||
+        parsedStyleProfile != _outfitStyleProfile) {
+      _genderPreference = parsedGender;
+      _outfitStyleProfile = parsedStyleProfile;
+      notifyListeners();
+    }
+  }
+
+  Future<bool> saveGenderPreference(GenderPreference preference) async {
+    final success = await _firebaseService.saveUserIdentityPreferences(
+      gender: preference.firestoreValue,
+      styleProfile:
+          (_outfitStyleProfile ??
+                  OutfitStyleProfile.defaultForGender(preference))
+              .firestoreValue,
+    );
+
+    if (success) {
+      _genderPreference = preference;
+      _outfitStyleProfile ??= OutfitStyleProfile.defaultForGender(preference);
+      notifyListeners();
+    }
+
+    return success;
+  }
+
+  Future<bool> saveIdentityPreferences({
+    required GenderPreference gender,
+    required OutfitStyleProfile styleProfile,
+  }) async {
+    final success = await _firebaseService.saveUserIdentityPreferences(
+      gender: gender.firestoreValue,
+      styleProfile: styleProfile.firestoreValue,
+    );
+
+    if (success) {
+      _genderPreference = gender;
+      _outfitStyleProfile = styleProfile;
+      notifyListeners();
+    }
+
+    return success;
+  }
+
+  void setOutfitStyleProfile(OutfitStyleProfile profile) {
+    _outfitStyleProfile = profile;
+    notifyListeners();
+  }
+
+  bool _isRestrictedByStyleProfile(ClothingItem item) {
+    final profile = effectiveOutfitStyleProfile;
+    if (profile != OutfitStyleProfile.masculine) {
+      return false;
+    }
+
+    return item.type == ClothingType.dress || item.type == ClothingType.skirt;
+  }
+
+  List<ClothingItem> _getWardrobeForSuggestion() {
+    if (effectiveOutfitStyleProfile != OutfitStyleProfile.masculine) {
+      return _items;
+    }
+
+    final filtered = _items
+        .where((item) => !_isRestrictedByStyleProfile(item))
+        .toList();
+
+    // Fallback to original wardrobe to avoid hard-failing when user has too few items.
+    return filtered.isNotEmpty ? filtered : _items;
+  }
+
   /// Suggest outfit
   Future<void> suggestOutfit(String occasion) async {
     try {
@@ -274,12 +506,19 @@ class WardrobeProvider extends ChangeNotifier {
           _weather?.toAIDescription() ??
           'Temperature: 28°C, Humidity: 70%, Condition: Ấm áp';
 
+      final wardrobeForSuggestion = _getWardrobeForSuggestion();
+      if (wardrobeForSuggestion.isEmpty) {
+        throw Exception('Tủ đồ trống, chưa thể gợi ý outfit');
+      }
+
       // Call AI
       final suggestion = await _groqService.suggestOutfit(
-        wardrobe: _items,
+        wardrobe: wardrobeForSuggestion,
         weatherContext: weatherContext,
         occasion: occasion,
         stylePreference: _stylePreference.aiDescription,
+        genderProfile: _genderPreference?.aiDescription,
+        styleProfile: effectiveOutfitStyleProfile.aiDescription,
       );
 
       if (suggestion == null) {
@@ -303,6 +542,18 @@ class WardrobeProvider extends ChangeNotifier {
     Map<String, dynamic> suggestion,
     String occasion,
   ) {
+    final removedByStyleProfile = <String>[];
+
+    ClothingItem? applyStyleProfileConstraint(ClothingItem? item) {
+      if (item == null) return null;
+      if (_isRestrictedByStyleProfile(item)) {
+        removedByStyleProfile.add(item.type.displayName);
+        return null;
+      }
+
+      return item;
+    }
+
     ClothingItem? findItem(String? id) {
       if (id == null || id == 'null') return null;
       final found = _items.where((item) => item.id == id);
@@ -315,19 +566,30 @@ class WardrobeProvider extends ChangeNotifier {
 
     final accessoryIds = suggestion['accessories'] as List<dynamic>? ?? [];
     final accessories = accessoryIds
-        .map((id) => findItem(id.toString()))
+        .map((id) => applyStyleProfileConstraint(findItem(id.toString())))
         .whereType<ClothingItem>()
         .toList();
 
+    final baseReason = suggestion['reason'] ?? 'Gợi ý từ AI';
+    final reason = removedByStyleProfile.isEmpty
+        ? baseReason
+        : '$baseReason (Đã bỏ ${removedByStyleProfile.join(', ')} để phù hợp phong cách hồ sơ đã chọn.)';
+
     return Outfit(
       id: _uuid.v4(),
-      top: findItem(suggestion['top']?.toString()),
-      bottom: findItem(suggestion['bottom']?.toString()),
-      outerwear: findItem(suggestion['outerwear']?.toString()),
-      footwear: findItem(suggestion['footwear']?.toString()),
+      top: applyStyleProfileConstraint(findItem(suggestion['top']?.toString())),
+      bottom: applyStyleProfileConstraint(
+        findItem(suggestion['bottom']?.toString()),
+      ),
+      outerwear: applyStyleProfileConstraint(
+        findItem(suggestion['outerwear']?.toString()),
+      ),
+      footwear: applyStyleProfileConstraint(
+        findItem(suggestion['footwear']?.toString()),
+      ),
       accessories: accessories,
       occasion: occasion,
-      reason: suggestion['reason'] ?? 'Gợi ý từ AI',
+      reason: reason,
       createdAt: DateTime.now(),
     );
   }

@@ -105,6 +105,8 @@ class GroqService {
     required String weatherContext,
     required String occasion,
     String? stylePreference,
+    String? genderProfile,
+    String? styleProfile,
   }) async {
     if (!_isInitialized || _apiKey == null) {
       print('❌ Groq not initialized');
@@ -127,6 +129,8 @@ class GroqService {
         weatherContext: weatherContext,
         occasion: occasion,
         stylePreference: stylePreference,
+        genderProfile: genderProfile,
+        styleProfile: styleProfile,
       );
 
       // Build request body

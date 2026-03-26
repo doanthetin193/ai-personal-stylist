@@ -35,11 +35,150 @@ class _HomeScreenState extends State<HomeScreen> {
       const ProfileScreen(),
     ];
     // Load data khi vào home
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       final wardrobeProvider = context.read<WardrobeProvider>();
+      await wardrobeProvider.loadGenderPreference();
       wardrobeProvider.loadItems();
       wardrobeProvider.loadWeather();
+
+      if (!mounted || wardrobeProvider.hasIdentityPreferences) return;
+      await _showInitialIdentityDialog(wardrobeProvider);
     });
+  }
+
+  Future<void> _showInitialIdentityDialog(
+    WardrobeProvider wardrobeProvider,
+  ) async {
+    GenderPreference selectedGender =
+        wardrobeProvider.genderPreference ?? GenderPreference.male;
+    OutfitStyleProfile selectedStyleProfile =
+        wardrobeProvider.outfitStyleProfile ??
+        OutfitStyleProfile.defaultForGender(selectedGender);
+
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => PopScope(
+        canPop: false,
+        child: StatefulBuilder(
+          builder: (context, setState) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            title: const Text('Chọn giới tính hồ sơ'),
+            content: SizedBox(
+              width: double.maxFinite,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Để gợi ý outfit hợp lý hơn, bạn vui lòng chọn giới tính và phong cách hồ sơ trước khi sử dụng.',
+                    ),
+                    const SizedBox(height: 16),
+                    RadioListTile<GenderPreference>(
+                      value: GenderPreference.male,
+                      groupValue: selectedGender,
+                      onChanged: (value) {
+                        if (value != null) {
+                          setState(() {
+                            selectedGender = value;
+                            if (selectedStyleProfile ==
+                                    OutfitStyleProfile.defaultForGender(
+                                      value == GenderPreference.male
+                                          ? GenderPreference.female
+                                          : GenderPreference.male,
+                                    ) ||
+                                selectedStyleProfile ==
+                                    OutfitStyleProfile.defaultForGender(null)) {
+                              selectedStyleProfile =
+                                  OutfitStyleProfile.defaultForGender(value);
+                            }
+                          });
+                        }
+                      },
+                      title: const Text('Nam'),
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                    RadioListTile<GenderPreference>(
+                      value: GenderPreference.female,
+                      groupValue: selectedGender,
+                      onChanged: (value) {
+                        if (value != null) {
+                          setState(() {
+                            selectedGender = value;
+                            if (selectedStyleProfile ==
+                                    OutfitStyleProfile.defaultForGender(
+                                      value == GenderPreference.male
+                                          ? GenderPreference.female
+                                          : GenderPreference.male,
+                                    ) ||
+                                selectedStyleProfile ==
+                                    OutfitStyleProfile.defaultForGender(null)) {
+                              selectedStyleProfile =
+                                  OutfitStyleProfile.defaultForGender(value);
+                            }
+                          });
+                        }
+                      },
+                      title: const Text('Nữ'),
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                    const Divider(height: 24),
+                    const Text(
+                      'Phong cách hồ sơ',
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(height: 8),
+                    ...OutfitStyleProfile.values.map(
+                      (profile) => RadioListTile<OutfitStyleProfile>(
+                        value: profile,
+                        groupValue: selectedStyleProfile,
+                        onChanged: (value) {
+                          if (value != null) {
+                            setState(() => selectedStyleProfile = value);
+                          }
+                        },
+                        title: Text(profile.displayName),
+                        subtitle: Text(profile.description),
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            actions: [
+              ElevatedButton(
+                onPressed: () async {
+                  final success = await wardrobeProvider
+                      .saveIdentityPreferences(
+                        gender: selectedGender,
+                        styleProfile: selectedStyleProfile,
+                      );
+
+                  if (!mounted) return;
+
+                  if (success) {
+                    Navigator.of(dialogContext).pop();
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'Không lưu được giới tính. Vui lòng thử lại.',
+                        ),
+                      ),
+                    );
+                  }
+                },
+                child: const Text('Xác nhận'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   /// Navigate to specific tab - public method for child widgets
