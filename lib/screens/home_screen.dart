@@ -11,6 +11,7 @@ import 'outfit_suggest_screen.dart';
 import 'color_harmony_screen.dart';
 import 'wardrobe_cleanup_screen.dart';
 import 'add_item_screen.dart';
+import 'plan_ahead_screen.dart';
 import 'profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -49,6 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _showInitialIdentityDialog(
     WardrobeProvider wardrobeProvider,
   ) async {
+    final rootContext = context;
     GenderPreference selectedGender =
         wardrobeProvider.genderPreference ?? GenderPreference.male;
     OutfitStyleProfile selectedStyleProfile =
@@ -163,7 +165,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   if (success) {
                     Navigator.of(dialogContext).pop();
                   } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    ScaffoldMessenger.of(rootContext).showSnackBar(
                       const SnackBar(
                         content: Text(
                           'Không lưu được giới tính. Vui lòng thử lại.',
@@ -519,6 +521,20 @@ class _HomeTab extends StatelessWidget {
                           ),
                         ),
                       ],
+                    ),
+                    const SizedBox(height: 12),
+                    _QuickActionCard(
+                      icon: Icons.event_available,
+                      title: 'Lên kế hoạch outfit (Plan Ahead)',
+                      color: const Color(0xFF0284C7),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const PlanAheadScreen(),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),

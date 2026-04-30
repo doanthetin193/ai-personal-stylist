@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../models/clothing_item.dart';
+import '../models/plan_ahead.dart';
 import '../utils/constants.dart';
 
 class FirebaseService {
@@ -161,6 +162,9 @@ class FirebaseService {
   CollectionReference<Map<String, dynamic>> get _usersRef =>
       _firestore.collection(AppConstants.usersCollection);
 
+  CollectionReference<Map<String, dynamic>> get _planAheadRef =>
+      _firestore.collection(AppConstants.planAheadCollection);
+
   /// Get current user's gender preference
   Future<String?> getUserGenderPreference() async {
     try {
@@ -241,6 +245,62 @@ class FirebaseService {
       return true;
     } catch (e) {
       print('Save User Identity Preferences Error: $e');
+      return false;
+    }
+  }
+
+  /// Get all Smart Plan Ahead records for current user
+  Future<List<SmartOutfitPlan>> getUserPlanAheadPlans() async {
+    try {
+      final userId = currentUser?.uid;
+      if (userId == null) return [];
+
+      final snapshot = await _planAheadRef
+          .where('userId', isEqualTo: userId)
+          .orderBy('eventDateTime')
+          .get();
+
+      return snapshot.docs
+          .map((doc) => SmartOutfitPlan.fromJson(doc.data(), doc.id))
+          .toList();
+    } catch (e) {
+      print('Get Plan Ahead Plans Error: $e');
+      return [];
+    }
+  }
+
+  /// Create a Smart Plan Ahead record
+  Future<String?> createPlanAheadPlan(SmartOutfitPlan plan) async {
+    try {
+      final docRef = await _planAheadRef.add(plan.toJson());
+      return docRef.id;
+    } catch (e) {
+      print('Create Plan Ahead Plan Error: $e');
+      return null;
+    }
+  }
+
+  /// Update a Smart Plan Ahead record
+  Future<bool> updatePlanAheadPlan(
+    String planId,
+    Map<String, dynamic> updates,
+  ) async {
+    try {
+      await _planAheadRef.doc(planId).update(updates);
+      return true;
+    } catch (e) {
+      print('Update Plan Ahead Plan Error: $e');
+      return false;
+    }
+  }
+
+  /// Delete a Smart Plan Ahead record
+  Future<bool> deletePlanAheadPlan(String planId) async {
+    try {
+      await _planAheadRef.doc(planId).delete();
+      return true;
+    } catch (e) {
+      print('Delete Plan Ahead Plan Error: $e');
       return false;
     }
   }

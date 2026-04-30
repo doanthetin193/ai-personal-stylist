@@ -472,6 +472,25 @@ class WardrobeProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Dùng cho các luồng planner muốn tái sử dụng cùng logic ràng buộc.
+  List<ClothingItem> getSuggestionWardrobe() {
+    return _getWardrobeForSuggestion();
+  }
+
+  String get stylePreferenceAiDescription => _stylePreference.aiDescription;
+
+  String? get genderProfileAiDescription => _genderPreference?.aiDescription;
+
+  String get styleProfileAiDescription =>
+      effectiveOutfitStyleProfile.aiDescription;
+
+  Outfit buildPlanningOutfitFromSuggestion(
+    Map<String, dynamic> suggestion,
+    String occasion,
+  ) {
+    return _buildOutfitFromSuggestion(suggestion, occasion);
+  }
+
   bool _isRestrictedByStyleProfile(ClothingItem item) {
     final profile = effectiveOutfitStyleProfile;
     if (profile != OutfitStyleProfile.masculine) {

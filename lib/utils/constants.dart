@@ -16,12 +16,16 @@ class AppConstants {
   // Firebase Collections
   static const String itemsCollection = 'items';
   static const String usersCollection = 'users';
+  static const String planAheadCollection = 'plan_ahead';
 
   // Cache Duration
   static const Duration weatherCacheDuration = Duration(minutes: 30);
 
   // AI Settings
   static const Duration aiTimeout = Duration(seconds: 30);
+
+  // Plan Ahead Settings
+  static const int maxForecastDaysAhead = 7;
 }
 
 /// Occasions/Events cho outfit

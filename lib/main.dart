@@ -11,6 +11,7 @@ import 'services/weather_service.dart';
 // Providers
 import 'providers/auth_provider.dart';
 import 'providers/wardrobe_provider.dart';
+import 'providers/plan_ahead_provider.dart';
 
 // Utils
 import 'utils/theme.dart';
@@ -78,6 +79,13 @@ class _MyAppState extends State<MyApp> {
             widget.firebaseService,
             _groqService,
             _weatherService,
+          ),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => PlanAheadProvider(
+            widget.firebaseService,
+            _weatherService,
+            _groqService,
           ),
         ),
       ],
