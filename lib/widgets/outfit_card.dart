@@ -83,30 +83,49 @@ class OutfitCard extends StatelessWidget {
 
           // Actions
           const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: onWear,
-                  icon: const Icon(Icons.checkroom, size: 18),
-                  label: const Text('Mặc hôm nay'),
-                ),
-              ),
-              if (onSave != null) ...[
-                const SizedBox(width: 12),
+          IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
                 Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: onSave,
-                    icon: const Icon(Icons.favorite_border, size: 18, color: Colors.pink),
-                    label: const Text('Lưu Set đồ', style: TextStyle(color: Colors.pink)),
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      side: const BorderSide(color: Colors.pink),
+                  child: ElevatedButton(
+                    onPressed: onWear,
+                    child: const Text(
+                      'Mặc hôm nay',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
+                if (onSave != null) ...[
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: onSave,
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        side: const BorderSide(color: Colors.pink),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          Icon(Icons.favorite_border, size: 16, color: Colors.pink),
+                          SizedBox(width: 4),
+                          Text(
+                            'Lưu',
+                            style: TextStyle(
+                              color: Colors.pink,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
         ],
       ),
