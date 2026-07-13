@@ -11,20 +11,55 @@ import '../utils/helpers.dart';
 class GroqService {
   static const String _baseUrl = 'https://api.groq.com/openai/v1';
 
-  String? _apiKey;
+  List<String> _apiKeys = [];
+  int _currentKeyIndex = 0;
   bool _isInitialized = false;
 
-  /// Initialize với API key
-  void initialize(String apiKey) {
-    if (apiKey.isEmpty || apiKey == 'YOUR_GROQ_API_KEY') {
-      print('⚠️ Warning: Groq API key not configured');
+  /// Initialize với danh sách API keys
+  void initialize(List<String> apiKeys) {
+    if (apiKeys.isEmpty) {
+      print('⚠️ Warning: Groq API keys not configured');
       return;
     }
 
-    print('🔑 Initializing Groq with API key: ${apiKey.substring(0, 10)}...');
-    _apiKey = apiKey;
+    _apiKeys = apiKeys.where((key) => key.isNotEmpty && key != 'YOUR_GROQ_API_KEY').toList();
+    if (_apiKeys.isEmpty) {
+      print('⚠️ Warning: No valid Groq API keys found');
+      return;
+    }
+
+    print('🔑 Initializing Groq with \${_apiKeys.length} API keys');
     _isInitialized = true;
+    _currentKeyIndex = 0;
     print('✅ Groq initialized successfully!');
+  }
+
+  Future<http.Response> _postWithRetry(String endpoint, Map<String, dynamic> bodyJson, Duration timeout) async {
+    int attempts = 0;
+    final maxAttempts = _apiKeys.length;
+    final bodyStr = jsonEncode(bodyJson);
+
+    while (attempts < maxAttempts) {
+      final apiKey = _apiKeys[_currentKeyIndex];
+      final response = await http.post(
+        Uri.parse('$_baseUrl$endpoint'),
+        headers: {
+          'Authorization': 'Bearer $apiKey',
+          'Content-Type': 'application/json',
+        },
+        body: bodyStr,
+      ).timeout(timeout);
+
+      if (response.statusCode == 429) {
+        print('⚠️ Rate limit (429) hit for key index $_currentKeyIndex. Rotating key...');
+        _currentKeyIndex = (_currentKeyIndex + 1) % _apiKeys.length;
+        attempts++;
+      } else {
+        return response;
+      }
+    }
+    
+    throw Exception('All API keys hit rate limits (429)');
   }
 
   /// Check if initialized
@@ -34,7 +69,7 @@ class GroqService {
   Future<Map<String, dynamic>?> analyzeClothingImageBytes(
     Uint8List imageBytes,
   ) async {
-    if (!_isInitialized || _apiKey == null) {
+    if (!_isInitialized || _apiKeys.isEmpty) {
       print('❌ Groq not initialized - API key may be invalid');
       return null;
     }
@@ -46,7 +81,7 @@ class GroqService {
       final base64Image = base64Encode(imageBytes);
 
       // Build request body (OpenAI-compatible format)
-      final body = jsonEncode({
+      final body = {
         'model': 'meta-llama/llama-4-scout-17b-16e-instruct',
         'messages': [
           {
@@ -62,24 +97,10 @@ class GroqService {
         ],
         'max_tokens': 1024,
         'temperature': 0.3,
-      });
+      };
 
       // Make API call
-      final response = await http
-          .post(
-            Uri.parse('$_baseUrl/chat/completions'),
-            headers: {
-              'Authorization': 'Bearer $_apiKey',
-              'Content-Type': 'application/json',
-            },
-            body: body,
-          )
-          .timeout(
-            const Duration(seconds: 30),
-            onTimeout: () {
-              throw Exception('Timeout - Groq took too long');
-            },
-          );
+      final response = await _postWithRetry('/chat/completions', body, const Duration(seconds: 30));
 
       if (response.statusCode == 200) {
         final json = jsonDecode(response.body);
@@ -108,7 +129,7 @@ class GroqService {
     String? genderProfile,
     String? styleProfile,
   }) async {
-    if (!_isInitialized || _apiKey == null) {
+    if (!_isInitialized || _apiKeys.isEmpty) {
       print('❌ Groq not initialized');
       return null;
     }
@@ -134,25 +155,16 @@ class GroqService {
       );
 
       // Build request body
-      final body = jsonEncode({
+      final body = {
         'model': 'llama-3.3-70b-versatile', // Text-only model, more powerful
         'messages': [
           {'role': 'user', 'content': prompt},
         ],
         'max_tokens': 1024,
         'temperature': 0.7,
-      });
+      };
 
-      final response = await http
-          .post(
-            Uri.parse('$_baseUrl/chat/completions'),
-            headers: {
-              'Authorization': 'Bearer $_apiKey',
-              'Content-Type': 'application/json',
-            },
-            body: body,
-          )
-          .timeout(AppConstants.aiTimeout);
+      final response = await _postWithRetry('/chat/completions', body, AppConstants.aiTimeout);
 
       if (response.statusCode == 200) {
         final json = jsonDecode(response.body);
@@ -173,7 +185,7 @@ class GroqService {
     ClothingItem item1,
     ClothingItem item2,
   ) async {
-    if (!_isInitialized || _apiKey == null) {
+    if (!_isInitialized || _apiKeys.isEmpty) {
       print('❌ Groq not initialized');
       return null;
     }
@@ -184,25 +196,16 @@ class GroqService {
         item2.toAIDescription(),
       );
 
-      final body = jsonEncode({
+      final body = {
         'model': 'llama-3.3-70b-versatile',
         'messages': [
           {'role': 'user', 'content': prompt},
         ],
         'max_tokens': 1024,
         'temperature': 0.5,
-      });
+      };
 
-      final response = await http
-          .post(
-            Uri.parse('$_baseUrl/chat/completions'),
-            headers: {
-              'Authorization': 'Bearer $_apiKey',
-              'Content-Type': 'application/json',
-            },
-            body: body,
-          )
-          .timeout(AppConstants.aiTimeout);
+      final response = await _postWithRetry('/chat/completions', body, AppConstants.aiTimeout);
 
       if (response.statusCode == 200) {
         final json = jsonDecode(response.body);
@@ -226,7 +229,7 @@ class GroqService {
   Future<Map<String, dynamic>?> getCleanupSuggestions(
     List<ClothingItem> wardrobe,
   ) async {
-    if (!_isInitialized || _apiKey == null) {
+    if (!_isInitialized || _apiKeys.isEmpty) {
       print('❌ Groq not initialized');
       return null;
     }
@@ -243,25 +246,16 @@ class GroqService {
 
       final prompt = AIPrompts.cleanupSuggestion(wardrobeContext);
 
-      final body = jsonEncode({
+      final body = {
         'model': 'llama-3.3-70b-versatile',
         'messages': [
           {'role': 'user', 'content': prompt},
         ],
         'max_tokens': 1024,
         'temperature': 0.7,
-      });
+      };
 
-      final response = await http
-          .post(
-            Uri.parse('$_baseUrl/chat/completions'),
-            headers: {
-              'Authorization': 'Bearer $_apiKey',
-              'Content-Type': 'application/json',
-            },
-            body: body,
-          )
-          .timeout(AppConstants.aiTimeout);
+      final response = await _postWithRetry('/chat/completions', body, AppConstants.aiTimeout);
 
       if (response.statusCode == 200) {
         final json = jsonDecode(response.body);

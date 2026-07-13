@@ -12,6 +12,7 @@ import 'services/weather_service.dart';
 import 'providers/auth_provider.dart';
 import 'providers/wardrobe_provider.dart';
 import 'providers/plan_ahead_provider.dart';
+import 'providers/lookbook_provider.dart';
 
 // Utils
 import 'utils/theme.dart';
@@ -57,8 +58,8 @@ class _MyAppState extends State<MyApp> {
     _groqService = GroqService();
     _weatherService = WeatherService();
 
-    // Initialize Groq with API key
-    _groqService.initialize(AppConstants.groqApiKey);
+    // Initialize Groq with API keys
+    _groqService.initialize(AppConstants.groqApiKeysList);
   }
 
   @override
@@ -86,6 +87,11 @@ class _MyAppState extends State<MyApp> {
             widget.firebaseService,
             _weatherService,
             _groqService,
+          ),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => LookbookProvider(
+            widget.firebaseService,
           ),
         ),
       ],

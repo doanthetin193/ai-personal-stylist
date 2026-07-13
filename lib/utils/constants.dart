@@ -5,6 +5,7 @@ class AppConstants {
   // API Keys - Import từ file riêng (đã gitignore)
   static const String geminiApiKey = ApiKeys.geminiApiKey;
   static const String groqApiKey = ApiKeys.groqApiKey;
+  static const List<String> groqApiKeysList = ApiKeys.groqApiKeysList;
   static const String weatherApiKey = ApiKeys.weatherApiKey;
 
   // Weather API
@@ -17,6 +18,7 @@ class AppConstants {
   static const String itemsCollection = 'items';
   static const String usersCollection = 'users';
   static const String planAheadCollection = 'plan_ahead';
+  static const String savedOutfitsCollection = 'saved_outfits';
 
   // Cache Duration
   static const Duration weatherCacheDuration = Duration(minutes: 30);

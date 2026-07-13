@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/wardrobe_provider.dart';
+import '../providers/lookbook_provider.dart';
 import '../models/outfit.dart';
 import '../utils/theme.dart';
 import '../utils/constants.dart';
@@ -319,6 +320,8 @@ class _OutfitSuggestScreenState extends State<OutfitSuggestScreen> {
                             outfit: wardrobe.currentOutfit!,
                             onWear: () =>
                                 _markOutfitAsWorn(wardrobe.currentOutfit!),
+                            onSave: () =>
+                                _saveOutfit(wardrobe.currentOutfit!),
                           ),
                         ],
                       ),
@@ -485,6 +488,27 @@ class _OutfitSuggestScreenState extends State<OutfitSuggestScreen> {
       const SnackBar(
         content: Text('Đã đánh dấu outfit!'),
         backgroundColor: AppTheme.successColor,
+      ),
+    );
+  }
+
+  void _saveOutfit(Outfit outfit) {
+    final lookbook = context.read<LookbookProvider>();
+    lookbook.saveOutfit(
+      topId: outfit.top?.id,
+      bottomId: outfit.bottom?.id,
+      outerwearId: outfit.outerwear?.id,
+      footwearId: outfit.footwear?.id,
+      accessoryIds: outfit.accessories.map((a) => a.id).toList(),
+      source: 'ai',
+      name: 'AI Gợi ý: ${outfit.occasion}',
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text('Đã lưu vào Lookbook! 💖'),
+        backgroundColor: Colors.pink.shade400,
+        behavior: SnackBarBehavior.floating,
       ),
     );
   }

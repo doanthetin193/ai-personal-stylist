@@ -6,6 +6,7 @@ import 'package:confetti/confetti.dart';
 
 import '../models/clothing_item.dart';
 import '../providers/wardrobe_provider.dart';
+import '../providers/lookbook_provider.dart';
 import '../utils/theme.dart';
 import '../widgets/common_widgets.dart';
 import '../widgets/clothing_card.dart';
@@ -81,12 +82,22 @@ class _TinderOutfitScreenState extends State<TinderOutfitScreen> {
     CardSwiperDirection direction,
   ) {
     if (direction == CardSwiperDirection.right) {
+      final outfit = _cards[previousIndex];
+      final lookbook = context.read<LookbookProvider>();
+      lookbook.saveOutfit(
+        topId: outfit[0].id,
+        bottomId: outfit[1].id,
+        footwearId: outfit[2].id,
+        source: 'tinder',
+        name: 'Tinder Mix',
+      );
+
       // Bắn pháo hoa khi quẹt phải (Thích)
       _confettiController.play();
       ScaffoldMessenger.of(context).clearSnackBars();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Đã thêm vào mục Yêu thích! 💖'),
+          content: const Text('Đã lưu vào Lookbook của bạn! 💖'),
           backgroundColor: Colors.pink.shade400,
           duration: const Duration(milliseconds: 1500),
           behavior: SnackBarBehavior.floating,

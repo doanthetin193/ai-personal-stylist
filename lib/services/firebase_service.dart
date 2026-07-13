@@ -7,6 +7,7 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../models/clothing_item.dart';
 import '../models/plan_ahead.dart';
+import '../models/saved_outfit.dart';
 import '../utils/constants.dart';
 
 class FirebaseService {
@@ -165,6 +166,9 @@ class FirebaseService {
   CollectionReference<Map<String, dynamic>> get _planAheadRef =>
       _firestore.collection(AppConstants.planAheadCollection);
 
+  CollectionReference<Map<String, dynamic>> get _savedOutfitsRef =>
+      _firestore.collection(AppConstants.savedOutfitsCollection);
+
   /// Get current user's gender preference
   Future<String?> getUserGenderPreference() async {
     try {
@@ -300,6 +304,51 @@ class FirebaseService {
       return true;
     } catch (e) {
       print('Delete Plan Ahead Plan Error: $e');
+      return false;
+    }
+  }
+
+  // ==================== FIRESTORE - SAVED OUTFITS ====================
+
+  Future<List<SavedOutfit>> getUserSavedOutfits() async {
+    try {
+      final userId = currentUser?.uid;
+      if (userId == null) return [];
+
+      final snapshot = await _savedOutfitsRef
+          .where('userId', isEqualTo: userId)
+          .get();
+
+      final outfits = snapshot.docs
+          .map((doc) => SavedOutfit.fromJson(doc.data(), doc.id))
+          .toList();
+          
+      // Sắp xếp trên Dart để tránh lỗi thiếu Composite Index trên Firestore
+      outfits.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      
+      return outfits;
+    } catch (e) {
+      print('Get Saved Outfits Error: $e');
+      return [];
+    }
+  }
+
+  Future<String?> saveOutfit(SavedOutfit outfit) async {
+    try {
+      final docRef = await _savedOutfitsRef.add(outfit.toJson());
+      return docRef.id;
+    } catch (e) {
+      print('Save Outfit Error: $e');
+      return null;
+    }
+  }
+
+  Future<bool> deleteSavedOutfit(String outfitId) async {
+    try {
+      await _savedOutfitsRef.doc(outfitId).delete();
+      return true;
+    } catch (e) {
+      print('Delete Saved Outfit Error: $e');
       return false;
     }
   }

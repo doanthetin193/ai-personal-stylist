@@ -5,6 +5,7 @@ import '../providers/wardrobe_provider.dart';
 import '../utils/theme.dart';
 import 'wardrobe_cleanup_screen.dart';
 import 'login_screen.dart';
+import 'lookbook_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -143,6 +144,17 @@ class ProfileScreen extends StatelessWidget {
                       subtitle: 'Xem chi tiết tủ đồ của bạn',
                       onTap: () =>
                           _showWardrobeStats(context, wardrobeProvider),
+                    ),
+                    _buildMenuItem(
+                      icon: Icons.favorite,
+                      title: 'Lookbook (Set đồ đã lưu)',
+                      subtitle: 'Những bộ đồ bạn yêu thích nhất',
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const LookbookScreen(),
+                        ),
+                      ),
                     ),
                     _buildMenuItem(
                       icon: Icons.cleaning_services_outlined,

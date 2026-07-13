@@ -7,8 +7,9 @@ import 'clothing_card.dart';
 class OutfitCard extends StatelessWidget {
   final Outfit outfit;
   final VoidCallback? onWear;
+  final VoidCallback? onSave;
 
-  const OutfitCard({super.key, required this.outfit, this.onWear});
+  const OutfitCard({super.key, required this.outfit, this.onWear, this.onSave});
 
   @override
   Widget build(BuildContext context) {
@@ -82,13 +83,30 @@ class OutfitCard extends StatelessWidget {
 
           // Actions
           const SizedBox(height: 16),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: onWear,
-              icon: const Icon(Icons.checkroom, size: 18),
-              label: const Text('Mặc hôm nay'),
-            ),
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: onWear,
+                  icon: const Icon(Icons.checkroom, size: 18),
+                  label: const Text('Mặc hôm nay'),
+                ),
+              ),
+              if (onSave != null) ...[
+                const SizedBox(width: 12),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: onSave,
+                    icon: const Icon(Icons.favorite_border, size: 18, color: Colors.pink),
+                    label: const Text('Lưu Set đồ', style: TextStyle(color: Colors.pink)),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      side: const BorderSide(color: Colors.pink),
+                    ),
+                  ),
+                ),
+              ],
+            ],
           ),
         ],
       ),
