@@ -257,7 +257,6 @@ class FirebaseService {
 
       final snapshot = await _planAheadRef
           .where('userId', isEqualTo: userId)
-          .orderBy('eventDateTime')
           .get();
 
       return snapshot.docs

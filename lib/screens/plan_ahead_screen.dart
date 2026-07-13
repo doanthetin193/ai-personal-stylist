@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../models/clothing_item.dart';
 import '../models/plan_ahead.dart';
@@ -46,12 +47,12 @@ class _PlanAheadScreenState extends State<PlanAheadScreen> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final wardrobe = context.read<WardrobeProvider>();
-      _locationController.text =
-          wardrobe.weather?.cityName ?? AppConstants.defaultCity;
+      String city = wardrobe.weather?.cityName ?? AppConstants.defaultCity;
+      if (city.toLowerCase() == 'qui nhon') city = 'Quy Nhon';
+      _locationController.text = city;
 
       final planProvider = context.read<PlanAheadProvider>();
       await planProvider.loadPlans(wardrobeProvider: wardrobe);
-      _showPendingMessages(planProvider);
     });
   }
 
@@ -77,7 +78,6 @@ class _PlanAheadScreenState extends State<PlanAheadScreen> {
           return RefreshIndicator(
             onRefresh: () async {
               await planner.loadPlans(wardrobeProvider: wardrobe);
-              _showPendingMessages(planner);
             },
             child: ListView(
               padding: const EdgeInsets.all(16),
@@ -96,12 +96,22 @@ class _PlanAheadScreenState extends State<PlanAheadScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    if (planner.isLoading)
-                      const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
+                    Row(
+                      children: [
+                        if (planner.isLoading)
+                          const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                        if (planner.plans.isNotEmpty)
+                          TextButton.icon(
+                            onPressed: () => _confirmDeleteAllPlans(planner),
+                            icon: const Icon(Icons.delete_sweep, color: Colors.red, size: 18),
+                            label: const Text('Xóa tất cả', style: TextStyle(color: Colors.red)),
+                          ),
+                      ],
+                    ),
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -396,11 +406,15 @@ class _PlanAheadScreenState extends State<PlanAheadScreen> {
                 onPressed: planner.isRefreshingPlan
                     ? null
                     : () async {
-                        await planner.refreshPlanById(
+                        final success = await planner.refreshPlanById(
                           planId: plan.id,
                           wardrobeProvider: wardrobe,
                         );
-                        _showPendingMessages(planner);
+                        if (success && mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Đã cập nhật theo dự báo mới nhất!')),
+                          );
+                        }
                       },
                 icon: const Icon(Icons.refresh),
               ),
@@ -413,6 +427,18 @@ class _PlanAheadScreenState extends State<PlanAheadScreen> {
           ),
           const SizedBox(height: 10),
           _buildForecastSummary(plan),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: () => _addToGoogleCalendar(plan),
+              icon: const Icon(Icons.edit_calendar),
+              label: const Text('Thêm vào Lịch (Bật nhắc nhở)'),
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+              ),
+            ),
+          ),
           if (plan.needsAdjustment &&
               plan.adjustmentReason != null &&
               plan.adjustmentReason!.isNotEmpty) ...[
@@ -610,14 +636,23 @@ class _PlanAheadScreenState extends State<PlanAheadScreen> {
     if (pickedTime == null) return;
     if (!mounted) return;
 
-    setState(() {
-      _eventDateTime = DateTime(
-        pickedDate.year,
-        pickedDate.month,
-        pickedDate.day,
-        pickedTime.hour,
-        pickedTime.minute,
+    final selectedDateTime = DateTime(
+      pickedDate.year,
+      pickedDate.month,
+      pickedDate.day,
+      pickedTime.hour,
+      pickedTime.minute,
+    );
+
+    if (selectedDateTime.isBefore(DateTime.now())) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Vui lòng chọn thời gian trong tương lai!')),
       );
+      return;
+    }
+
+    setState(() {
+      _eventDateTime = selectedDateTime;
     });
   }
 
@@ -655,9 +690,10 @@ class _PlanAheadScreenState extends State<PlanAheadScreen> {
 
     if (!mounted) return;
 
-    _showPendingMessages(planner);
-
     if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Đã tạo kế hoạch thành công! Bạn có thể kiểm tra chuông thông báo ngoài trang chủ.')),
+      );
       setState(() {
         _customActivityController.clear();
         _dressCodeController.clear();
@@ -702,13 +738,38 @@ class _PlanAheadScreenState extends State<PlanAheadScreen> {
     );
   }
 
-  void _showPendingMessages(PlanAheadProvider provider) {
-    final messages = provider.consumeNotifications();
-    if (messages.isEmpty || !mounted) return;
+  Future<void> _confirmDeleteAllPlans(PlanAheadProvider planner) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Xóa tất cả kế hoạch?'),
+        content: const Text('Bạn có chắc muốn xóa TOÀN BỘ kế hoạch outfit?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Huỷ'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.errorColor,
+            ),
+            child: const Text('Xoá tất cả'),
+          ),
+        ],
+      ),
+    );
 
-    for (final msg in messages) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
-    }
+    if (confirmed != true) return;
+
+    final success = await planner.deleteAllPlans();
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(success ? 'Đã xóa toàn bộ kế hoạch.' : 'Một số kế hoạch không thể xóa, thử lại sau.'),
+      ),
+    );
   }
 
   String _formatDateTime(DateTime value) {
@@ -729,6 +790,49 @@ class _PlanAheadScreenState extends State<PlanAheadScreen> {
         return 'Sáng ngày đi';
       default:
         return checkpoint;
+    }
+  }
+
+  Future<void> _addToGoogleCalendar(SmartOutfitPlan plan) async {
+    final title = Uri.encodeComponent('Lên đồ: ${plan.activityType.displayName}');
+    final location = Uri.encodeComponent(plan.location);
+    
+    // Format yyyyMMddTHHmmssZ for Google Calendar
+    String formatGCalDate(DateTime dt) {
+      final utc = dt.toUtc();
+      return '${utc.year}${utc.month.toString().padLeft(2, '0')}${utc.day.toString().padLeft(2, '0')}T${utc.hour.toString().padLeft(2, '0')}${utc.minute.toString().padLeft(2, '0')}00Z';
+    }
+    
+    final startTime = formatGCalDate(plan.eventDateTime);
+    final endTime = formatGCalDate(plan.eventDateTime.add(const Duration(hours: 1)));
+    
+    final StringBuffer details = StringBuffer();
+    details.writeln('Chuẩn bị Outfit cho chuyến đi của bạn!');
+    if (plan.customActivity != null && plan.customActivity!.isNotEmpty) {
+      details.writeln('Chi tiết: ${plan.customActivity}');
+    }
+    if (plan.dressCode != null && plan.dressCode!.isNotEmpty) {
+      details.writeln('Dress code: ${plan.dressCode}');
+    }
+    details.writeln('');
+    details.writeln('Nhắc nhở chuẩn bị:');
+    for (var tip in plan.prepChecklist) {
+      details.writeln('- $tip');
+    }
+    
+    final detailsEncoded = Uri.encodeComponent(details.toString());
+    
+    final url = 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=$title&dates=$startTime/$endTime&details=$detailsEncoded&location=$location';
+    
+    final uri = Uri.parse(url);
+    try {
+      await launchUrl(uri);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Không thể mở liên kết Lịch (Lỗi: $e)')),
+        );
+      }
     }
   }
 }

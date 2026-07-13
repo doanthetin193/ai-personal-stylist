@@ -36,10 +36,18 @@ class PlanAheadProvider extends ChangeNotifier {
   bool get isRefreshingPlan => _isRefreshingPlan;
   String? get errorMessage => _errorMessage;
 
+  List<String> get notifications => List.unmodifiable(_pendingNotifications);
+
   List<String> consumeNotifications() {
     final copy = List<String>.from(_pendingNotifications);
     _pendingNotifications.clear();
+    notifyListeners();
     return copy;
+  }
+
+  void clearNotifications() {
+    _pendingNotifications.clear();
+    notifyListeners();
   }
 
   Future<void> loadPlans({required WardrobeProvider wardrobeProvider}) async {
@@ -258,6 +266,20 @@ class PlanAheadProvider extends ChangeNotifier {
     _plans.removeWhere((plan) => plan.id == planId);
     notifyListeners();
     return true;
+  }
+
+  Future<bool> deleteAllPlans() async {
+    bool allSuccess = true;
+    for (final plan in List.from(_plans)) {
+      final success = await _firebaseService.deletePlanAheadPlan(plan.id);
+      if (success) {
+        _plans.removeWhere((p) => p.id == plan.id);
+      } else {
+        allSuccess = false;
+      }
+    }
+    notifyListeners();
+    return allSuccess;
   }
 
   Future<void> _runAutoUpdatesIfNeeded({

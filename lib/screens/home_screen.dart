@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/wardrobe_provider.dart';
+import '../providers/plan_ahead_provider.dart';
 import '../utils/theme.dart';
 import '../utils/helpers.dart';
 import '../widgets/common_widgets.dart';
@@ -13,6 +14,7 @@ import 'wardrobe_cleanup_screen.dart';
 import 'add_item_screen.dart';
 import 'plan_ahead_screen.dart';
 import 'profile_screen.dart';
+import 'tinder_outfit_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -396,24 +398,50 @@ class _HomeTab extends StatelessWidget {
                       ),
                     ),
                     // Notification icon
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.05),
-                            blurRadius: 10,
-                            offset: const Offset(0, 2),
+                    Consumer<PlanAheadProvider>(
+                      builder: (context, planProvider, _) {
+                        final hasNotifications = planProvider.notifications.isNotEmpty;
+                        return GestureDetector(
+                          onTap: () => _showNotificationsDialog(context, planProvider),
+                          child: Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.05),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Stack(
+                              clipBehavior: Clip.none,
+                              children: [
+                                const Icon(
+                                  Icons.notifications_outlined,
+                                  color: AppTheme.primaryColor,
+                                  size: 22,
+                                ),
+                                if (hasNotifications)
+                                  Positioned(
+                                    top: -2,
+                                    right: -2,
+                                    child: Container(
+                                      width: 10,
+                                      height: 10,
+                                      decoration: const BoxDecoration(
+                                        color: Colors.red,
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
                           ),
-                        ],
-                      ),
-                      child: const Icon(
-                        Icons.notifications_outlined,
-                        color: AppTheme.primaryColor,
-                        size: 22,
-                      ),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -532,6 +560,20 @@ class _HomeTab extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => const PlanAheadScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    _QuickActionCard(
+                      icon: Icons.local_fire_department_rounded,
+                      title: 'Quẹt Outfit (Mix ngẫu nhiên) 🔥',
+                      color: Colors.pink.shade500,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const TinderOutfitScreen(),
                           ),
                         );
                       },
@@ -745,6 +787,74 @@ class _HomeTab extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+  void _showNotificationsDialog(BuildContext context, PlanAheadProvider provider) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        final notes = provider.notifications;
+        return Container(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Row(
+                    children: [
+                      Icon(Icons.notifications, color: AppTheme.primaryColor),
+                      SizedBox(width: 8),
+                      Text(
+                        'Thông báo',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                      ),
+                    ],
+                  ),
+                  if (notes.isNotEmpty)
+                    TextButton(
+                      onPressed: () {
+                        provider.clearNotifications();
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Đánh dấu đã đọc'),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              if (notes.isEmpty)
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 20),
+                  child: Center(
+                    child: Text(
+                      'Bạn không có thông báo mới nào!',
+                      style: TextStyle(color: AppTheme.textSecondary),
+                    ),
+                  ),
+                )
+              else
+                Flexible(
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    itemCount: notes.length,
+                    separatorBuilder: (_, __) => const Divider(),
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        leading: const Icon(Icons.event_available, color: AppTheme.accentColor),
+                        title: Text(notes[index]),
+                      );
+                    },
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
