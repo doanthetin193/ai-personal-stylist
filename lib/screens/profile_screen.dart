@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/wardrobe_provider.dart';
+import '../models/clothing_item.dart';
 import '../utils/theme.dart';
 import 'wardrobe_cleanup_screen.dart';
 import 'login_screen.dart';
@@ -23,7 +25,7 @@ class ProfileScreen extends StatelessWidget {
               // Header
               SliverToBoxAdapter(
                 child: Container(
-                  padding: const EdgeInsets.fromLTRB(20, 60, 20, 30),
+                  padding: const EdgeInsets.fromLTRB(20, 30, 20, 20),
                   decoration: const BoxDecoration(
                     gradient: AppTheme.primaryGradient,
                     borderRadius: BorderRadius.vertical(
@@ -46,7 +48,7 @@ class ProfileScreen extends StatelessWidget {
                           ],
                         ),
                         child: CircleAvatar(
-                          radius: 50,
+                          radius: 40,
                           backgroundColor: Colors.grey.shade200,
                           backgroundImage: user?.photoURL != null
                               ? NetworkImage(user!.photoURL!)
@@ -54,7 +56,7 @@ class ProfileScreen extends StatelessWidget {
                           child: user?.photoURL == null
                               ? const Icon(
                                   Icons.person,
-                                  size: 50,
+                                  size: 40,
                                   color: AppTheme.textSecondary,
                                 )
                               : null,
@@ -68,7 +70,7 @@ class ProfileScreen extends StatelessWidget {
                         user?.displayName ?? 'Người dùng',
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 24,
+                          fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -79,12 +81,12 @@ class ProfileScreen extends StatelessWidget {
                           user!.email!,
                           style: TextStyle(
                             color: Colors.white.withValues(alpha: 0.8),
-                            fontSize: 14,
+                            fontSize: 13,
                           ),
                         ),
                       ],
 
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 16),
 
                       // Stats
                       Row(
@@ -290,10 +292,21 @@ class ProfileScreen extends StatelessWidget {
     required VoidCallback onTap,
   }) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
+      margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: AppTheme.primaryColor.withValues(alpha: 0.1),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: AppTheme.primaryColor.withValues(alpha: 0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: ListTile(
         onTap: onTap,
@@ -582,6 +595,27 @@ class ProfileScreen extends StatelessWidget {
               ),
 
               const SizedBox(height: 24),
+
+              // By Color
+              const Text(
+                'Phân bổ màu sắc',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 30),
+              if (totalItems > 0)
+                SizedBox(
+                  height: 200,
+                  child: PieChart(
+                    PieChartData(
+                      sectionsSpace: 2,
+                      centerSpaceRadius: 40,
+                      sections: _buildColorChartSections(items),
+                    ),
+                  ),
+                )
+              else
+                const Text('Chưa có đủ đồ để vẽ biểu đồ.', style: TextStyle(color: Colors.grey)),
+              const SizedBox(height: 40),
 
               // By type
               const Text(
@@ -926,6 +960,88 @@ class ProfileScreen extends StatelessWidget {
             ),
           );
         },
+      ),
+    );
+  }
+
+  List<PieChartSectionData> _buildColorChartSections(List<ClothingItem> items) {
+    if (items.isEmpty) return [];
+
+    final Map<String, int> colorCount = {};
+    for (var item in items) {
+      final color = item.color.toLowerCase();
+      colorCount[color] = (colorCount[color] ?? 0) + 1;
+    }
+
+    final total = items.length;
+    int colorIndex = 0;
+    
+    Color getColor(String colorName, int index) {
+      final name = colorName.toLowerCase();
+      if (name.contains('đen') || name.contains('black')) return Colors.black87;
+      if (name.contains('trắng') || name.contains('white')) return Colors.grey.shade400;
+      if (name.contains('đỏ') || name.contains('red')) return Colors.red;
+      if (name.contains('xanh dương') || name.contains('blue')) return Colors.blue;
+      if (name.contains('xanh lá') || name.contains('green')) return Colors.green;
+      if (name.contains('vàng') || name.contains('yellow')) return Colors.amber;
+      if (name.contains('hồng') || name.contains('pink')) return Colors.pinkAccent;
+      if (name.contains('tím') || name.contains('purple')) return Colors.purple;
+      if (name.contains('xám') || name.contains('grey') || name.contains('gray')) return Colors.grey;
+      if (name.contains('nâu') || name.contains('brown')) return Colors.brown;
+      if (name.contains('be') || name.contains('beige')) return const Color(0xFFD2B48C);
+      if (name.contains('cam') || name.contains('orange')) return Colors.orange;
+      
+      final colors = [Colors.teal, Colors.cyan, Colors.indigo, Colors.lime, Colors.deepOrange];
+      return colors[index % colors.length];
+    }
+
+    return colorCount.entries.map((entry) {
+      final percentage = (entry.value / total * 100);
+      final color = getColor(entry.key, colorIndex++);
+      
+      return PieChartSectionData(
+        color: color,
+        value: entry.value.toDouble(),
+        title: percentage >= 5 ? '${percentage.toStringAsFixed(0)}%' : '',
+        radius: 50,
+        titleStyle: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.bold,
+          color: color.computeLuminance() > 0.5 ? Colors.black87 : Colors.white,
+        ),
+        badgeWidget: percentage >= 5 ? _Badge(entry.key, color) : null,
+        badgePositionPercentageOffset: 1.25,
+      );
+    }).toList();
+  }
+}
+
+class _Badge extends StatelessWidget {
+  final String text;
+  final Color bgColor;
+
+  const _Badge(this.text, this.bgColor);
+
+  @override
+  Widget build(BuildContext context) {
+    final textColor = bgColor.computeLuminance() > 0.5 ? Colors.black87 : Colors.white;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: Colors.white, width: 1),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 2),
+        ],
+      ),
+      child: Text(
+        text.length > 10 ? '${text.substring(0, 10)}...' : text,
+        style: TextStyle(
+          fontSize: 9,
+          fontWeight: FontWeight.w600,
+          color: textColor,
+        ),
       ),
     );
   }

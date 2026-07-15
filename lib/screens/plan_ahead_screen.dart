@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -427,6 +428,8 @@ class _PlanAheadScreenState extends State<PlanAheadScreen> {
             ],
           ),
           const SizedBox(height: 10),
+          _EventCountdownWidget(eventTime: plan.eventDateTime),
+          const SizedBox(height: 10),
           _buildForecastSummary(plan),
           const SizedBox(height: 12),
           SizedBox(
@@ -844,5 +847,102 @@ class _PlanAheadScreenState extends State<PlanAheadScreen> {
         );
       }
     }
+  }
+}
+
+class _EventCountdownWidget extends StatefulWidget {
+  final DateTime eventTime;
+
+  const _EventCountdownWidget({required this.eventTime});
+
+  @override
+  State<_EventCountdownWidget> createState() => _EventCountdownWidgetState();
+}
+
+class _EventCountdownWidgetState extends State<_EventCountdownWidget> {
+  late Timer _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final now = DateTime.now();
+    if (now.isAfter(widget.eventTime)) {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: Colors.green.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: const Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.check_circle_outline, color: Colors.green, size: 16),
+            SizedBox(width: 6),
+            Text(
+              'Sự kiện đã diễn ra',
+              style: TextStyle(
+                color: Colors.green,
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    final diff = widget.eventTime.difference(now);
+    final days = diff.inDays;
+    final hours = diff.inHours % 24;
+    final minutes = diff.inMinutes % 60;
+    final seconds = diff.inSeconds % 60;
+
+    return Center(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          color: AppTheme.primaryColor.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: AppTheme.primaryColor.withValues(alpha: 0.2),
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.access_time, // Changed icon for better visibility
+              color: AppTheme.primaryColor,
+              size: 18,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              'Còn lại: ${days}d ${hours}h ${minutes}m ${seconds}s',
+              style: const TextStyle(
+                fontWeight: FontWeight.w700,
+                color: AppTheme.primaryColor,
+                fontSize: 13,
+                letterSpacing: 0.3,
+                fontFeatures: [FontFeature.tabularFigures()],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

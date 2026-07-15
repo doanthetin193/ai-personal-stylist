@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
@@ -313,10 +314,11 @@ class _HomeTab extends StatelessWidget {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            Color(0xFFEDE9FE), // Purple 100
+            Color(0xFFE0E7FF), // Indigo 100
+            Color(0xFFF3E8FF), // Purple 100
             AppTheme.backgroundColor,
           ],
-          stops: [0.0, 0.3],
+          stops: [0.0, 0.2, 0.4],
         ),
       ),
       child: SafeArea(
@@ -325,13 +327,29 @@ class _HomeTab extends StatelessWidget {
             // Premium Header
             SliverToBoxAdapter(
               child: Container(
-                padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+                margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.85),
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                  border: Border.all(
+                    color: Colors.white,
+                    width: 1.5,
+                  ),
+                ),
                 child: Row(
                   children: [
                     // Avatar với gradient border
                     Consumer<AuthProvider>(
                       builder: (context, auth, _) => Container(
-                        padding: const EdgeInsets.all(3),
+                        padding: const EdgeInsets.all(2),
                         decoration: BoxDecoration(
                           gradient: AppTheme.primaryGradient,
                           shape: BoxShape.circle,
@@ -340,13 +358,13 @@ class _HomeTab extends StatelessWidget {
                               color: AppTheme.primaryColor.withValues(
                                 alpha: 0.3,
                               ),
-                              blurRadius: 12,
-                              offset: const Offset(0, 4),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
                             ),
                           ],
                         ),
                         child: CircleAvatar(
-                          radius: 28,
+                          radius: 20,
                           backgroundColor: Colors.white,
                           backgroundImage: auth.photoUrl != null
                               ? NetworkImage(auth.photoUrl!)
@@ -355,13 +373,13 @@ class _HomeTab extends StatelessWidget {
                               ? const Icon(
                                   Icons.person,
                                   color: AppTheme.primaryColor,
-                                  size: 28,
+                                  size: 20,
                                 )
                               : null,
                         ),
                       ),
                     ),
-                    const SizedBox(width: 16),
+                    const SizedBox(width: 12),
                     // Greeting text
                     Expanded(
                       child: Column(
@@ -372,7 +390,7 @@ class _HomeTab extends StatelessWidget {
                               Text(
                                 getGreeting(),
                                 style: TextStyle(
-                                  fontSize: 14,
+                                  fontSize: 12,
                                   color: AppTheme.primaryColor.withValues(
                                     alpha: 0.8,
                                   ),
@@ -380,7 +398,7 @@ class _HomeTab extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(width: 4),
-                              const Text('👋', style: TextStyle(fontSize: 16)),
+                              const Text('👋', style: TextStyle(fontSize: 14)),
                             ],
                           ),
                           const SizedBox(height: 4),
@@ -388,7 +406,7 @@ class _HomeTab extends StatelessWidget {
                             builder: (context, auth, _) => Text(
                               auth.displayName,
                               style: const TextStyle(
-                                fontSize: 22,
+                                fontSize: 18,
                                 fontWeight: FontWeight.bold,
                                 color: AppTheme.textPrimary,
                               ),
@@ -404,14 +422,14 @@ class _HomeTab extends StatelessWidget {
                         return GestureDetector(
                           onTap: () => _showNotificationsDialog(context, planProvider),
                           child: Container(
-                            padding: const EdgeInsets.all(10),
+                            padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
                               color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(10),
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.black.withValues(alpha: 0.05),
-                                  blurRadius: 10,
+                                  blurRadius: 8,
                                   offset: const Offset(0, 2),
                                 ),
                               ],
@@ -422,7 +440,7 @@ class _HomeTab extends StatelessWidget {
                                 const Icon(
                                   Icons.notifications_outlined,
                                   color: AppTheme.primaryColor,
-                                  size: 22,
+                                  size: 20,
                                 ),
                                 if (hasNotifications)
                                   Positioned(
@@ -466,7 +484,14 @@ class _HomeTab extends StatelessWidget {
               ),
             ),
 
-            const SliverToBoxAdapter(child: SizedBox(height: 24)),
+            const SliverToBoxAdapter(child: SizedBox(height: 12)),
+
+            // Fashion Quote (Sleek Compact Version)
+            const SliverToBoxAdapter(
+              child: _FashionQuoteWidget(),
+            ),
+
+            const SliverToBoxAdapter(child: SizedBox(height: 16)),
 
             // Quick Actions
             SliverToBoxAdapter(
@@ -482,7 +507,7 @@ class _HomeTab extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
                     Row(
                       children: [
                         Expanded(
@@ -514,7 +539,7 @@ class _HomeTab extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 8),
                     Row(
                       children: [
                         Expanded(
@@ -789,6 +814,7 @@ class _HomeTab extends StatelessWidget {
       ),
     );
   }
+
   void _showNotificationsDialog(BuildContext context, PlanAheadProvider provider) {
     showModalBottomSheet(
       context: context,
@@ -877,26 +903,48 @@ class _QuickActionCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.1),
+          gradient: LinearGradient(
+            colors: [
+              color.withValues(alpha: 0.25),
+              color.withValues(alpha: 0.1),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
           borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: color.withValues(alpha: 0.3),
+            width: 1,
+          ),
         ),
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.2),
+                color: Colors.white.withValues(alpha: 0.7),
                 borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: color.withValues(alpha: 0.2),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
-              child: Icon(icon, color: color, size: 24),
+              child: Icon(icon, color: color, size: 20),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 8),
             Expanded(
               child: Text(
                 title,
-                style: TextStyle(fontWeight: FontWeight.w600, color: color),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                  color: color.withValues(alpha: 0.9),
+                ),
               ),
             ),
           ],
@@ -905,3 +953,115 @@ class _QuickActionCard extends StatelessWidget {
     );
   }
 }
+
+class _FashionQuoteWidget extends StatefulWidget {
+  const _FashionQuoteWidget({super.key});
+
+  @override
+  State<_FashionQuoteWidget> createState() => _FashionQuoteWidgetState();
+}
+
+class _FashionQuoteWidgetState extends State<_FashionQuoteWidget> {
+  final List<String> _quotes = [
+    '"Phong cách nói lên bạn là ai mà không cần mở lời."\n- Rachel Zoe',
+    '"Hãy quyết định bạn là ai qua cách ăn mặc."\n- Gianni Versace',
+    '"Sự thanh lịch là vẻ đẹp không bao giờ tàn phai."\n- Audrey Hepburn',
+    '"Thời trang phai tàn, nhưng phong cách là mãi mãi."\n- Y.S.Laurent',
+    '"Mặc đẹp là một cách thể hiện sự tôn trọng."\n- Tom Ford',
+    '"Thời trang là một bản nhạc tuyệt vời."\n- Michael Kors',
+    '"Đừng mặc để tỏa sáng, hãy mặc để được nhớ đến."\n- Giorgio Armani',
+    '"Người mặc mang lại sự sống cho quần áo."\n- Marc Jacobs',
+    '"Phong cách là nói lên những điều phức tạp một cách đơn giản."\n- Jean Cocteau',
+    '"Trang phục đẹp nhất chính là sự tự tin của bạn."\n- Blake Lively'
+  ];
+
+  late int _currentIndex;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _quotes.shuffle();
+    _currentIndex = 0;
+    _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
+      if (mounted) {
+        setState(() {
+          _currentIndex = (_currentIndex + 1) % _quotes.length;
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final currentQuote = _quotes[_currentIndex];
+    final quoteParts = currentQuote.split('\n- ');
+    final quoteText = quoteParts[0];
+    final authorText = quoteParts.length > 1 ? quoteParts[1] : '';
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+      child: IntrinsicHeight(
+        child: Row(
+          children: [
+            Container(
+              width: 4,
+              decoration: BoxDecoration(
+                color: AppTheme.primaryColor.withValues(alpha: 0.6),
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: SizedBox(
+                height: 56, // Fixed height for 2 lines + author
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 500),
+                  child: Column(
+                    key: ValueKey<int>(_currentIndex),
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        quoteText,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontStyle: FontStyle.italic,
+                          color: AppTheme.textSecondary,
+                          height: 1.4,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      if (authorText.isNotEmpty) ...[
+                        const SizedBox(height: 4),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: Text(
+                            authorText,
+                            style: const TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: AppTheme.primaryColor,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+

@@ -12,86 +12,106 @@ class WeatherWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            _getWeatherColor().withValues(alpha: 0.8),
+            _getWeatherColor().withValues(alpha: 0.85),
             _getWeatherColor(),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: _getWeatherColor().withValues(alpha: 0.3),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Image.network(
-                weather.iconUrl,
-                width: 64,
-                height: 64,
-                errorBuilder: (_, __, ___) =>
-                    const Icon(Icons.cloud, size: 48, color: Colors.white),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      formatTemperature(weather.temperature),
-                      style: const TextStyle(
-                        fontSize: 36,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    Text(
                       weather.cityName,
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
                         color: Colors.white.withValues(alpha: 0.9),
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      formatTemperature(weather.temperature),
+                      style: const TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        height: 1.1,
                       ),
                     ),
                   ],
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              _buildInfoChip(
-                Icons.thermostat,
-                'Cảm giác ${formatTemperature(weather.feelsLike)}',
-              ),
-              const SizedBox(width: 12),
-              _buildInfoChip(Icons.water_drop, '${weather.humidity}%'),
-              const SizedBox(width: 12),
-              _buildInfoChip(Icons.air, '${weather.windSpeed.round()} m/s'),
-            ],
-          ),
-          if (weather.clothingSuggestions.isNotEmpty) ...[
-            const SizedBox(height: 12),
-            Text(
-              weather.clothingSuggestions.first,
-              style: TextStyle(
-                fontSize: 13,
-                color: Colors.white.withValues(alpha: 0.9),
-              ),
+                Image.network(
+                  weather.iconUrl,
+                  width: 56,
+                  height: 56,
+                  fit: BoxFit.contain,
+                  errorBuilder: (_, __, ___) =>
+                      const Icon(Icons.cloud, size: 40, color: Colors.white),
+                ),
+              ],
             ),
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildInfoChip(
+                  Icons.thermostat,
+                  'Cảm giác ${formatTemperature(weather.feelsLike)}',
+                ),
+                _buildInfoChip(Icons.water_drop, '${weather.humidity}%'),
+                _buildInfoChip(Icons.air, '${weather.windSpeed.round()} m/s'),
+              ],
+            ),
+            if (weather.clothingSuggestions.isNotEmpty) ...[
+              const SizedBox(height: 10),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  weather.clothingSuggestions.first,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ],
           ],
-        ],
-      ),
+        ),
     );
   }
 
   Widget _buildInfoChip(IconData icon, String text) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(20),
@@ -99,9 +119,9 @@ class WeatherWidget extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 16, color: Colors.white),
+          Icon(icon, size: 14, color: Colors.white),
           const SizedBox(width: 4),
-          Text(text, style: const TextStyle(fontSize: 12, color: Colors.white)),
+          Text(text, style: const TextStyle(fontSize: 11, color: Colors.white)),
         ],
       ),
     );
