@@ -61,19 +61,54 @@ class _TinderOutfitScreenState extends State<TinderOutfitScreen> {
     final random = math.Random();
     final List<List<ClothingItem>> outfits = [];
     
-    // Generate 20 random combinations
+    // Generate 20 random combinations with smart rules
     for (int i = 0; i < 20; i++) {
-      outfits.add([
-        tops[random.nextInt(tops.length)],
-        bottoms[random.nextInt(bottoms.length)],
-        shoes[random.nextInt(shoes.length)],
-      ]);
+      ClothingItem? selectedTop;
+      ClothingItem? selectedBottom;
+      ClothingItem? selectedShoes;
+
+      for (int attempt = 0; attempt < 50; attempt++) {
+        final top = tops[random.nextInt(tops.length)];
+        final bottom = bottoms[random.nextInt(bottoms.length)];
+        final shoe = shoes[random.nextInt(shoes.length)];
+
+        if (_isCombinationValid(top, bottom, shoe) || attempt == 49) {
+          selectedTop = top;
+          selectedBottom = bottom;
+          selectedShoes = shoe;
+          break;
+        }
+      }
+
+      if (selectedTop != null && selectedBottom != null && selectedShoes != null) {
+        outfits.add([selectedTop, selectedBottom, selectedShoes]);
+      }
     }
 
     setState(() {
       _cards = outfits;
       _isLoading = false;
     });
+  }
+
+  bool _isCombinationValid(ClothingItem top, ClothingItem bottom, ClothingItem shoes) {
+    final isFormalTop = top.type == ClothingType.shirt || top.styles.contains(ClothingStyle.formal) || top.styles.contains(ClothingStyle.elegant);
+    final isCasualTop = top.type == ClothingType.tshirt || top.type == ClothingType.hoodie || top.styles.contains(ClothingStyle.sporty);
+    
+    final isCasualBottom = bottom.type == ClothingType.shorts || bottom.styles.contains(ClothingStyle.sporty);
+    
+    final isFormalShoes = shoes.type == ClothingType.shoes || shoes.styles.contains(ClothingStyle.formal) || shoes.styles.contains(ClothingStyle.elegant);
+
+    // Rule 1: No casual top (tshirt/hoodie) + formal shoes (leather shoes)
+    if (isCasualTop && isFormalShoes) return false;
+
+    // Rule 2: No formal top (shirt) + very casual bottom (shorts/sporty)
+    if (isFormalTop && isCasualBottom) return false;
+
+    // Rule 3: No shorts with formal shoes
+    if (bottom.type == ClothingType.shorts && isFormalShoes) return false;
+
+    return true;
   }
 
   bool _onSwipe(

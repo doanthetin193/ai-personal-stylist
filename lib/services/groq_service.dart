@@ -227,8 +227,10 @@ class GroqService {
 
   /// Get wardrobe cleanup suggestions (Text only)
   Future<Map<String, dynamic>?> getCleanupSuggestions(
-    List<ClothingItem> wardrobe,
-  ) async {
+    List<ClothingItem> wardrobe, {
+    String? genderProfile,
+    String? styleProfile,
+  }) async {
     if (!_isInitialized || _apiKeys.isEmpty) {
       print('❌ Groq not initialized');
       return null;
@@ -244,7 +246,11 @@ class GroqService {
           .map((item) => item.toAIDescription())
           .join('\n');
 
-      final prompt = AIPrompts.cleanupSuggestion(wardrobeContext);
+      final prompt = AIPrompts.cleanupSuggestion(
+        wardrobeContext,
+        genderProfile: genderProfile,
+        styleProfile: styleProfile,
+      );
 
       final body = {
         'model': 'llama-3.3-70b-versatile',

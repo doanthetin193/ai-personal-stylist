@@ -624,7 +624,11 @@ class WardrobeProvider extends ChangeNotifier {
   /// Get cleanup suggestions from AI
   Future<Map<String, dynamic>?> getCleanupSuggestions() async {
     if (_items.isEmpty) return null;
-    return await _groqService.getCleanupSuggestions(_items);
+    return await _groqService.getCleanupSuggestions(
+      _items,
+      genderProfile: genderProfileAiDescription,
+      styleProfile: styleProfileAiDescription,
+    );
   }
 
   /// Delete item by ID

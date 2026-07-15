@@ -137,12 +137,19 @@ PRIORITY ORDER (highest to lowest):
 If any signals conflict, follow the higher-priority one.
 Select items that:
 1. Match the weather conditions
-2. Are appropriate for the occasion
+2. Are STRICTLY appropriate for the occasion (see OCCASION RULES below)
 3. Have harmonious colors
 4. Create a cohesive style
 5. Respect the user's style profile (masculine/feminine/unisex/flexible)
 6. Respect the user's gender profile (if provided)
 7. Use style preference only to fine-tune fit/silhouette
+
+OCCASION RULES:
+- "Đi làm" (Work) or "Sự kiện trang trọng" (Formal): MUST prioritize shirts (sơ mi), polos, trousers/chinos, and leather shoes. STRICTLY AVOID basic t-shirts, tank tops, and shorts unless no other options exist.
+- "Thể thao" (Sport): Prioritize t-shirts, hoodies, shorts, sneakers.
+- "Đi biển" (Beach): Prioritize shorts, tank tops, short-sleeve shirts, light colors.
+- "Hẹn hò" (Date) / "Tiệc tùng" (Party): Prioritize stylish, impressive, and neat pieces.
+- "Cafe/Đi chơi" (Casual): Relaxed, comfortable styling (t-shirts, jeans, sneakers are perfect here).
 
 Return ONLY a valid JSON object:
 {
@@ -151,7 +158,7 @@ Return ONLY a valid JSON object:
   "outerwear": "item_id or null",
   "footwear": "item_id or null",
   "accessories": ["item_id", ...] or [],
-  "reason": "Brief explanation in Vietnamese why these items work together (2-3 sentences)"
+  "reason": "Brief explanation in Vietnamese why these items work together and how they fit the occasion (2-3 sentences)"
 }
 
 Rules:
@@ -162,7 +169,7 @@ Rules:
 - If style profile is unisex, prioritize neutral pieces and avoid extreme styling
 - If style profile is flexible, you may mix masculine/feminine pieces when harmonious
 - Use style preference only as a fit refinement (loose/regular/fitted), never to override style profile
-- Reason should mention color harmony, style match, and weather appropriateness
+- Reason MUST mention why this is suitable for the specific occasion, along with color harmony and weather.
 
 Return ONLY the JSON. No markdown, no extra text.
 ''';
@@ -196,17 +203,26 @@ Return ONLY the JSON. No markdown, no extra text.
   }
 
   /// Prompt gợi ý dọn tủ đồ
-  static String cleanupSuggestion(String wardrobeContext) {
+  static String cleanupSuggestion(String wardrobeContext, {String? genderProfile, String? styleProfile}) {
+    final genderContext = genderProfile != null
+        ? '\nUSER GENDER PROFILE:\n$genderProfile\n'
+        : '';
+    final styleProfileContext = styleProfile != null
+        ? '\nUSER STYLE PROFILE:\n$styleProfile\n'
+        : '';
     return '''
 As a wardrobe organization expert, analyze this wardrobe and suggest items that could be removed or donated.
 
 WARDROBE ITEMS:
 $wardrobeContext
+$styleProfileContext
+$genderContext
 
 Identify:
 1. Duplicate items (same type and similar color)
 2. Items that don't match any style in the wardrobe
 3. Seasonal items that may not be needed
+4. Items that strongly conflict with the user's gender profile or style profile (e.g., dress/skirt for a male profile, unless style is flexible)
 
 Return ONLY a valid JSON object:
 {
@@ -214,7 +230,7 @@ Return ONLY a valid JSON object:
     {"ids": ["id1", "id2"], "reason": "Why they're duplicates in Vietnamese"}
   ],
   "mismatched": [
-    {"id": "item_id", "reason": "Why it doesn't fit in Vietnamese"}
+    {"id": "item_id", "reason": "Why it doesn't fit in Vietnamese (e.g. 'Không phù hợp với giới tính nam')"}
   ],
   "suggestions": ["General tip 1 in Vietnamese", "General tip 2 in Vietnamese"]
 }

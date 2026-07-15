@@ -8,6 +8,7 @@ import '../providers/plan_ahead_provider.dart';
 import '../providers/wardrobe_provider.dart';
 import '../utils/constants.dart';
 import '../utils/theme.dart';
+import '../widgets/clothing_card.dart';
 
 class PlanAheadScreen extends StatefulWidget {
   const PlanAheadScreen({super.key});
@@ -569,20 +570,29 @@ class _PlanAheadScreenState extends State<PlanAheadScreen> {
               runSpacing: 8,
               children: items
                   .map(
-                    (item) => Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: Colors.grey.shade300),
-                      ),
-                      child: Text(
-                        '${item.type.displayName} (${item.color})',
-                        style: const TextStyle(fontSize: 12),
-                      ),
+                    (item) => Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.grey.shade200, width: 2),
+                          ),
+                          clipBehavior: Clip.antiAlias,
+                          child: ClothingImage(
+                            item: item,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          item.type.displayName,
+                          style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
+                        ),
+                      ],
                     ),
                   )
                   .toList(),
