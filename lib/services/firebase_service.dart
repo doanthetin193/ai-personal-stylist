@@ -253,6 +253,59 @@ class FirebaseService {
     }
   }
 
+  /// Get current user's personal profile (birth year, height, weight)
+  Future<Map<String, dynamic>?> getUserPersonalProfile() async {
+    try {
+      final userId = currentUser?.uid;
+      if (userId == null) return null;
+
+      final snapshot = await _usersRef.doc(userId).get();
+      if (!snapshot.exists) return null;
+
+      final data = snapshot.data();
+      return {
+        'birthYear': data?['birthYear'],
+        'heightCm': data?['heightCm'],
+        'weightKg': data?['weightKg'],
+      };
+    } catch (e) {
+      print('Get User Personal Profile Error: $e');
+      return null;
+    }
+  }
+
+  /// Save current user's personal profile
+  Future<bool> saveUserPersonalProfile({
+    required int? birthYear,
+    required int? heightCm,
+    required int? weightKg,
+  }) async {
+    try {
+      final userId = currentUser?.uid;
+      if (userId == null) return false;
+
+      final updates = <String, dynamic>{
+        'updatedAt': FieldValue.serverTimestamp(),
+      };
+      
+      if (birthYear != null) updates['birthYear'] = birthYear;
+      else updates['birthYear'] = FieldValue.delete();
+
+      if (heightCm != null) updates['heightCm'] = heightCm;
+      else updates['heightCm'] = FieldValue.delete();
+
+      if (weightKg != null) updates['weightKg'] = weightKg;
+      else updates['weightKg'] = FieldValue.delete();
+
+      await _usersRef.doc(userId).set(updates, SetOptions(merge: true));
+
+      return true;
+    } catch (e) {
+      print('Save User Personal Profile Error: $e');
+      return false;
+    }
+  }
+
   /// Get all Smart Plan Ahead records for current user
   Future<List<SmartOutfitPlan>> getUserPlanAheadPlans() async {
     try {

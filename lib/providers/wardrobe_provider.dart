@@ -308,54 +308,20 @@ class WardrobeProvider extends ChangeNotifier {
 
   Future<void> loadPreferences() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final genderStr = prefs.getString('gender');
-      _genderPreference = GenderPreference.fromString(genderStr);
-
-      final styleProfIndex = prefs.getInt('style_profile');
-      if (styleProfIndex != null &&
-          styleProfIndex >= 0 &&
-          styleProfIndex < OutfitStyleProfile.values.length) {
-        _outfitStyleProfile = OutfitStyleProfile.values[styleProfIndex];
+      final profile = await _firebaseService.getUserPersonalProfile();
+      if (profile != null) {
+        _birthYear = profile['birthYear'];
+        _heightCm = profile['heightCm'];
+        _weightKg = profile['weightKg'];
+        notifyListeners();
       }
-
-      _birthYear = prefs.getInt('birth_year');
-      _heightCm = prefs.getInt('height_cm');
-      _weightKg = prefs.getInt('weight_kg');
-
-      notifyListeners();
     } catch (e) {
-      print('Error loading preferences: $e');
+      print('Error loading personal profile from Firebase: $e');
     }
   }
 
   Future<void> savePreferences() async {
-    final prefs = await SharedPreferences.getInstance();
-    if (_genderPreference != null) {
-      await prefs.setString('gender', _genderPreference!.firestoreValue);
-    } else {
-      await prefs.remove('gender');
-    }
-    if (_outfitStyleProfile != null) {
-      await prefs.setInt('style_profile', _outfitStyleProfile!.index);
-    } else {
-      await prefs.remove('style_profile');
-    }
-    if (_birthYear != null) {
-      await prefs.setInt('birth_year', _birthYear!);
-    } else {
-      await prefs.remove('birth_year');
-    }
-    if (_heightCm != null) {
-      await prefs.setInt('height_cm', _heightCm!);
-    } else {
-      await prefs.remove('height_cm');
-    }
-    if (_weightKg != null) {
-      await prefs.setInt('weight_kg', _weightKg!);
-    } else {
-      await prefs.remove('weight_kg');
-    }
+    // Deprecated: We now save directly to Firebase
   }
 
   /// Load weather
@@ -564,7 +530,11 @@ class WardrobeProvider extends ChangeNotifier {
       _birthYear = year;
       _heightCm = height;
       _weightKg = weight;
-      await savePreferences();
+      await _firebaseService.saveUserPersonalProfile(
+        birthYear: year,
+        heightCm: height,
+        weightKg: weight,
+      );
       notifyListeners();
     } catch (e) {
       print('Error updating personal profile: $e');
