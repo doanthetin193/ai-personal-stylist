@@ -105,6 +105,8 @@ CHỈ TRẢ VỀ JSON. Không markdown, không giải thích, không text thừa
     String? stylePreference,
     String? genderProfile,
     String? styleProfile,
+    String? fengShuiContext,
+    String? bodyProfileContext,
   }) {
     final styleContext = stylePreference != null
         ? '\nSTYLE PREFERENCE:\n$stylePreference\n'
@@ -114,6 +116,12 @@ CHỈ TRẢ VỀ JSON. Không markdown, không giải thích, không text thừa
         : '';
     final styleProfileContext = styleProfile != null
         ? '\nUSER STYLE PROFILE:\n$styleProfile\n'
+        : '';
+    final fengShuiContextStr = fengShuiContext != null
+        ? '\nFENG SHUI (NGŨ HÀNH) PROFILE:\n$fengShuiContext\n'
+        : '';
+    final bodyContextStr = bodyProfileContext != null
+        ? '\nBODY PROFILE (BMI & SHAPE):\n$bodyProfileContext\n'
         : '';
     return '''
 You are a professional fashion stylist. Based on the wardrobe items and conditions below, suggest the best outfit.
@@ -128,6 +136,8 @@ OCCASION: $occasion
 $styleProfileContext
 $genderContext
 $styleContext
+$fengShuiContextStr
+$bodyContextStr
 
 PRIORITY ORDER (highest to lowest):
 1) USER STYLE PROFILE
@@ -138,11 +148,12 @@ If any signals conflict, follow the higher-priority one.
 Select items that:
 1. Match the weather conditions
 2. Are STRICTLY appropriate for the occasion (see OCCASION RULES below)
-3. Have harmonious colors
+3. Have harmonious colors. (CRITICAL: MUST strictly follow FENG SHUI lucky/unlucky colors if provided)
 4. Create a cohesive style
 5. Respect the user's style profile (masculine/feminine/unisex/flexible)
 6. Respect the user's gender profile (if provided)
-7. Use style preference only to fine-tune fit/silhouette
+7. Flatters the user's body shape (CRITICAL: MUST strictly follow BODY PROFILE instructions if provided to hide flaws)
+8. Use style preference only to fine-tune fit/silhouette
 
 OCCASION RULES:
 - "Đi làm" (Work) or "Sự kiện trang trọng" (Formal): MUST prioritize shirts (sơ mi), polos, trousers/chinos, and leather shoes. STRICTLY AVOID basic t-shirts, tank tops, and shorts unless no other options exist.

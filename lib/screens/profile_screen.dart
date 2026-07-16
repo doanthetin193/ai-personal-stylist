@@ -179,6 +179,12 @@ class ProfileScreen extends StatelessWidget {
                       ),
                     ),
                     _buildMenuItem(
+                      icon: Icons.accessibility_new_rounded,
+                      title: 'Hình thể & Phong thủy',
+                      subtitle: _getPersonalProfileSubtitle(wardrobeProvider),
+                      onTap: () => _showPersonalProfileDialog(context, wardrobeProvider),
+                    ),
+                    _buildMenuItem(
                       icon: Icons.style_outlined,
                       title: 'Sở thích phong cách',
                       subtitle: wardrobeProvider.stylePreference.displayName,
@@ -246,6 +252,11 @@ class ProfileScreen extends StatelessWidget {
     final genderLabel = gender?.displayName ?? 'Chưa chọn';
     final styleLabel = styleProfile?.displayName ?? 'Mặc định';
     return '$genderLabel • $styleLabel';
+  }
+
+  String _getPersonalProfileSubtitle(WardrobeProvider wp) {
+    if (!wp.hasPersonalProfile) return 'Chưa thiết lập';
+    return '${wp.fengShuiProfile?.displayString ?? ''} • BMI ${wp.bodyProfile?.bmi.toStringAsFixed(1) ?? ''}';
   }
 
   Widget _buildStat({
@@ -961,6 +972,90 @@ class ProfileScreen extends StatelessWidget {
           );
         },
       ),
+    );
+  }
+
+  void _showPersonalProfileDialog(
+      BuildContext context, WardrobeProvider provider) {
+    final yearController = TextEditingController(
+        text: provider.birthYear?.toString() ?? '');
+    final heightController = TextEditingController(
+        text: provider.heightCm?.toString() ?? '');
+    final weightController = TextEditingController(
+        text: provider.weightKg?.toString() ?? '');
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: const Text('Hình thể & Phong thủy'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Nhập thông tin để AI gợi ý trang phục chuẩn xác nhất!',
+                  style: TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
+              const SizedBox(height: 16),
+              TextField(
+                controller: yearController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: 'Năm sinh (VD: 2002)',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.cake),
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: heightController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: 'Chiều cao (cm)',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.height),
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: weightController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: 'Cân nặng (kg)',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.monitor_weight),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Hủy'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final y = int.tryParse(yearController.text);
+                final h = int.tryParse(heightController.text);
+                final w = int.tryParse(weightController.text);
+
+                if (y != null && h != null && w != null) {
+                  await provider.updatePersonalProfile(y, h, w);
+                  if (context.mounted) Navigator.pop(context);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Vui lòng nhập đúng định dạng số!')),
+                  );
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.primaryColor,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Lưu & Cập nhật'),
+            ),
+          ],
+        );
+      },
     );
   }
 

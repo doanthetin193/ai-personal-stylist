@@ -128,6 +128,8 @@ class GroqService {
     String? stylePreference,
     String? genderProfile,
     String? styleProfile,
+    String? fengShuiContext,
+    String? bodyProfileContext,
   }) async {
     if (!_isInitialized || _apiKeys.isEmpty) {
       print('❌ Groq not initialized');
@@ -152,6 +154,8 @@ class GroqService {
         stylePreference: stylePreference,
         genderProfile: genderProfile,
         styleProfile: styleProfile,
+        fengShuiContext: fengShuiContext,
+        bodyProfileContext: bodyProfileContext,
       );
 
       // Build request body

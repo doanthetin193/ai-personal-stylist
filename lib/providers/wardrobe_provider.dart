@@ -7,6 +7,9 @@ import '../services/firebase_service.dart';
 import '../services/groq_service.dart';
 import '../services/weather_service.dart';
 import '../utils/constants.dart';
+import '../utils/body_profile_utils.dart';
+import '../utils/feng_shui_utils.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 enum WardrobeStatus { initial, loading, loaded, error }
 
@@ -176,7 +179,7 @@ enum OutfitStyleProfile {
       case GenderPreference.female:
         return OutfitStyleProfile.feminine;
       default:
-        return OutfitStyleProfile.unisex;
+        return OutfitStyleProfile.flexible;
     }
   }
 }
@@ -200,6 +203,11 @@ class WardrobeProvider extends ChangeNotifier {
   GenderPreference? _genderPreference;
   OutfitStyleProfile? _outfitStyleProfile;
 
+  // Personal Profile
+  int? _birthYear;
+  int? _heightCm;
+  int? _weightKg;
+
   // Current outfit suggestion
   Outfit? _currentOutfit;
 
@@ -214,9 +222,8 @@ class WardrobeProvider extends ChangeNotifier {
 
   // Getters
   WardrobeStatus get status => _status;
-  List<ClothingItem> get items =>
-      _filteredItems; //để hiển thị UI bao gồm cả lọc hoặc tất cả
-  List<ClothingItem> get allItems => _items; //để AI gợi ý
+  List<ClothingItem> get items => _filteredItems;
+  List<ClothingItem> get allItems => _items;
   WeatherInfo? get weather => _weather;
   String? get errorMessage => _errorMessage;
   bool get isLoading => _status == WardrobeStatus.loading;
@@ -227,13 +234,33 @@ class WardrobeProvider extends ChangeNotifier {
   GenderPreference? get genderPreference => _genderPreference;
   OutfitStyleProfile? get outfitStyleProfile => _outfitStyleProfile;
   bool get hasGenderPreference => _genderPreference != null;
+  bool get hasStylePreference => _outfitStyleProfile != null;
   bool get hasIdentityPreferences =>
       _genderPreference != null && _outfitStyleProfile != null;
 
   OutfitStyleProfile get effectiveOutfitStyleProfile {
-    return _outfitStyleProfile ??
-        OutfitStyleProfile.defaultForGender(_genderPreference);
+    if (_outfitStyleProfile != null) {
+      return _outfitStyleProfile!;
+    }
+    return _genderPreference != null
+        ? OutfitStyleProfile.defaultForGender(_genderPreference)
+        : OutfitStyleProfile.flexible;
   }
+
+  // Personal Profile getters
+  int? get birthYear => _birthYear;
+  int? get heightCm => _heightCm;
+  int? get weightKg => _weightKg;
+
+  bool get hasPersonalProfile =>
+      _birthYear != null && _heightCm != null && _weightKg != null;
+
+  FengShuiProfile? get fengShuiProfile =>
+      _birthYear != null ? FengShuiUtils.calculateFengShui(_birthYear!) : null;
+
+  BodyProfile? get bodyProfile => (_heightCm != null && _weightKg != null)
+      ? BodyProfile(heightCm: _heightCm!, weightKg: _weightKg!)
+      : null;
 
   // Filtered items
   List<ClothingItem> get _filteredItems {
@@ -274,6 +301,42 @@ class WardrobeProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> loadPreferences() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final genderStr = prefs.getString('gender');
+      _genderPreference = GenderPreference.fromString(genderStr);
+
+      final styleProfIndex = prefs.getInt('style_profile');
+      if (styleProfIndex != null &&
+          styleProfIndex >= 0 &&
+          styleProfIndex < OutfitStyleProfile.values.length) {
+        _outfitStyleProfile = OutfitStyleProfile.values[styleProfIndex];
+      }
+
+      _birthYear = prefs.getInt('birth_year');
+      _heightCm = prefs.getInt('height_cm');
+      _weightKg = prefs.getInt('weight_kg');
+
+      notifyListeners();
+    } catch (e) {
+      print('Error loading preferences: $e');
+    }
+  }
+
+  Future<void> savePreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (_genderPreference != null) {
+      await prefs.setString('gender', _genderPreference!.firestoreValue);
+    }
+    if (_outfitStyleProfile != null) {
+      await prefs.setInt('style_profile', _outfitStyleProfile!.index);
+    }
+    if (_birthYear != null) await prefs.setInt('birth_year', _birthYear!);
+    if (_heightCm != null) await prefs.setInt('height_cm', _heightCm!);
+    if (_weightKg != null) await prefs.setInt('weight_kg', _weightKg!);
+  }
+
   /// Load weather
   Future<void> loadWeather({String? city}) async {
     try {
@@ -310,7 +373,6 @@ class WardrobeProvider extends ChangeNotifier {
         '🖼️ Original image size: ${(imageBytes.length / 1024).toStringAsFixed(1)}KB',
       );
 
-      // 1. Tự động nén và convert image to Base64 (thay thế Firebase Storage)
       final imageBase64 = await _firebaseService.compressAndConvertToBase64(
         imageBytes,
       );
@@ -318,12 +380,10 @@ class WardrobeProvider extends ChangeNotifier {
         '✅ Image compressed and converted to Base64 (${imageBase64.length} chars)',
       );
 
-      // 2. Create ClothingItem with provided data
       final userId = _firebaseService.currentUser?.uid;
       if (userId == null) {
         throw Exception('Chưa đăng nhập');
       }
-      print('👤 User ID: $userId');
 
       final item = ClothingItem(
         id: '',
@@ -337,15 +397,12 @@ class WardrobeProvider extends ChangeNotifier {
         createdAt: DateTime.now(),
       );
 
-      print('💾 Saving to Firestore...');
-      // 3. Save to Firestore
       final docId = await _firebaseService.addClothingItem(item);
       if (docId == null) {
         throw Exception(
           'Không thể lưu item. Vui lòng kiểm tra:\n1. Firestore Rules đã cho phép write\n2. Kết nối internet ổn định',
         );
       }
-      print('✅ Saved with ID: $docId');
 
       final savedItem = item.copyWith(id: docId);
       _items.insert(0, savedItem);
@@ -355,7 +412,6 @@ class WardrobeProvider extends ChangeNotifier {
 
       return savedItem;
     } catch (e) {
-      print('❌ Error saving item: $e');
       _isAnalyzing = false;
       _errorMessage = e.toString();
       notifyListeners();
@@ -418,8 +474,7 @@ class WardrobeProvider extends ChangeNotifier {
 
   Future<void> loadGenderPreference() async {
     final rawGender = await _firebaseService.getUserGenderPreference();
-    final rawStyleProfile = await _firebaseService
-        .getUserStyleProfilePreference();
+    final rawStyleProfile = await _firebaseService.getUserStyleProfilePreference();
     final parsedGender = GenderPreference.fromString(rawGender);
     final parsedStyleProfile = OutfitStyleProfile.fromString(rawStyleProfile);
 
@@ -434,15 +489,15 @@ class WardrobeProvider extends ChangeNotifier {
   Future<bool> saveGenderPreference(GenderPreference preference) async {
     final success = await _firebaseService.saveUserIdentityPreferences(
       gender: preference.firestoreValue,
-      styleProfile:
-          (_outfitStyleProfile ??
-                  OutfitStyleProfile.defaultForGender(preference))
-              .firestoreValue,
+      styleProfile: (_outfitStyleProfile ??
+              OutfitStyleProfile.defaultForGender(preference))
+          .firestoreValue,
     );
 
     if (success) {
       _genderPreference = preference;
       _outfitStyleProfile ??= OutfitStyleProfile.defaultForGender(preference);
+      await savePreferences();
       notifyListeners();
     }
 
@@ -461,6 +516,7 @@ class WardrobeProvider extends ChangeNotifier {
     if (success) {
       _genderPreference = gender;
       _outfitStyleProfile = styleProfile;
+      await savePreferences();
       notifyListeners();
     }
 
@@ -472,7 +528,28 @@ class WardrobeProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Dùng cho các luồng planner muốn tái sử dụng cùng logic ràng buộc.
+  Future<void> updateStyleProfile(OutfitStyleProfile profile) async {
+    try {
+      _outfitStyleProfile = profile;
+      await savePreferences();
+      notifyListeners();
+    } catch (e) {
+      print('Error updating style profile: $e');
+    }
+  }
+
+  Future<void> updatePersonalProfile(int? year, int? height, int? weight) async {
+    try {
+      _birthYear = year;
+      _heightCm = height;
+      _weightKg = weight;
+      await savePreferences();
+      notifyListeners();
+    } catch (e) {
+      print('Error updating personal profile: $e');
+    }
+  }
+
   List<ClothingItem> getSuggestionWardrobe() {
     return _getWardrobeForSuggestion();
   }
@@ -505,11 +582,9 @@ class WardrobeProvider extends ChangeNotifier {
       return _items;
     }
 
-    final filtered = _items
-        .where((item) => !_isRestrictedByStyleProfile(item))
-        .toList();
+    final filtered =
+        _items.where((item) => !_isRestrictedByStyleProfile(item)).toList();
 
-    // Fallback to original wardrobe to avoid hard-failing when user has too few items.
     return filtered.isNotEmpty ? filtered : _items;
   }
 
@@ -520,9 +595,7 @@ class WardrobeProvider extends ChangeNotifier {
       _errorMessage = null;
       notifyListeners();
 
-      // Get weather context
-      final weatherContext =
-          _weather?.toAIDescription() ??
+      final weatherContext = _weather?.toAIDescription() ??
           'Temperature: 28°C, Humidity: 70%, Condition: Ấm áp';
 
       final wardrobeForSuggestion = _getWardrobeForSuggestion();
@@ -538,6 +611,8 @@ class WardrobeProvider extends ChangeNotifier {
         stylePreference: _stylePreference.aiDescription,
         genderProfile: _genderPreference?.aiDescription,
         styleProfile: effectiveOutfitStyleProfile.aiDescription,
+        fengShuiContext: fengShuiProfile?.aiDescription,
+        bodyProfileContext: bodyProfile?.aiDescription,
       );
 
       if (suggestion == null) {
