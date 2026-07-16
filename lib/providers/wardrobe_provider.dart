@@ -294,6 +294,8 @@ class WardrobeProvider extends ChangeNotifier {
       _errorMessage = null;
       notifyListeners();
 
+      await loadPreferences();
+
       _items = await _firebaseService.getUserItems();
       _status = WardrobeStatus.loaded;
       notifyListeners();
@@ -331,13 +333,29 @@ class WardrobeProvider extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     if (_genderPreference != null) {
       await prefs.setString('gender', _genderPreference!.firestoreValue);
+    } else {
+      await prefs.remove('gender');
     }
     if (_outfitStyleProfile != null) {
       await prefs.setInt('style_profile', _outfitStyleProfile!.index);
+    } else {
+      await prefs.remove('style_profile');
     }
-    if (_birthYear != null) await prefs.setInt('birth_year', _birthYear!);
-    if (_heightCm != null) await prefs.setInt('height_cm', _heightCm!);
-    if (_weightKg != null) await prefs.setInt('weight_kg', _weightKg!);
+    if (_birthYear != null) {
+      await prefs.setInt('birth_year', _birthYear!);
+    } else {
+      await prefs.remove('birth_year');
+    }
+    if (_heightCm != null) {
+      await prefs.setInt('height_cm', _heightCm!);
+    } else {
+      await prefs.remove('height_cm');
+    }
+    if (_weightKg != null) {
+      await prefs.setInt('weight_kg', _weightKg!);
+    } else {
+      await prefs.remove('weight_kg');
+    }
   }
 
   /// Load weather
