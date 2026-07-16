@@ -8,6 +8,7 @@ import '../utils/constants.dart';
 import '../widgets/outfit_card.dart';
 import '../widgets/loading_widgets.dart';
 import '../widgets/common_widgets.dart';
+import '../utils/feng_shui_utils.dart';
 
 class OutfitSuggestScreen extends StatefulWidget {
   const OutfitSuggestScreen({super.key});
@@ -105,6 +106,24 @@ class _OutfitSuggestScreenState extends State<OutfitSuggestScreen> {
                         return const SizedBox.shrink();
                       }
                       return WeatherWidget(weather: wardrobe.weather!);
+                    },
+                  ),
+                ),
+              ),
+
+              // Daily Feng Shui info
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Consumer<WardrobeProvider>(
+                    builder: (context, wardrobe, _) {
+                      if (wardrobe.dailyAdvice == null) {
+                        return const SizedBox.shrink();
+                      }
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 16),
+                        child: DailyFengShuiCard(advice: wardrobe.dailyAdvice!),
+                      );
                     },
                   ),
                 ),
@@ -509,6 +528,83 @@ class _OutfitSuggestScreenState extends State<OutfitSuggestScreen> {
         content: const Text('Đã lưu vào Lookbook! 💖'),
         backgroundColor: Colors.pink.shade400,
         behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+}
+
+class DailyFengShuiCard extends StatelessWidget {
+  final DailyAdvice advice;
+
+  const DailyFengShuiCard({super.key, required this.advice});
+
+  @override
+  Widget build(BuildContext context) {
+    Color relationColor;
+    IconData relationIcon;
+    
+    if (advice.relation.contains('Cát') || advice.relation.contains('Sinh') && !advice.relation.contains('Xuất')) {
+      relationColor = Colors.green;
+      relationIcon = Icons.auto_awesome;
+    } else if (advice.relation.contains('Khắc') || advice.relation.contains('Hao')) {
+      relationColor = Colors.orange;
+      relationIcon = Icons.warning_amber_rounded;
+    } else {
+      relationColor = Colors.blue;
+      relationIcon = Icons.balance;
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: relationColor.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: relationColor.withValues(alpha: 0.3),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(relationIcon, color: relationColor, size: 20),
+              const SizedBox(width: 8),
+              Text(
+                'Lịch Vạn Niên: ${advice.dailyFengShui.name}',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: relationColor.withValues(alpha: 0.9),
+                ),
+              ),
+              const Spacer(),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: relationColor.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  advice.relation,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: relationColor.withValues(alpha: 0.9),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Text(
+            advice.uiAdvice,
+            style: TextStyle(
+              fontSize: 13,
+              color: AppTheme.textSecondary,
+              height: 1.4,
+            ),
+          ),
+        ],
       ),
     );
   }

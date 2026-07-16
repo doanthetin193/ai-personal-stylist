@@ -258,6 +258,9 @@ class WardrobeProvider extends ChangeNotifier {
   FengShuiProfile? get fengShuiProfile =>
       _birthYear != null ? FengShuiUtils.calculateFengShui(_birthYear!) : null;
 
+  DailyAdvice? get dailyAdvice =>
+      fengShuiProfile != null ? FengShuiUtils.getDailyAdvice(fengShuiProfile!, DateTime.now()) : null;
+
   BodyProfile? get bodyProfile => (_heightCm != null && _weightKg != null)
       ? BodyProfile(heightCm: _heightCm!, weightKg: _weightKg!)
       : null;
@@ -611,7 +614,7 @@ class WardrobeProvider extends ChangeNotifier {
         stylePreference: _stylePreference.aiDescription,
         genderProfile: _genderPreference?.aiDescription,
         styleProfile: effectiveOutfitStyleProfile.aiDescription,
-        fengShuiContext: fengShuiProfile?.aiDescription,
+        fengShuiContext: dailyAdvice?.aiContext ?? fengShuiProfile?.aiDescription,
         bodyProfileContext: bodyProfile?.aiDescription,
       );
 

@@ -148,7 +148,7 @@ If any signals conflict, follow the higher-priority one.
 Select items that:
 1. Match the weather conditions
 2. Are STRICTLY appropriate for the occasion (see OCCASION RULES below)
-3. Have harmonious colors. (CRITICAL: MUST strictly follow FENG SHUI lucky/unlucky colors if provided)
+3. Have harmonious colors. (CRITICAL: MUST strictly follow FENG SHUI and DAILY ADVICE instructions if provided. If daily advice dictates a specific color, you MUST pick an item of that color if available in the wardrobe)
 4. Create a cohesive style
 5. Respect the user's style profile (masculine/feminine/unisex/flexible)
 6. Respect the user's gender profile (if provided)
