@@ -17,10 +17,10 @@ class FengShuiProfile {
   FengShuiProfile({required this.birthYear, required this.element});
 
   String get aiDescription {
-    return 'Người dùng sinh năm \$birthYear (Mệnh \${element.name}). Ưu tiên gợi ý trang phục có các màu tương sinh/bản mệnh: \${element.luckyColors} để thu hút may mắn. Tuyệt đối tránh hoặc hạn chế tối đa các màu tương khắc: \${element.unluckyColors}.';
+    return 'Người dùng sinh năm $birthYear (Mệnh ${element.name}). Ưu tiên gợi ý trang phục có các màu tương sinh/bản mệnh: ${element.luckyColors} để thu hút may mắn. Tuyệt đối tránh hoặc hạn chế tối đa các màu tương khắc: ${element.unluckyColors}.';
   }
 
-  String get displayString => 'Mệnh \${element.name} (Hợp: \${element.luckyColors})';
+  String get displayString => 'Mệnh ${element.name} (Hợp: ${element.luckyColors})';
 }
 
 class FengShuiUtils {

@@ -13,8 +13,8 @@ class BodyProfile {
   }
 
   String get aiDescription {
-    return 'Chiều cao: \${heightCm}cm, Cân nặng: \${weightKg}kg. Đặc điểm cơ thể: $shapeDescription. Hãy ưu tiên các form dáng tôn lên ưu điểm và che khuyết điểm cho vóc dáng này.';
+    return 'Chiều cao: ${heightCm}cm, Cân nặng: ${weightKg}kg. Đặc điểm cơ thể: $shapeDescription. Hãy ưu tiên các form dáng tôn lên ưu điểm và che khuyết điểm cho vóc dáng này.';
   }
 
-  String get displayString => 'Cao \${heightCm}cm, Nặng \${weightKg}kg (BMI: \${bmi.toStringAsFixed(1)} - $shapeDescription)';
+  String get displayString => 'Cao ${heightCm}cm, Nặng ${weightKg}kg (BMI: ${bmi.toStringAsFixed(1)} - $shapeDescription)';
 }
